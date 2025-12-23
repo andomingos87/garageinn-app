@@ -1,0 +1,47 @@
+# AGENTS.md
+
+## Dev environment tips
+- Install dependencies with `npm install` before running scaffolds.
+- Use `npm run dev` for the interactive TypeScript session that powers local experimentation.
+- Run `npm run build` to refresh the CommonJS bundle in `dist/` before shipping changes.
+- Store generated artefacts in `.context/` so reruns stay deterministic.
+
+## Testing instructions
+- Execute `npm run test` to run the Jest suite.
+- Append `-- --watch` while iterating on a failing spec.
+- Trigger `npm run build && npm run test` before opening a PR to mimic CI.
+- Add or update tests alongside any generator or CLI changes.
+
+## PR instructions
+- Follow Conventional Commits (for example, `feat(scaffolding): add doc links`).
+- Cross-link new scaffolds in `docs/README.md` and `agents/README.md` so future agents can find them.
+- Attach sample CLI output or generated markdown when behaviour shifts.
+- Confirm the built artefacts in `dist/` match the new source changes.
+
+## Repository map
+- `design-system.md/` — explain what lives here and when agents should edit it.
+- `favicon.ico/` — explain what lives here and when agents should edit it.
+- `logo-garageinn.png/` — explain what lives here and when agents should edit it.
+- `projeto/` — explain what lives here and when agents should edit it.
+
+## Supabase MCP Integration
+Este projeto utiliza o **Supabase** como backend. **Sempre utilize o MCP do Supabase** para operações de banco de dados:
+
+### Quando usar o MCP Supabase:
+- **Consultas ao banco**: Use `mcp_supabase_execute_sql` para queries SELECT
+- **Alterações de schema**: Use `mcp_supabase_apply_migration` para DDL (CREATE, ALTER, DROP)
+- **Verificar estrutura**: Use `mcp_supabase_list_tables` para listar tabelas existentes
+- **Gerar types**: Use `mcp_supabase_generate_typescript_types` após alterações no schema
+- **Debug**: Use `mcp_supabase_get_logs` para investigar erros
+- **Segurança**: Use `mcp_supabase_get_advisors` após mudanças DDL para verificar RLS
+
+### Regras importantes:
+1. **Nunca execute DDL diretamente** — sempre use `apply_migration` para manter histórico
+2. **Sempre verifique advisors de segurança** após criar/alterar tabelas
+3. **Gere TypeScript types** após mudanças no schema para manter tipagem atualizada
+4. Para operações de leitura simples, prefira `execute_sql` sobre chamadas via código
+
+## AI Context References
+- Documentation index: `.context/docs/README.md`
+- Agent playbooks: `.context/agents/README.md`
+- Contributor guide: `CONTRIBUTING.md`
