@@ -67,11 +67,11 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ## Chamados — Compras
 
-- [ ] Criar modelo de dados: `tickets`, `ticket_comments`, `ticket_attachments`, `ticket_history`
-- [ ] Criar tela de abertura de chamado de Compras
-- [ ] Criar tela de listagem de chamados de Compras
-- [ ] Implementar fluxo de execução do chamado de Compras
-- [ ] Implementar triagem e priorização
+- [x] Criar modelo de dados: `tickets`, `ticket_comments`, `ticket_attachments`, `ticket_history`
+- [x] Criar tela de abertura de chamado de Compras
+- [x] Criar tela de listagem de chamados de Compras
+- [x] Implementar fluxo de execução do chamado de Compras
+- [x] Implementar triagem e priorização
 
 ## Chamados — Manutenção
 
