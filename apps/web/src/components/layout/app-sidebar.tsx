@@ -127,19 +127,16 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border p-4">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="relative h-8 w-8">
+        <Link href="/" className="flex items-center">
+          <div className="relative h-8 w-32">
             <Image
               src="/logo-garageinn.png"
               alt="GarageInn Logo"
               fill
-              className="object-contain"
+              className="object-contain object-left"
               priority
             />
           </div>
-          <span className="text-xl font-semibold tracking-tight text-sidebar-foreground">
-            GAPP
-          </span>
         </Link>
       </SidebarHeader>
 
