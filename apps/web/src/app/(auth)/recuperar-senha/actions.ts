@@ -23,7 +23,8 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/redefinir-senha`,
+    // Go through callback to exchange PKCE code for session first
+    redirectTo: `${siteUrl}/auth/callback?next=/redefinir-senha`,
   });
 
   if (error) {

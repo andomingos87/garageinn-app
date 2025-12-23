@@ -59,8 +59,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 4. Redirect authenticated users away from auth pages
-  if (user && isPublic && pathname !== "/auth/callback") {
+  // 4. Redirect authenticated users away from auth pages (except password reset)
+  if (user && isPublic && pathname !== "/auth/callback" && pathname !== "/redefinir-senha") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

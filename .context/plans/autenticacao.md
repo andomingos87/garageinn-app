@@ -41,6 +41,7 @@ related_agents:
 | 4 | Implementar middleware de proteção de rotas | ✅ Concluído | `apps/web/src/middleware.ts` |
 | 5 | Criação de usuário admin | ✅ Concluído | Migrations aplicadas: profiles, departments, roles, user_roles |
 | 6 | Impersonação para usuário admin | ✅ Concluído | `apps/web/src/lib/auth/impersonation.ts`, Edge Function `impersonate-user` |
+| 7 | Implementar Logout | ✅ Concluído | `apps/web/src/app/(app)/actions.ts`, `apps/web/src/components/layout/user-nav.tsx` |
 
 ---
 
@@ -104,9 +105,9 @@ export async function GET(request: Request) {
   - `useRequireAuth()` — Redirect se não autenticado
 
 ### Critérios de Aceite
-- [ ] `supabase.auth.getUser()` retorna usuário após login
-- [ ] Sessão persiste entre reloads
-- [ ] Callback route funciona para magic links
+- [x] `supabase.auth.getUser()` retorna usuário após login
+- [x] Sessão persiste entre reloads
+- [x] Callback route funciona para magic links
 
 ---
 
@@ -188,11 +189,11 @@ export async function signIn(formData: FormData) {
 - **Fonte:** Inter (sans-serif)
 
 ### Critérios de Aceite
-- [ ] Login funciona com email/senha válidos
-- [ ] Exibe erro para credenciais inválidas
-- [ ] Redireciona para `/` após login bem-sucedido
-- [ ] Responsivo em mobile e desktop
-- [ ] Acessível (labels, focus states, ARIA)
+- [x] Login funciona com email/senha válidos
+- [x] Exibe erro para credenciais inválidas
+- [x] Redireciona para `/` após login bem-sucedido
+- [x] Responsivo em mobile e desktop
+- [x] Acessível (labels, focus states, ARIA)
 
 ---
 
@@ -253,12 +254,14 @@ export async function requestPasswordReset(formData: FormData) {
 ```
 
 ### Critérios de Aceite
-- [ ] Email de recuperação é enviado corretamente
-- [ ] Link de redefinição funciona
-- [ ] Nova senha é salva com sucesso
-- [ ] Validação de senha (mínimo 6 chars, confirmação)
-- [ ] Mensagens de feedback claras
+- [x] Email de recuperação é enviado corretamente
+- [x] Link de redefinição funciona
+- [x] Nova senha é salva com sucesso
+- [x] Validação de senha (mínimo 6 chars, confirmação)
+- [x] Mensagens de feedback claras
 
+---
+https://pwsesfwbbwimniivemwg.supabase.co/auth/v1/verify?token=pkce_0ceebddfd7270be7856d9534c0768780edab73e929b9c79b3997b08c&type=recovery&redirect_to=http://localhost:3000/redefinir-senha
 ---
 
 ## Tarefa 4: Implementar Middleware de Proteção de Rotas
@@ -335,10 +338,10 @@ export const config = {
 ```
 
 ### Critérios de Aceite
-- [ ] Rotas `/(app)/*` redirecionam para `/login` sem sessão
-- [ ] `/login` redireciona para `/` com sessão ativa
-- [ ] Sessão é refreshed automaticamente
-- [ ] Assets estáticos não são interceptados
+- [x] Rotas `/(app)/*` redirecionam para `/login` sem sessão
+- [x] `/login` redireciona para `/` com sessão ativa
+- [x] Sessão é refreshed automaticamente
+- [x] Assets estáticos não são interceptados
 
 ---
 
@@ -463,10 +466,10 @@ SELECT '{USER_ID}', id FROM public.roles WHERE name = 'Administrador' AND is_glo
 ```
 
 ### Critérios de Aceite
-- [ ] Tabelas profiles, departments, roles, user_roles criadas
-- [ ] RLS configurado nas tabelas
-- [ ] Usuário admin pode fazer login
-- [ ] Admin tem cargo "Administrador" vinculado
+- [x] Tabelas profiles, departments, roles, user_roles criadas
+- [x] RLS configurado nas tabelas
+- [x] Usuário admin pode fazer login
+- [x] Admin tem cargo "Administrador" vinculado
 
 ---
 
@@ -578,10 +581,230 @@ export function ImpersonationBanner() {
 ```
 
 ### Critérios de Aceite
-- [ ] Apenas admins podem impersonar
-- [ ] Banner visível durante impersonação
-- [ ] Admin pode retornar à sua sessão original
-- [ ] Logs de impersonação são registrados (auditoria)
+- [x] Apenas admins podem impersonar
+- [x] Banner visível durante impersonação
+- [x] Admin pode retornar à sua sessão original
+- [x] Logs de impersonação são registrados (auditoria)
+
+---
+
+## Tarefa 7: Implementar Logout
+
+### Objetivo
+Permitir que usuários encerrem sua sessão de forma segura, invalidando tokens e redirecionando para a página de login.
+
+### Estrutura de Arquivos
+```
+apps/web/src/
+├── app/(app)/
+│   └── actions.ts              # Server actions do app (incluindo logout)
+└── components/layout/
+    ├── app-header.tsx          # Header com botão de logout
+    └── user-nav.tsx            # Dropdown de navegação do usuário (opcional)
+```
+
+### Subtarefas
+
+#### 7.1 Criar Server Action de Logout
+- **Arquivo:** `apps/web/src/app/(app)/actions.ts`
+- **Função:** `signOut()` — Encerra sessão do Supabase e redireciona
+
+```typescript
+'use server'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+
+export async function signOut() {
+  const supabase = await createClient()
+  
+  const { error } = await supabase.auth.signOut()
+  
+  if (error) {
+    console.error('Erro ao fazer logout:', error.message)
+    // Mesmo com erro, redireciona para login
+  }
+  
+  // Limpa cache de todas as rotas protegidas
+  revalidatePath('/', 'layout')
+  
+  redirect('/login')
+}
+```
+
+#### 7.2 Adicionar Botão de Logout no Header
+- **Arquivo:** `apps/web/src/components/layout/app-header.tsx`
+- **Local:** Dropdown do avatar do usuário ou botão direto
+- **Comportamento:**
+  - Exibe nome/email do usuário logado
+  - Botão "Sair" com ícone `LogOut`
+  - Loading state durante logout
+  - Confirmação opcional para evitar cliques acidentais
+
+```tsx
+'use client'
+import { LogOut, User, Settings } from 'lucide-react'
+import { signOut } from '@/app/(app)/actions'
+import { useTransition } from 'react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+
+interface UserNavProps {
+  user: {
+    name: string
+    email: string
+    avatarUrl?: string
+  }
+}
+
+export function UserNav({ user }: UserNavProps) {
+  const [isPending, startTransition] = useTransition()
+  
+  const handleSignOut = () => {
+    startTransition(async () => {
+      await signOut()
+    })
+  }
+  
+  const initials = user.name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+          <Avatar className="h-9 w-9">
+            <AvatarImage src={user.avatarUrl} alt={user.name} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <a href="/perfil" className="cursor-pointer">
+            <User className="mr-2 h-4 w-4" />
+            Meu Perfil
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a href="/configuracoes" className="cursor-pointer">
+            <Settings className="mr-2 h-4 w-4" />
+            Configurações
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem 
+          onClick={handleSignOut}
+          disabled={isPending}
+          className="text-destructive focus:text-destructive cursor-pointer"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          {isPending ? 'Saindo...' : 'Sair'}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+```
+
+#### 7.3 Integrar com Layout do App
+- **Arquivo:** `apps/web/src/app/(app)/layout.tsx`
+- **Ação:** Passar dados do usuário para o `AppHeader`
+
+```tsx
+import { createClient } from '@/lib/supabase/server'
+import { AppHeader } from '@/components/layout/app-header'
+import { AppSidebar } from '@/components/layout/app-sidebar'
+
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  // Buscar perfil completo
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, avatar_url')
+    .eq('id', user?.id)
+    .single()
+  
+  const userData = {
+    name: profile?.full_name ?? user?.email?.split('@')[0] ?? 'Usuário',
+    email: user?.email ?? '',
+    avatarUrl: profile?.avatar_url,
+  }
+  
+  return (
+    <div className="flex min-h-screen">
+      <AppSidebar />
+      <div className="flex-1 flex flex-col">
+        <AppHeader user={userData} />
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
+```
+
+#### 7.4 Tratar Logout em Modo Impersonação
+- **Lógica:** Se usuário está em modo impersonação, logout deve restaurar sessão do admin
+- **Integração:** Verificar `useImpersonation()` antes de chamar `signOut()`
+
+```tsx
+// No componente UserNav, antes do signOut padrão
+const { isImpersonating, exitImpersonation } = useImpersonation()
+
+const handleSignOut = () => {
+  if (isImpersonating) {
+    // Restaura sessão do admin em vez de fazer logout completo
+    exitImpersonation()
+    return
+  }
+  
+  startTransition(async () => {
+    await signOut()
+  })
+}
+```
+
+### Segurança
+
+- **Invalidação de Token:** `supabase.auth.signOut()` invalida o refresh token no servidor
+- **Limpeza de Cookies:** O Supabase SSR remove automaticamente os cookies de sessão
+- **Proteção CSRF:** Server Actions do Next.js incluem proteção CSRF automática
+- **Limpeza de Cache:** `revalidatePath` garante que dados em cache não persistam
+
+### Critérios de Aceite
+- [x] Botão de logout visível no header do app
+- [x] Sessão é invalidada corretamente no Supabase
+- [x] Usuário é redirecionado para `/login` após logout
+- [x] Cookies de sessão são removidos do browser
+- [x] Cache de rotas protegidas é limpo
+- [x] Loading state exibido durante processamento
+- [x] Modo impersonação é tratado corretamente (restaura sessão admin)
+- [x] Funciona em mobile e desktop
 
 ---
 

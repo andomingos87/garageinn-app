@@ -1,18 +1,11 @@
 "use client";
 
-import { Bell, Menu, User } from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/components/ui/sidebar";
+import { UserNav } from "./user-nav";
+import { useProfile } from "@/hooks/use-profile";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AppHeaderProps {
   title?: string;
@@ -20,6 +13,7 @@ interface AppHeaderProps {
 
 export function AppHeader({ title = "Dashboard" }: AppHeaderProps) {
   const { toggleSidebar, isMobile } = useSidebar();
+  const { profile, isLoading } = useProfile();
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card px-4 lg:px-6">
@@ -49,39 +43,21 @@ export function AppHeader({ title = "Dashboard" }: AppHeaderProps) {
         </Button>
 
         {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src="" alt="Avatar" />
-                <AvatarFallback>
-                  <User className="h-5 w-5" />
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">Usuário</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  usuario@garageinn.com.br
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <a href="/perfil">Meu Perfil</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="/configuracoes">Configurações</a>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
-              Sair
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {isLoading ? (
+          <Skeleton className="h-10 w-10 rounded-full" />
+        ) : (
+          <UserNav
+            user={
+              profile
+                ? {
+                    name: profile.full_name,
+                    email: profile.email,
+                    avatarUrl: profile.avatar_url || undefined,
+                  }
+                : null
+            }
+          />
+        )}
       </div>
     </header>
   );
