@@ -138,8 +138,8 @@ className={cn("bg-accent animate-pulse rounded-md", className)}
 - Adiciona `object-left` para alinhar logo à esquerda quando sidebar colapsa
 
 ### Tarefa 2 — Corrigir Cor do Skeleton
-- [ ] **2.1** Substituir `bg-accent` por `bg-muted` no componente Skeleton
-- [ ] **2.2** Verificar telas de loading que usam Skeleton
+- [x] **2.1** Substituir `bg-accent` por `bg-muted` no componente Skeleton
+- [x] **2.2** Verificar telas de loading que usam Skeleton
 
 **Arquivo:** `apps/web/src/components/ui/skeleton.tsx`
 
