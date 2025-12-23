@@ -29,7 +29,7 @@ related_agents:
 | # | Tarefa | Status | Prioridade | Arquivos Principais |
 |---|--------|--------|------------|---------------------|
 | 1 | Adicionar campo de email na unidade | ✅ Concluída | Baixa | Migration, `unit-form.tsx`, `database.types.ts` |
-| 2 | Implementar métricas da unidade | ⏳ Pendente | Média | `unit-metrics.tsx`, `actions.ts` |
+| 2 | Implementar métricas da unidade | ✅ Concluída | Média | `unit-metrics.tsx`, `actions.ts` |
 | 3 | Histórico de alterações (audit log) | ⏳ Pendente | Alta | `unit-history.tsx`, `audit_logs` table |
 | 4 | Vincular supervisores após importar | ⏳ Pendente | Média | `actions.ts`, função de vinculação |
 
@@ -323,10 +323,10 @@ export function UnitMetricsCard({ metrics }: UnitMetricsCardProps) {
 - Renderizar `UnitMetricsCard` na sidebar
 
 ### Critérios de Aceite
-- [ ] Métricas são calculadas corretamente
-- [ ] Card de métricas exibido na página de detalhes
-- [ ] Dados atualizados em tempo real (revalidação)
-- [ ] Design consistente com o sistema
+- [x] Métricas são calculadas corretamente
+- [x] Card de métricas exibido na página de detalhes
+- [x] Dados atualizados em tempo real (revalidação)
+- [x] Design consistente com o sistema
 
 ---
 

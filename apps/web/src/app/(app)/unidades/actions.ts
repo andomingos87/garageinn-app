@@ -404,3 +404,62 @@ export async function checkIsAdmin(): Promise<boolean> {
   return data === true
 }
 
+// ============================================
+// Unit Metrics
+// ============================================
+
+export interface UnitMetrics {
+  // Chamados
+  totalTickets: number
+  openTickets: number
+  resolvedTickets: number
+  
+  // Checklists
+  totalChecklists: number
+  completedChecklists: number
+  checklistsThisMonth: number
+  
+  // Conformidade
+  nonConformityRate: number // % de checklists com não-conformidades
+}
+
+/**
+ * Busca métricas operacionais de uma unidade (chamados e checklists)
+ */
+export async function getUnitMetrics(unitId: string): Promise<UnitMetrics> {
+  const supabase = await createClient()
+  
+  // Buscar chamados da unidade
+  const { data: tickets } = await supabase
+    .from('tickets')
+    .select('id, status')
+    .eq('unit_id', unitId)
+  
+  // Buscar execuções de checklist da unidade
+  const { data: checklists } = await supabase
+    .from('checklist_executions')
+    .select('id, status, has_non_conformities, completed_at')
+    .eq('unit_id', unitId)
+  
+  const now = new Date()
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  
+  const openStatuses = ['awaiting_triage', 'in_triage', 'awaiting_approval', 'in_progress', 'awaiting_quotation']
+  
+  return {
+    totalTickets: tickets?.length || 0,
+    openTickets: tickets?.filter(t => openStatuses.includes(t.status)).length || 0,
+    resolvedTickets: tickets?.filter(t => t.status === 'resolved' || t.status === 'closed').length || 0,
+    
+    totalChecklists: checklists?.length || 0,
+    completedChecklists: checklists?.filter(c => c.status === 'completed').length || 0,
+    checklistsThisMonth: checklists?.filter(c => 
+      c.completed_at && new Date(c.completed_at) >= firstDayOfMonth
+    ).length || 0,
+    
+    nonConformityRate: checklists?.length 
+      ? Math.round((checklists.filter(c => c.has_non_conformities).length / checklists.length) * 100)
+      : 0,
+  }
+}
+

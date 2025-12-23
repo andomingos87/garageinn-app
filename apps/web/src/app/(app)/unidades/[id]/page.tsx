@@ -19,9 +19,10 @@ import {
   MapPinned,
   Briefcase,
 } from 'lucide-react'
-import { checkIsAdmin, getUnitById, getUnitStaff } from '../actions'
+import { checkIsAdmin, getUnitById, getUnitStaff, getUnitMetrics } from '../actions'
 import { UnitStatusBadge } from '../components/unit-status-badge'
 import { UnitStatusActions } from './components/unit-status-actions'
+import { UnitMetricsCard } from './components/unit-metrics'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -35,9 +36,10 @@ export default async function UnitDetailsPage({ params }: PageProps) {
     redirect('/')
   }
 
-  const [unit, staff] = await Promise.all([
+  const [unit, staff, metrics] = await Promise.all([
     getUnitById(id),
     getUnitStaff(id),
+    getUnitMetrics(id),
   ])
 
   if (!unit) {
@@ -311,6 +313,9 @@ export default async function UnitDetailsPage({ params }: PageProps) {
               )}
             </CardContent>
           </Card>
+
+          {/* Metrics */}
+          <UnitMetricsCard metrics={metrics} />
 
           {/* Quick Actions */}
           <Card>
