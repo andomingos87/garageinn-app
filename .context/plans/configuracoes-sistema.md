@@ -42,7 +42,7 @@ related_agents:
 |--------|------|--------|------------|
 | Departamentos e Cargos | `/configuracoes/departamentos` | ✅ Implementado | Alta |
 | Unidades | `/configuracoes/unidades` | ✅ Redirect para `/unidades` | Média |
-| Checklists | `/configuracoes/checklists` | ⚠️ Redirecionar para `/checklists/configurar` | Baixa |
+| Checklists | `/configuracoes/checklists` | ✅ Redirect para `/checklists/configurar` | Baixa |
 | Chamados | `/configuracoes/chamados` | ❌ Não existe | Alta |
 | Permissões | `/configuracoes/permissoes` | ❌ Não existe | Alta |
 | Sistema | `/configuracoes/sistema` | ❌ Não existe | Baixa |
@@ -150,10 +150,10 @@ configuracoes/
 **Objetivo:** Acesso rápido à configuração de checklists
 
 **Implementação:**
-- [ ] Redirecionar para `/checklists/configurar` (já existe e funciona)
-- [ ] OU criar página wrapper que embute a funcionalidade
+- [x] Redirecionar para `/checklists/configurar` (já existe e funciona)
+- [x] ~~OU criar página wrapper que embute a funcionalidade~~ (não necessário)
 
-**Decisão:** Simples redirect, pois a funcionalidade já existe completa.
+**Decisão:** ✅ Implementado como redirect simples, pois a funcionalidade já existe completa em `/checklists/configurar`.
 
 ---
 
@@ -378,7 +378,7 @@ export async function getDepartments() {
 - [ ] Testar visualização
 
 ### Tarefa 4: Checklists
-- [ ] Implementar redirect para `/checklists/configurar`
+- [x] Implementar redirect para `/checklists/configurar`
 
 ### Tarefa 5: Unidades
 - [x] Avaliar escopo real necessário
