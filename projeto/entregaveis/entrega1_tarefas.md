@@ -75,9 +75,9 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ## Chamados — Manutenção
 
-- [ ] Criar tela de abertura de chamado de Manutenção
-- [ ] Criar tela de listagem de chamados de Manutenção
-- [ ] Implementar fluxo de execução do chamado de Manutenção
+- [x] Criar tela de abertura de chamado de Manutenção
+- [x] Criar tela de listagem de chamados de Manutenção
+- [x] Implementar fluxo de execução do chamado de Manutenção
 
 ## Chamados — RH (Uniformes e Gerais)
 

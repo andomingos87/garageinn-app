@@ -41,8 +41,8 @@ related_agents:
 | 1 | Criar modelo de dados específico (migrations) | ✅ Concluída | Migrations Supabase, `database.types.ts` |
 | 2 | Criar tela de abertura de chamado de Manutenção | ✅ Concluída | `apps/web/src/app/(app)/chamados/manutencao/novo/` |
 | 3 | Criar tela de listagem de chamados de Manutenção | ✅ Concluída | `apps/web/src/app/(app)/chamados/manutencao/page.tsx` |
-| 4 | Implementar fluxo de execução do chamado de Manutenção | ⏳ Pendente | `apps/web/src/app/(app)/chamados/manutencao/[ticketId]/` |
-| 5 | Implementar triagem e priorização | ⏳ Pendente | `actions.ts`, `triage-dialog.tsx`, `ticket-actions.tsx` |
+| 4 | Implementar fluxo de execução do chamado de Manutenção | ✅ Concluída | `apps/web/src/app/(app)/chamados/manutencao/[ticketId]/` |
+| 5 | Implementar triagem e priorização | ✅ Concluída | `actions.ts`, `triage-dialog.tsx`, `ticket-actions.tsx` |
 
 ---
 
@@ -1017,12 +1017,12 @@ export async function changeTicketStatus(ticketId: string, newStatus: string, re
 ```
 
 ### Critérios de Aceite
-- [ ] Detalhes exibem todas informações
-- [ ] Sistema de execuções funcional
-- [ ] Transições de status respeitam regras
-- [ ] Timeline mostra histórico completo
-- [ ] Comentários podem ser adicionados
-- [ ] Status "Aguardando peças/materiais" funciona
+- [x] Detalhes exibem todas informações
+- [x] Sistema de execuções funcional
+- [x] Transições de status respeitam regras
+- [x] Timeline mostra histórico completo
+- [x] Comentários podem ser adicionados
+- [x] Status "Aguardando peças/materiais" funciona
 
 ---
 
@@ -1095,10 +1095,10 @@ export async function getManutencaoDepartmentMembers() {
 | due_date | Date picker | Não |
 
 ### Critérios de Aceite
-- [ ] Apenas Supervisores/Gerentes do dept. Manutenção (ou admins) podem triar
-- [ ] Triagem define prioridade e responsável
-- [ ] Status muda para "Em andamento" após triagem
-- [ ] Histórico registra triagem com metadados
+- [x] Apenas Supervisores/Gerentes do dept. Manutenção (ou admins) podem triar
+- [x] Triagem define prioridade e responsável
+- [x] Status muda para "Em andamento" após triagem
+- [x] Histórico registra triagem com metadados
 
 ---
 
@@ -1270,9 +1270,9 @@ export async function getManutencaoDepartmentMembers() {
 - Output de `mcp_supabase_list_tables` mostrando novas tabelas
 
 ### Follow-up Actions
-- [ ] Atualizar `entrega1_tarefas.md` marcando itens 78-80 como concluídos
+- [x] Atualizar `entrega1_tarefas.md` marcando itens 78-80 como concluídos
 - [ ] Atualizar `README.md` do plans com status
-- [ ] Preparar dados de seed (assuntos de Manutenção)
+- [x] Preparar dados de seed (assuntos de Manutenção)
 - [ ] Documentar fluxo de chamados para usuários
 
 ---
