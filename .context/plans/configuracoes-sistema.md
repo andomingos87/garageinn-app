@@ -43,7 +43,7 @@ related_agents:
 | Departamentos e Cargos | `/configuracoes/departamentos` | ✅ Implementado | Alta |
 | Unidades | `/configuracoes/unidades` | ✅ Redirect para `/unidades` | Média |
 | Checklists | `/configuracoes/checklists` | ✅ Redirect para `/checklists/configurar` | Baixa |
-| Chamados | `/configuracoes/chamados` | ❌ Não existe | Alta |
+| Chamados | `/configuracoes/chamados` | ✅ Implementado | Alta |
 | Permissões | `/configuracoes/permissoes` | ❌ Não existe | Alta |
 | Sistema | `/configuracoes/sistema` | ❌ Não existe | Baixa |
 
@@ -162,10 +162,10 @@ configuracoes/
 **Objetivo:** Gerenciar categorias de chamados e configurações de fluxo
 
 **Funcionalidades:**
-- [ ] Listar categorias de chamados por departamento
-- [ ] Criar/editar/excluir categorias
-- [ ] Ativar/desativar categorias
-- [ ] Configurar campos obrigatórios por categoria
+- [x] Listar categorias de chamados por departamento
+- [x] Criar/editar/excluir categorias
+- [x] Ativar/desativar categorias
+- [ ] Configurar campos obrigatórios por categoria (futuro)
 - [ ] Definir fluxo de aprovação por categoria (futuro)
 
 **Estrutura de arquivos:**
@@ -361,13 +361,13 @@ export async function getDepartments() {
 - [x] Verificar RLS policies
 
 ### Tarefa 2: Chamados (Categorias)
-- [ ] Criar estrutura de pastas
-- [ ] Implementar `actions.ts` (CRUD)
-- [ ] Implementar página com tabs por departamento
-- [ ] Implementar tabela de categorias
-- [ ] Implementar dialog de criação/edição
-- [ ] Implementar toggle de status
-- [ ] Testar fluxo completo
+- [x] Criar estrutura de pastas
+- [x] Implementar `actions.ts` (CRUD)
+- [x] Implementar página com tabs por departamento
+- [x] Implementar tabela de categorias
+- [x] Implementar dialog de criação/edição
+- [x] Implementar toggle de status
+- [x] Testar fluxo completo
 
 ### Tarefa 3: Permissões
 - [ ] Criar estrutura de pastas
