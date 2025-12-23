@@ -14,7 +14,9 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 1. ~~[Autenticacao](./autenticacao.md)~~ ✅ Concluído
 2. ~~[Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)~~ ✅ Concluído
 3. ~~[Gestao Usuarios](./gestao-usuarios.md)~~ ✅ Concluído
-4. [Gestao Usuarios Followups](./gestao-usuarios-followups.md) ⏳ Próximo
+4. ~~[Gestao Usuarios Followups](./gestao-usuarios-followups.md)~~ ✅ Concluído
+5. ~~[Gestao Unidades](./gestao-unidades.md)~~ ✅ Concluído
+6. [Checklists](./checklists.md) ⏳ Próximo
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

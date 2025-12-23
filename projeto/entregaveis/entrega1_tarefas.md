@@ -34,17 +34,28 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ### Follow-ups (Gestão de Usuários)
 
-- [ ] Vincular usuários a unidades (após criar tabela `units`)
-- [ ] Implementar paginação server-side (avaliar quando > 50 usuários)
-- [ ] Adicionar logs de auditoria para ações de usuário
+- [x] Vincular usuários a unidades (após criar tabela `units`)
+- [x] Implementar paginação server-side (avaliar quando > 50 usuários)
+- [x] Adicionar logs de auditoria para ações de usuário
 
 ## Gestão de Unidades
 
-- [ ] Criar modelo de dados: `units`, `user_units`
-- [ ] Criar tela de listagem de unidades
-- [ ] Criar tela de cadastro/edição de unidade
-- [ ] Criar tela de detalhes da unidade
-- [ ] Implementar vínculo usuário-unidade
+- [x] Criar modelo de dados: `units`, `user_units`
+- [x] Criar tela de listagem de unidades
+- [x] Criar tela de cadastro/edição de unidade
+- [x] Criar tela de detalhes da unidade
+- [x] Implementar vínculo usuário-unidade
+- [x] Implementar importação de CSV (94 unidades em `projeto/unidades.csv`)
+
+### Follow-ups (Gestão de Unidades)
+
+- [ ] Adicionar campo de email na unidade (fase futura)
+- [ ] Implementar upload de foto da fachada (Storage)
+- [ ] Adicionar coordenadas GPS (lat/long)
+- [ ] Implementar métricas da unidade (chamados, checklists)
+- [ ] Histórico de alterações da unidade (audit log)
+- [ ] Vincular supervisores após importar (converter `supervisor_name` → `user_units`)
+- [ ] Exportar unidades para CSV
 
 ## Checklists
 

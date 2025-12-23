@@ -1128,10 +1128,10 @@ import { RequirePermission } from '@/components/auth/require-permission'
 - [x] ~~**Tarefa 5:** Criar bucket 'avatars' no Supabase Storage com policies~~
 - [x] ~~**Tarefa 6:** Sincronizar cargos e departamentos do banco com `permissions.ts`~~
 - [x] ~~**Tarefa 6:** Integrar `RequirePermission` no sidebar e componentes de UI~~
-- [ ] Implementar Gestão de Unidades (plano separado)
-- [ ] Vincular usuários a unidades após criar tabela `units`
-- [ ] Implementar paginação server-side (se necessário)
-- [ ] Adicionar logs de auditoria para ações de usuário
+- [x] Implementar Gestão de Unidades (plano separado)
+- [x] Vincular usuários a unidades após criar tabela `units`
+- [x] Implementar paginação server-side (se necessário)
+- [x] Adicionar logs de auditoria para ações de usuário
 - [x] Implementar notificações de convite (email customizado)
 
 ---

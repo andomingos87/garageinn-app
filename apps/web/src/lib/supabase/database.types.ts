@@ -65,6 +65,228 @@ export type Database = {
           },
         ]
       }
+      checklist_answers: {
+        Row: {
+          answer: boolean
+          created_at: string | null
+          execution_id: string
+          id: string
+          observation: string | null
+          question_id: string
+        }
+        Insert: {
+          answer: boolean
+          created_at?: string | null
+          execution_id: string
+          id?: string
+          observation?: string | null
+          question_id: string
+        }
+        Update: {
+          answer?: boolean
+          created_at?: string | null
+          execution_id?: string
+          id?: string
+          observation?: string | null
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_answers_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_executions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_answers_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_executions_with_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_executions: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          executed_by: string
+          general_observations: string | null
+          has_non_conformities: boolean | null
+          id: string
+          started_at: string
+          status: string
+          template_id: string
+          unit_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          executed_by: string
+          general_observations?: string | null
+          has_non_conformities?: boolean | null
+          id?: string
+          started_at?: string
+          status?: string
+          template_id: string
+          unit_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          executed_by?: string
+          general_observations?: string | null
+          has_non_conformities?: boolean | null
+          id?: string
+          started_at?: string
+          status?: string
+          template_id?: string
+          unit_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_executions_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "users_with_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units_with_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_questions: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_required: boolean | null
+          order_index: number
+          question_text: string
+          requires_observation_on_no: boolean | null
+          status: string
+          template_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_required?: boolean | null
+          order_index: number
+          question_text: string
+          requires_observation_on_no?: boolean | null
+          status?: string
+          template_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_required?: boolean | null
+          order_index?: number
+          question_text?: string
+          requires_observation_on_no?: boolean | null
+          status?: string
+          template_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_questions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_templates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          status: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          status?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          status?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users_with_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       departments: {
         Row: {
           created_at: string | null
@@ -151,6 +373,109 @@ export type Database = {
           },
         ]
       }
+      unit_checklist_templates: {
+        Row: {
+          created_at: string | null
+          id: string
+          template_id: string
+          unit_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          template_id: string
+          unit_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          template_id?: string
+          unit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_checklist_templates_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unit_checklist_templates_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unit_checklist_templates_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units_with_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      units: {
+        Row: {
+          address: string
+          administrator: string | null
+          capacity: number | null
+          city: string | null
+          cnpj: string | null
+          code: string
+          created_at: string | null
+          id: string
+          name: string
+          neighborhood: string | null
+          phone: string | null
+          region: string | null
+          state: string | null
+          status: string
+          supervisor_name: string | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address: string
+          administrator?: string | null
+          capacity?: number | null
+          city?: string | null
+          cnpj?: string | null
+          code: string
+          created_at?: string | null
+          id?: string
+          name: string
+          neighborhood?: string | null
+          phone?: string | null
+          region?: string | null
+          state?: string | null
+          status?: string
+          supervisor_name?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string
+          administrator?: string | null
+          capacity?: number | null
+          city?: string | null
+          cnpj?: string | null
+          code?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          neighborhood?: string | null
+          phone?: string | null
+          region?: string | null
+          state?: string | null
+          status?: string
+          supervisor_name?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -194,51 +519,6 @@ export type Database = {
           },
         ]
       }
-      units: {
-        Row: {
-          address: string
-          capacity: number | null
-          city: string | null
-          code: string
-          created_at: string | null
-          id: string
-          name: string
-          phone: string | null
-          state: string | null
-          status: string
-          updated_at: string | null
-          zip_code: string | null
-        }
-        Insert: {
-          address: string
-          capacity?: number | null
-          city?: string | null
-          code: string
-          created_at?: string | null
-          id?: string
-          name: string
-          phone?: string | null
-          state?: string | null
-          status?: string
-          updated_at?: string | null
-          zip_code?: string | null
-        }
-        Update: {
-          address?: string
-          capacity?: number | null
-          city?: string | null
-          code?: string
-          created_at?: string | null
-          id?: string
-          name?: string
-          phone?: string | null
-          state?: string | null
-          status?: string
-          updated_at?: string | null
-          zip_code?: string | null
-        }
-        Relationships: []
-      }
       user_units: {
         Row: {
           created_at: string | null
@@ -270,6 +550,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_units_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units_with_staff"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_units_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -287,6 +574,92 @@ export type Database = {
       }
     }
     Views: {
+      checklist_executions_with_details: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          executed_by: string | null
+          executed_by_avatar: string | null
+          executed_by_email: string | null
+          executed_by_name: string | null
+          general_observations: string | null
+          has_non_conformities: boolean | null
+          id: string | null
+          non_conformities_count: number | null
+          started_at: string | null
+          status: string | null
+          template_id: string | null
+          template_name: string | null
+          template_type: string | null
+          total_answers: number | null
+          total_questions: number | null
+          unit_code: string | null
+          unit_id: string | null
+          unit_name: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_executions_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "users_with_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_executions_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units_with_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      units_with_staff: {
+        Row: {
+          address: string | null
+          administrator: string | null
+          capacity: number | null
+          city: string | null
+          cnpj: string | null
+          code: string | null
+          created_at: string | null
+          id: string | null
+          name: string | null
+          neighborhood: string | null
+          phone: string | null
+          region: string | null
+          staff: Json | null
+          staff_count: number | null
+          state: string | null
+          status: string | null
+          supervisor_name: string | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Relationships: []
+      }
       users_with_roles: {
         Row: {
           avatar_url: string | null
@@ -432,72 +805,8 @@ export type CompositeTypes<
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
-// ============================================
-// Custom Types for Application
-// ============================================
-
-/** Role information with department details */
-export interface UserRoleInfo {
-  role_id: string
-  role_name: string
-  department_id: string | null
-  department_name: string | null
-  is_global: boolean
-}
-
-/** Unit information */
-export interface Unit {
-  id: string
-  name: string
-  code: string
-  address: string
-  city: string | null
-  state: string | null
-  zip_code: string | null
-  phone: string | null
-  capacity: number | null
-  status: 'active' | 'inactive'
-}
-
-/** User unit link with unit details */
-export interface UserUnitInfo {
-  id: string
-  unit_id: string
-  unit_name: string
-  unit_code: string
-  is_coverage: boolean
-}
-
-/** User profile with roles and units */
-export interface UserWithRoles {
-  id: string
-  full_name: string
-  email: string
-  phone: string | null
-  cpf: string | null
-  avatar_url: string | null
-  status: 'active' | 'inactive' | 'pending'
-  created_at: string
-  updated_at: string
-  roles: UserRoleInfo[]
-  units?: UserUnitInfo[]
-}
-
-/** User status type */
-export type UserStatus = 'active' | 'inactive' | 'pending'
-
-/** Unit status type */
-export type UnitStatus = 'active' | 'inactive'
-
-/** Audit log entry */
-export interface AuditLog {
-  id: string
-  user_id: string | null
-  action: string
-  entity_type: string
-  entity_id: string
-  old_data: Record<string, unknown> | null
-  new_data: Record<string, unknown> | null
-  metadata: Record<string, unknown> | null
-  created_at: string
-}
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
