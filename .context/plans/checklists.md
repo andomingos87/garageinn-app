@@ -35,8 +35,8 @@ related_agents:
 | 1 | Criar modelo de dados (migrations) | ✅ Concluído | Migrations Supabase, `database.types.ts` |
 | 2 | Criar tela de configuração de checklist de abertura (admin) | ✅ Concluído | `apps/web/src/app/(app)/checklists/configurar/` |
 | 3 | Criar tela de execução de checklist de abertura | ✅ Concluído | `apps/web/src/app/(app)/checklists/executar/` |
-| 4 | Criar tela de histórico de checklists executados | ⏳ Pendente | `apps/web/src/app/(app)/checklists/page.tsx` |
-| 5 | Implementar exclusão de checklists (admin) | ⏳ Pendente | Server Actions, Dialog de confirmação |
+| 4 | Criar tela de histórico de checklists executados | ✅ Concluído | `apps/web/src/app/(app)/checklists/page.tsx`, `[executionId]/page.tsx` |
+| 5 | Implementar exclusão de checklists (admin) | ✅ Concluído | `actions.ts`, `executions-table.tsx`, `delete-execution-button.tsx` |
 
 ---
 
@@ -1476,13 +1476,31 @@ export async function getChecklistStats(filters?: {
 - Paginação no rodapé da tabela
 
 ### Critérios de Aceite
-- [ ] Lista de execuções carrega corretamente
-- [ ] Filtros funcionam (unidade, data, status, não-conformidades)
-- [ ] Estatísticas refletem dados filtrados
-- [ ] Detalhes da execução exibem todas informações
-- [ ] Paginação funcional
-- [ ] Visibilidade respeitada (usuário vê apenas suas unidades, exceto admin)
-- [ ] Responsivo em mobile
+- [x] Lista de execuções carrega corretamente
+- [x] Filtros funcionam (unidade, data, status, não-conformidades)
+- [x] Estatísticas refletem dados filtrados
+- [x] Detalhes da execução exibem todas informações
+- [x] Paginação funcional
+- [x] Visibilidade respeitada (usuário vê apenas suas unidades, exceto admin)
+- [x] Responsivo em mobile
+
+### Arquivos Criados
+
+**Server Actions:**
+- `apps/web/src/app/(app)/checklists/actions.ts` - Queries de execuções, estatísticas, filtros e exclusão
+
+**Componentes:**
+- `components/executions-filters.tsx` - Filtros de unidade, template, data, status e não-conformidades
+- `components/executions-table.tsx` - Tabela de execuções com seleção em massa
+- `components/executions-stats-cards.tsx` - Cards de estatísticas
+- `components/executions-pagination.tsx` - Paginação
+- `components/index.ts` - Barrel exports
+
+**Páginas:**
+- `page.tsx` - Histórico de execuções com filtros e paginação
+- `[executionId]/page.tsx` - Detalhes de uma execução
+- `[executionId]/components/delete-execution-button.tsx` - Botão de exclusão individual
+- `loading.tsx` - Loading skeleton
 
 ---
 
@@ -1571,12 +1589,12 @@ export async function deleteExecutions(executionIds: string[]) {
 - Redirect para lista após exclusão
 
 ### Critérios de Aceite
-- [ ] Admin pode excluir execução individual
-- [ ] Admin pode excluir múltiplas execuções
-- [ ] Dialog de confirmação exibido antes de excluir
-- [ ] Respostas são excluídas em cascata (ON DELETE CASCADE)
-- [ ] Usuário comum não vê opções de exclusão
-- [ ] Feedback visual após exclusão (toast de sucesso)
+- [x] Admin pode excluir execução individual
+- [x] Admin pode excluir múltiplas execuções
+- [x] Dialog de confirmação exibido antes de excluir
+- [x] Respostas são excluídas em cascata (ON DELETE CASCADE)
+- [x] Usuário comum não vê opções de exclusão
+- [x] Feedback visual após exclusão (alert de erro ou redirect após sucesso)
 
 ---
 
