@@ -34,7 +34,7 @@ related_agents:
 |---|--------|--------|---------------------|
 | 1 | Criar modelo de dados (migrations) | ✅ Concluído | Migrations Supabase, `database.types.ts` |
 | 2 | Criar tela de configuração de checklist de abertura (admin) | ✅ Concluído | `apps/web/src/app/(app)/checklists/configurar/` |
-| 3 | Criar tela de execução de checklist de abertura | ⏳ Pendente | `apps/web/src/app/(app)/checklists/executar/` |
+| 3 | Criar tela de execução de checklist de abertura | ✅ Concluído | `apps/web/src/app/(app)/checklists/executar/` |
 | 4 | Criar tela de histórico de checklists executados | ⏳ Pendente | `apps/web/src/app/(app)/checklists/page.tsx` |
 | 5 | Implementar exclusão de checklists (admin) | ⏳ Pendente | Server Actions, Dialog de confirmação |
 
@@ -1235,14 +1235,30 @@ export async function completeExecution(executionId: string, generalObservations
 - Toast de confirmação ao salvar cada resposta (opcional)
 
 ### Critérios de Aceite
-- [ ] Usuário vê apenas unidades vinculadas
-- [ ] Execução é criada corretamente
-- [ ] Respostas são salvas em tempo real (ou ao clicar)
-- [ ] Validação de perguntas obrigatórias funciona
-- [ ] Validação de observação obrigatória funciona
-- [ ] Execução é marcada como completed ao finalizar
-- [ ] has_non_conformities é calculado corretamente
-- [ ] Responsivo e táctil em mobile
+- [x] Usuário vê apenas unidades vinculadas
+- [x] Execução é criada corretamente
+- [x] Respostas são salvas em tempo real (ou ao clicar)
+- [x] Validação de perguntas obrigatórias funciona
+- [x] Validação de observação obrigatória funciona
+- [x] Execução é marcada como completed ao finalizar
+- [x] has_non_conformities é calculado corretamente
+- [x] Responsivo e táctil em mobile
+
+### Arquivos Criados
+
+**Server Actions:**
+- `apps/web/src/app/(app)/checklists/executar/actions.ts` - CRUD de execuções, respostas e validações
+
+**Componentes:**
+- `components/execution-start-card.tsx` - Card para iniciar execução de uma unidade
+- `components/question-item.tsx` - Item de pergunta com botões Sim/Não
+- `components/execution-progress.tsx` - Barra de progresso
+- `components/execution-summary.tsx` - Resumo antes de finalizar
+
+**Páginas:**
+- `executar/page.tsx` - Seleção de unidade/checklist
+- `executar/[executionId]/page.tsx` - Execução de checklist
+- `executar/loading.tsx` - Loading skeleton
 
 ---
 
