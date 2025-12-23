@@ -49,10 +49,10 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ### Follow-ups (Gestão de Unidades)
 
-- [ ] Adicionar campo de email na unidade (fase futura)
-- [ ] Implementar métricas da unidade (chamados, checklists)
-- [ ] Histórico de alterações da unidade (audit log)
-- [ ] Vincular supervisores após importar (converter `supervisor_name` → `user_units`)
+- [x] Adicionar campo de email na unidade (fase futura)
+- [x] Implementar métricas da unidade (chamados, checklists)
+- [x] Histórico de alterações da unidade (audit log)
+- [x] Vincular supervisores após importar (converter `supervisor_name` → `user_units`)
 
 ## Checklists
 
@@ -87,4 +87,41 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 - [ ] Usuário admin pode excluir chamados (unitário e em massa)
 
+---
+
+## UI/Design System (Refinamentos)
+
+- [ ] Ajustar logo na sidebar (remover texto "GAPP", tornar logo proporcional)
+- [ ] Corrigir cor do componente Skeleton (vermelho → cinza suave)
+
+## Dashboard
+
+- [x] Plano de implementação criado: [.context/plans/dashboard-dados-reais.md](.context/plans/dashboard-dados-reais.md)
+- [x] Remover dados mock do dashboard
+- [x] Implementar cards com dados reais (chamados abertos, checklists hoje, unidades ativas, taxa de resolução)
+- [x] Implementar lista de chamados recentes com dados reais
+- [x] Implementar lista de checklists pendentes com dados reais
+
+## Página de Chamados (Hub Unificado)
+
+> A página `/chamados` atualmente exibe dados mock. Objetivo: torná-la funcional como hub central.
+
+- [ ] Analisar e documentar requisitos para página "Chamados" funcional
+- [ ] Substituir dados mock por consulta real ao banco (todos os departamentos)
+- [ ] Implementar navegação para detalhes ao clicar no chamado
+- [ ] Implementar ação de abertura de novo chamado (escolha de tipo: Compras, Manutenção, RH)
+- [ ] Implementar filtros (departamento, status, prioridade, unidade)
+- [ ] Implementar paginação server-side
+
+## Configurações (Análise e Implementação)
+
+> A página `/configuracoes` lista 6 módulos. Verificar quais estão funcionais.
+
+- [ ] Testar e documentar estado atual da página "Configurações"
+- [ ] Verificar/implementar sub-página: Departamentos e Cargos
+- [ ] Verificar/implementar sub-página: Unidades (configurações)
+- [ ] Verificar/implementar sub-página: Checklists (já existe em `/checklists/configurar`)
+- [ ] Verificar/implementar sub-página: Chamados (tipos e fluxos)
+- [ ] Verificar/implementar sub-página: Permissões
+- [ ] Verificar/implementar sub-página: Sistema (configurações gerais)
 
