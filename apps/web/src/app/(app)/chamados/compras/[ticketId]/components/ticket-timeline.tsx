@@ -43,6 +43,7 @@ const actionConfig: Record<string, { icon: React.ElementType; color: string; lab
   'attachment_added': { icon: FileUp, color: 'text-emerald-500', label: 'Anexo adicionado' },
   'approval_approved': { icon: CheckCircle2, color: 'text-green-500', label: 'Aprovado' },
   'approval_rejected': { icon: XCircle, color: 'text-red-500', label: 'Rejeitado' },
+  'triaged': { icon: UserPlus, color: 'text-primary', label: 'Chamado triado' },
 }
 
 export function TicketTimeline({ history }: TicketTimelineProps) {
@@ -51,6 +52,13 @@ export function TicketTimeline({ history }: TicketTimelineProps) {
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
   }
   
+  const priorityLabels: Record<string, string> = {
+    low: 'Baixa',
+    medium: 'Média',
+    high: 'Alta',
+    urgent: 'Urgente'
+  }
+
   const getActionDescription = (item: HistoryItem) => {
     const config = actionConfig[item.action] || { 
       icon: Clock, 
@@ -65,13 +73,14 @@ export function TicketTimeline({ history }: TicketTimelineProps) {
     }
     
     if (item.action === 'priority_changed' && item.new_value) {
-      const priorityLabels: Record<string, string> = {
-        low: 'Baixa',
-        medium: 'Média',
-        high: 'Alta',
-        urgent: 'Urgente'
-      }
       description = `Prioridade definida como "${priorityLabels[item.new_value] || item.new_value}"`
+    }
+    
+    // Ação de triagem com detalhes
+    if (item.action === 'triaged' && item.metadata) {
+      const metadata = item.metadata as { priority?: string; due_date?: string }
+      const priority = metadata.priority ? priorityLabels[metadata.priority] || metadata.priority : null
+      description = `Chamado triado${priority ? ` com prioridade ${priority}` : ''}`
     }
     
     return { ...config, description }

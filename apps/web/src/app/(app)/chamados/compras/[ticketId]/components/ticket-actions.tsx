@@ -10,21 +10,12 @@ import {
   Star,
   ArrowRight,
   Ban,
-  UserPlus,
-  AlertTriangle
+  Settings
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -34,10 +25,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import { 
-  changeTicketStatus, 
-  triageTicket 
-} from '../../actions'
+import { changeTicketStatus } from '../../actions'
+import { TriageDialog } from './triage-dialog'
 
 interface DepartmentMember {
   id: string
@@ -49,10 +38,16 @@ interface DepartmentMember {
 
 interface TicketActionsProps {
   ticketId: string
+  ticketNumber: number
+  ticketTitle: string
   currentStatus: string
   canManage: boolean
+  canTriage: boolean
   departmentMembers: DepartmentMember[]
   allowedTransitions: string[]
+  perceivedUrgency?: string | null
+  itemName?: string
+  quantity?: number
 }
 
 // Labels para status
@@ -89,18 +84,24 @@ const statusActions: Record<string, { label: string; icon: React.ElementType; va
 }
 
 export function TicketActions({ 
-  ticketId, 
+  ticketId,
+  ticketNumber,
+  ticketTitle,
   currentStatus, 
   canManage,
+  canTriage,
   departmentMembers,
-  allowedTransitions
+  allowedTransitions,
+  perceivedUrgency,
+  itemName,
+  quantity
 }: TicketActionsProps) {
-  const [isTriageDialogOpen, setIsTriageDialogOpen] = useState(false)
   const [isDenyDialogOpen, setIsDenyDialogOpen] = useState(false)
   const [denyReason, setDenyReason] = useState('')
   const [isPending, startTransition] = useTransition()
   
-  const showTriageButton = currentStatus === 'awaiting_triage' && canManage
+  // Mostrar botão de triagem apenas se status é awaiting_triage e usuário pode triar
+  const showTriageButton = currentStatus === 'awaiting_triage' && canTriage
   
   const handleStatusChange = (newStatus: string) => {
     if (newStatus === 'denied') {
@@ -138,22 +139,7 @@ export function TicketActions({
     })
   }
   
-  const handleTriage = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    
-    startTransition(async () => {
-      const result = await triageTicket(ticketId, formData)
-      
-      if (result.error) {
-        toast.error(result.error)
-      } else {
-        toast.success('Chamado triado com sucesso')
-        setIsTriageDialogOpen(false)
-      }
-    })
-  }
-  
+  // Não mostrar card se não há ações disponíveis
   if (!canManage || (allowedTransitions.length === 0 && !showTriageButton)) {
     return null
   }
@@ -163,20 +149,23 @@ export function TicketActions({
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4" />
+            <Settings className="h-4 w-4" />
             Ações
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Botão de Triagem */}
+          {/* Botão de Triagem (componente separado com dialog melhorado) */}
           {showTriageButton && (
-            <Button
-              className="w-full gap-2"
-              onClick={() => setIsTriageDialogOpen(true)}
-            >
-              <UserPlus className="h-4 w-4" />
-              Fazer Triagem
-            </Button>
+            <TriageDialog
+              ticketId={ticketId}
+              ticketNumber={ticketNumber}
+              ticketTitle={ticketTitle}
+              perceivedUrgency={perceivedUrgency}
+              departmentMembers={departmentMembers}
+              itemName={itemName}
+              quantity={quantity}
+              disabled={isPending}
+            />
           )}
           
           {/* Botões de Transição de Status */}
@@ -201,69 +190,6 @@ export function TicketActions({
           })}
         </CardContent>
       </Card>
-      
-      {/* Dialog de Triagem */}
-      <Dialog open={isTriageDialogOpen} onOpenChange={setIsTriageDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Triagem do Chamado</DialogTitle>
-            <DialogDescription>
-              Defina a prioridade e atribua um responsável para este chamado.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <form onSubmit={handleTriage} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="priority">Prioridade *</Label>
-              <Select name="priority" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a prioridade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Baixa</SelectItem>
-                  <SelectItem value="medium">Média</SelectItem>
-                  <SelectItem value="high">Alta</SelectItem>
-                  <SelectItem value="urgent">Urgente</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="assigned_to">Responsável *</Label>
-              <Select name="assigned_to" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o responsável" />
-                </SelectTrigger>
-                <SelectContent>
-                  {departmentMembers.map((member) => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {member.full_name} ({member.role || 'Membro'})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="due_date">Previsão de Conclusão</Label>
-              <Input
-                id="due_date"
-                name="due_date"
-                type="date"
-              />
-            </div>
-            
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsTriageDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={isPending}>
-                {isPending ? 'Salvando...' : 'Confirmar Triagem'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
       
       {/* Dialog de Negação */}
       <Dialog open={isDenyDialogOpen} onOpenChange={setIsDenyDialogOpen}>

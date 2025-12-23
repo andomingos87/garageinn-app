@@ -681,13 +681,71 @@ export async function changeTicketStatus(
 // ============================================
 
 /**
+ * Cargos que podem fazer triagem de chamados de Compras
+ */
+const TRIAGE_ROLES = ['Desenvolvedor', 'Administrador', 'Diretor', 'Gerente', 'Supervisor', 'Coordenador']
+
+/**
+ * Verifica se o usuário atual pode triar chamados de Compras
+ */
+export async function canTriageTicket(): Promise<boolean> {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return false
+  
+  // Admin pode tudo
+  const { data: isAdmin } = await supabase.rpc('is_admin')
+  if (isAdmin) return true
+  
+  // Obter os departamentos de Compras (pode ter "Compras" ou "Compras e Manutenção")
+  const { data: comprasDepts } = await supabase
+    .from('departments')
+    .select('id')
+    .or('name.eq.Compras,name.eq.Compras e Manutenção')
+  
+  if (!comprasDepts || comprasDepts.length === 0) return false
+  
+  const deptIds = comprasDepts.map(d => d.id)
+  
+  // Verificar se usuário tem cargo de triagem no departamento de Compras
+  const { data: userRoles } = await supabase
+    .from('user_roles')
+    .select(`
+      role:roles!role_id(name, department_id)
+    `)
+    .eq('user_id', user.id)
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hasTriageRole = userRoles?.some((ur: any) => {
+    const role = ur.role
+    if (!role) return false
+    
+    // Se é um cargo global de triagem
+    if (['Desenvolvedor', 'Administrador', 'Diretor'].includes(role.name)) return true
+    
+    // Se é um cargo de triagem dentro do departamento de Compras
+    return deptIds.includes(role.department_id) && TRIAGE_ROLES.includes(role.name)
+  })
+  
+  return hasTriageRole || false
+}
+
+/**
  * Lista membros do departamento de Compras
  */
 export async function getComprasDepartmentMembers() {
   const supabase = await createClient()
   
-  const comprasDept = await getComprasDepartment()
-  if (!comprasDept) return []
+  // Buscar departamentos de Compras (pode ter "Compras" ou "Compras e Manutenção")
+  const { data: comprasDepts } = await supabase
+    .from('departments')
+    .select('id')
+    .or('name.eq.Compras,name.eq.Compras e Manutenção')
+  
+  if (!comprasDepts || comprasDepts.length === 0) return []
+  
+  const deptIds = comprasDepts.map(d => d.id)
   
   const { data } = await supabase
     .from('user_roles')
@@ -696,26 +754,61 @@ export async function getComprasDepartmentMembers() {
       role:roles!role_id(name, department_id)
     `)
   
-  // Filtrar por departamento de Compras
-  const members = data
-    ?.filter((d: Record<string, unknown>) => {
-      const role = d.role as { department_id: string } | null
-      return role?.department_id === comprasDept.id
-    })
-    .map((d: Record<string, unknown>) => {
-      const user = d.user as { id: string; full_name: string; email: string; avatar_url: string }
-      const role = d.role as { name: string }
-      return { ...user, role: role?.name }
-    })
+  // Filtrar por departamentos de Compras, removendo duplicatas
+  const membersMap = new Map<string, { id: string; full_name: string; email: string; avatar_url: string | null; role: string }>()
   
-  return members || []
+  data?.forEach((d: Record<string, unknown>) => {
+    const role = d.role as { department_id: string; name: string } | null
+    const user = d.user as { id: string; full_name: string; email: string; avatar_url: string | null } | null
+    
+    if (role && user && deptIds.includes(role.department_id)) {
+      // Se já existe, não sobrescreve (mantém o primeiro cargo encontrado)
+      if (!membersMap.has(user.id)) {
+        membersMap.set(user.id, {
+          ...user,
+          role: role.name
+        })
+      }
+    }
+  })
+  
+  return Array.from(membersMap.values())
 }
 
 /**
  * Triar chamado
+ * 
+ * Apenas Supervisores, Gerentes ou Coordenadores do departamento de Compras
+ * (ou admins globais) podem triar chamados.
  */
 export async function triageTicket(ticketId: string, formData: FormData) {
   const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'Não autenticado' }
+  }
+  
+  // Verificar permissão de triagem
+  const canTriage = await canTriageTicket()
+  if (!canTriage) {
+    return { error: 'Você não tem permissão para fazer triagem de chamados' }
+  }
+  
+  // Verificar se o chamado existe e está aguardando triagem
+  const { data: ticket } = await supabase
+    .from('tickets')
+    .select('status, priority, assigned_to')
+    .eq('id', ticketId)
+    .single()
+  
+  if (!ticket) {
+    return { error: 'Chamado não encontrado' }
+  }
+  
+  if (ticket.status !== 'awaiting_triage') {
+    return { error: 'Este chamado não está aguardando triagem' }
+  }
   
   const priority = formData.get('priority') as string
   const assigned_to = formData.get('assigned_to') as string
@@ -729,7 +822,14 @@ export async function triageTicket(ticketId: string, formData: FormData) {
     return { error: 'Responsável é obrigatório' }
   }
   
-  const { error } = await supabase
+  // Validar se a prioridade é válida
+  const validPriorities = ['low', 'medium', 'high', 'urgent']
+  if (!validPriorities.includes(priority)) {
+    return { error: 'Prioridade inválida' }
+  }
+  
+  // Atualizar o chamado
+  const { error: updateError } = await supabase
     .from('tickets')
     .update({
       priority,
@@ -739,10 +839,28 @@ export async function triageTicket(ticketId: string, formData: FormData) {
     })
     .eq('id', ticketId)
   
-  if (error) {
-    console.error('Error triaging ticket:', error)
-    return { error: error.message }
+  if (updateError) {
+    console.error('Error triaging ticket:', updateError)
+    return { error: updateError.message }
   }
+  
+  // Registrar histórico de triagem manualmente (além do trigger automático)
+  // para incluir metadados adicionais sobre a triagem
+  await supabase
+    .from('ticket_history')
+    .insert({
+      ticket_id: ticketId,
+      user_id: user.id,
+      action: 'triaged',
+      old_value: 'awaiting_triage',
+      new_value: 'in_progress',
+      metadata: {
+        priority,
+        assigned_to,
+        due_date: due_date || null,
+        triaged_by: user.id
+      }
+    })
   
   revalidatePath(`/chamados/compras/${ticketId}`)
   revalidatePath('/chamados/compras')

@@ -41,7 +41,7 @@ related_agents:
 | 2 | Criar tela de abertura de chamado de Compras | ✅ Concluído | `apps/web/src/app/(app)/chamados/compras/novo/` |
 | 3 | Criar tela de listagem de chamados de Compras | ✅ Concluído | `apps/web/src/app/(app)/chamados/compras/page.tsx` |
 | 4 | Implementar fluxo de execução do chamado de Compras | ✅ Concluído | `apps/web/src/app/(app)/chamados/compras/[ticketId]/` |
-| 5 | Implementar triagem e priorização | ✅ Concluído | `actions.ts`, componentes de triagem |
+| 5 | Implementar triagem e priorização | ✅ Concluído | `actions.ts`, `triage-dialog.tsx`, `ticket-actions.tsx` |
 | 6 | Implementar fluxo de aprovações (quando aplicável) | ⏳ Pendente | `ticket_approvals`, componentes de aprovação |
 | 7 | Implementar sistema de cotações | ⏳ Pendente | `ticket_quotations`, componentes de cotação |
 
@@ -1593,10 +1593,10 @@ export async function getComprasDepartmentMembers() {
 | due_date | Date picker | Não |
 
 ### Critérios de Aceite
-- [ ] Apenas Supervisores/Gerentes podem triar
-- [ ] Triagem define prioridade e responsável
-- [ ] Status muda para "Em andamento" após triagem
-- [ ] Histórico registra triagem
+- [x] Apenas Supervisores/Gerentes/Coordenadores do dept. Compras (ou admins) podem triar
+- [x] Triagem define prioridade e responsável
+- [x] Status muda para "Em andamento" após triagem
+- [x] Histórico registra triagem com metadados (prioridade, responsável, previsão)
 
 ---
 

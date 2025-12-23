@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { 
   getTicketDetails, 
   canManageTicket, 
+  canTriageTicket,
   getComprasDepartmentMembers,
   getCurrentUser
 } from '../actions'
@@ -39,9 +40,10 @@ export default async function TicketDetailsPage({ params }: PageProps) {
   const { ticketId } = await params
   
   // Buscar dados em paralelo
-  const [ticket, canManage, departmentMembers, currentUser] = await Promise.all([
+  const [ticket, canManage, canTriage, departmentMembers, currentUser] = await Promise.all([
     getTicketDetails(ticketId),
     canManageTicket(ticketId),
+    canTriageTicket(),
     getComprasDepartmentMembers(),
     getCurrentUser()
   ])
@@ -102,10 +104,16 @@ export default async function TicketDetailsPage({ params }: PageProps) {
           {/* Ações */}
           <TicketActions
             ticketId={ticketId}
+            ticketNumber={ticket.ticket_number}
+            ticketTitle={ticket.title}
             currentStatus={ticket.status}
             canManage={canManage}
+            canTriage={canTriage}
             departmentMembers={departmentMembers}
             allowedTransitions={allowedTransitions}
+            perceivedUrgency={ticket.perceived_urgency}
+            itemName={ticket.item_name}
+            quantity={ticket.quantity}
           />
           
           {/* Timeline / Histórico */}
