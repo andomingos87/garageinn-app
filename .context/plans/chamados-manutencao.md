@@ -39,7 +39,7 @@ related_agents:
 | # | Tarefa | Status | Arquivos Principais |
 |---|--------|--------|---------------------|
 | 1 | Criar modelo de dados específico (migrations) | ✅ Concluída | Migrations Supabase, `database.types.ts` |
-| 2 | Criar tela de abertura de chamado de Manutenção | ⏳ Pendente | `apps/web/src/app/(app)/chamados/manutencao/novo/` |
+| 2 | Criar tela de abertura de chamado de Manutenção | ✅ Concluída | `apps/web/src/app/(app)/chamados/manutencao/novo/` |
 | 3 | Criar tela de listagem de chamados de Manutenção | ⏳ Pendente | `apps/web/src/app/(app)/chamados/manutencao/page.tsx` |
 | 4 | Implementar fluxo de execução do chamado de Manutenção | ⏳ Pendente | `apps/web/src/app/(app)/chamados/manutencao/[ticketId]/` |
 | 5 | Implementar triagem e priorização | ⏳ Pendente | `actions.ts`, `triage-dialog.tsx`, `ticket-actions.tsx` |
@@ -683,12 +683,12 @@ export async function getUserUnits() {
 | attachments | File input (múltiplo) | Max 5MB cada | Não |
 
 ### Critérios de Aceite
-- [ ] Formulário validado no client e server
-- [ ] Chamado criado com status correto (com/sem aprovação)
-- [ ] Detalhes de manutenção vinculados
-- [ ] Aprovações criadas quando necessário
-- [ ] Redirect para detalhes após criação
-- [ ] Responsivo em mobile
+- [x] Formulário validado no client e server
+- [x] Chamado criado com status correto (com/sem aprovação)
+- [x] Detalhes de manutenção vinculados
+- [x] Aprovações criadas quando necessário
+- [x] Redirect para detalhes após criação
+- [x] Responsivo em mobile
 
 ---
 
