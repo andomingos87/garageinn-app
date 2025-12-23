@@ -45,7 +45,7 @@ related_agents:
 | Checklists | `/configuracoes/checklists` | ✅ Redirect para `/checklists/configurar` | Baixa |
 | Chamados | `/configuracoes/chamados` | ✅ Implementado | Alta |
 | Permissões | `/configuracoes/permissoes` | ✅ Implementado (read-only) | Alta |
-| Sistema | `/configuracoes/sistema` | ❌ Não existe | Baixa |
+| Sistema | `/configuracoes/sistema` | ✅ Implementado | Baixa |
 
 ## Análise do Banco de Dados
 
@@ -223,12 +223,12 @@ configuracoes/
 **Objetivo:** Configurações gerais da aplicação
 
 **Funcionalidades:**
-- [ ] Nome da empresa/sistema
-- [ ] Logo customizado
-- [ ] Timezone padrão
-- [ ] Configurações de email (SMTP)
-- [ ] Configurações de notificação
-- [ ] Limites do sistema (ex: tamanho máximo de upload)
+- [x] Nome da empresa/sistema
+- [x] Logo customizado (campo disponível, upload futuro)
+- [x] Timezone padrão
+- [x] Configurações de email (SMTP)
+- [x] Configurações de notificação
+- [x] Limites do sistema (ex: tamanho máximo de upload)
 
 **Modelo de dados (necessário criar):**
 ```sql
@@ -385,10 +385,10 @@ export async function getDepartments() {
 - [x] Implementar conforme decisão (redirect para `/unidades`)
 
 ### Tarefa 6: Sistema
-- [ ] Criar migration para `system_settings`
-- [ ] Implementar `actions.ts`
-- [ ] Implementar formulário de configurações
-- [ ] Testar persistência
+- [x] Criar migration para `system_settings`
+- [x] Implementar `actions.ts`
+- [x] Implementar formulário de configurações
+- [x] Testar persistência
 
 ---
 
