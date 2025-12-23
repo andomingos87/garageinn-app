@@ -10,27 +10,16 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 5. **Close out the plan** by updating any TODOs, recording outcomes in the "Evidence & Follow-up" section, and notifying maintainers if human review is required.
 6. **Return here** and pick the next plan in the queue. Always leave the README and plan files consistent with the work performed.
 
-## Plan Queue (status updated: 2024-12-23)
-
-| # | Plano | Status | Progresso | Descrição |
-|---|-------|--------|-----------|-----------|
-| 1 | [Autenticacao](./autenticacao.md) | ✅ Concluído | 7/7 | Login, recuperação de senha, middleware, impersonação |
-| 2 | [Chamados Compras](./chamados-compras.md) | 🔶 Em Progresso | 5/7 | Abertura, listagem, triagem (faltam: aprovações, cotações) |
-| 3 | [Chamados Manutencao](./chamados-manutencao.md) | ✅ Concluído | 5/5 | Abertura, listagem, execuções, triagem |
-| 4 | [Checklists](./checklists.md) | ✅ Concluído | 5/5 | Templates, execução, histórico, exclusão |
-| 5 | [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md) | ✅ Concluído | - | Next.js, Tailwind, shadcn/ui, estrutura base |
-| 6 | [Gestao Unidades](./gestao-unidades.md) | ⏳ Pendente | 0/6 | CRUD de unidades, importação CSV |
-| 7 | [Gestao Usuarios](./gestao-usuarios.md) | ✅ Concluído | 6/6 | CRUD, RBAC, perfil do usuário |
-| 8 | [Gestao Usuarios Followups](./gestao-usuarios-followups.md) | ✅ Concluído | 4/4 | Vínculo unidades, paginação, auditoria |
-
-### Legenda
-- ✅ **Concluído**: Todas as tarefas implementadas e validadas
-- 🔶 **Em Progresso**: Algumas tarefas concluídas, outras pendentes
-- ⏳ **Pendente**: Aguardando início da implementação
-
-### Próximas Prioridades
-1. **Chamados Compras**: Completar fluxo de aprovações e sistema de cotações
-2. **Gestão de Unidades**: Iniciar implementação do CRUD de unidades
+## Plan Queue (process in order)
+1. [Autenticacao](./autenticacao.md)
+2. [Chamados Compras](./chamados-compras.md)
+3. [Chamados Manutencao](./chamados-manutencao.md)
+4. [Checklists](./checklists.md)
+5. [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)
+6. [Gestao Unidades](./gestao-unidades.md)
+7. [Gestao Usuarios](./gestao-usuarios.md)
+8. [Gestao Usuarios Followups](./gestao-usuarios-followups.md)
+9. [Unidades Followups](./unidades-followups.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.
@@ -42,7 +31,3 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 - [Documentation Index](../docs/README.md)
 - [Agent Knowledge Base](../../AGENTS.md)
 - [Contributor Guidelines](../../CONTRIBUTING.md)
-
-## User Documentation
-- [Guia de Checklists](../docs/checklists-guia-usuario.md)
-- [Guia de Chamados de Manutenção](../docs/chamados-manutencao-guia-usuario.md)

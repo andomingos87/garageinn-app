@@ -263,6 +263,7 @@ export async function createUnit(data: {
   state?: string | null
   zip_code?: string | null
   phone?: string | null
+  email?: string | null
   capacity?: number | null
   cnpj?: string | null
   neighborhood?: string | null
@@ -292,6 +293,7 @@ export async function createUnit(data: {
       state: data.state || null,
       zip_code: data.zip_code || null,
       phone: data.phone || null,
+      email: data.email || null,
       capacity: data.capacity || null,
       cnpj: data.cnpj || null,
       neighborhood: data.neighborhood || null,
@@ -324,6 +326,7 @@ export async function updateUnit(
     state?: string | null
     zip_code?: string | null
     phone?: string | null
+    email?: string | null
     capacity?: number | null
     status?: UnitStatus
     cnpj?: string | null

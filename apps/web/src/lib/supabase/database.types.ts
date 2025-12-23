@@ -1817,6 +1817,7 @@ export type Database = {
           cnpj: string | null
           code: string
           created_at: string | null
+          email: string | null
           id: string
           name: string
           neighborhood: string | null
@@ -1836,6 +1837,7 @@ export type Database = {
           cnpj?: string | null
           code: string
           created_at?: string | null
+          email?: string | null
           id?: string
           name: string
           neighborhood?: string | null
@@ -1855,6 +1857,7 @@ export type Database = {
           cnpj?: string | null
           code?: string
           created_at?: string | null
+          email?: string | null
           id?: string
           name?: string
           neighborhood?: string | null

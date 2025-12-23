@@ -50,12 +50,9 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 ### Follow-ups (Gestão de Unidades)
 
 - [ ] Adicionar campo de email na unidade (fase futura)
-- [ ] Implementar upload de foto da fachada (Storage)
-- [ ] Adicionar coordenadas GPS (lat/long)
 - [ ] Implementar métricas da unidade (chamados, checklists)
 - [ ] Histórico de alterações da unidade (audit log)
 - [ ] Vincular supervisores após importar (converter `supervisor_name` → `user_units`)
-- [ ] Exportar unidades para CSV
 
 ## Checklists
 

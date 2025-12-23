@@ -31,6 +31,7 @@ export interface UnitFormData {
   state?: string | null
   zip_code?: string | null
   phone?: string | null
+  email?: string | null
   capacity?: number | null
   status?: UnitStatus
   cnpj?: string | null
@@ -84,6 +85,7 @@ export function UnitForm({ unit, suggestedCode, onSubmit }: UnitFormProps) {
     state: unit?.state || '',
     zip_code: unit?.zip_code || '',
     phone: unit?.phone || '',
+    email: unit?.email || '',
     capacity: unit?.capacity || null,
     status: unit?.status || 'active',
     cnpj: unit?.cnpj || '',
@@ -121,6 +123,7 @@ export function UnitForm({ unit, suggestedCode, onSubmit }: UnitFormProps) {
         state: formData.state || null,
         zip_code: formData.zip_code || null,
         phone: formData.phone || null,
+        email: formData.email || null,
         capacity: formData.capacity || null,
         cnpj: formData.cnpj || null,
         neighborhood: formData.neighborhood || null,
@@ -214,7 +217,21 @@ export function UnitForm({ unit, suggestedCode, onSubmit }: UnitFormProps) {
                 disabled={isPending}
               />
             </div>
-            {isEditing && (
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email || ''}
+                onChange={(e) => handleChange('email', e.target.value)}
+                placeholder="contato@unidade.com.br"
+                disabled={isPending}
+              />
+            </div>
+          </div>
+
+          {isEditing && (
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
@@ -231,8 +248,8 @@ export function UnitForm({ unit, suggestedCode, onSubmit }: UnitFormProps) {
                   </SelectContent>
                 </Select>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

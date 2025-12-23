@@ -8,6 +8,7 @@ import {
   Building2,
   MapPin,
   Phone,
+  Mail,
   Hash,
   Calendar,
   Users,
@@ -139,6 +140,21 @@ export default async function UnitDetailsPage({ params }: PageProps) {
                     <p className="text-sm font-medium">Telefone</p>
                     <p className="text-sm text-muted-foreground">
                       {unit.phone || 'Não informado'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium">Email</p>
+                    <p className="text-sm text-muted-foreground">
+                      {unit.email ? (
+                        <a href={`mailto:${unit.email}`} className="hover:text-primary hover:underline">
+                          {unit.email}
+                        </a>
+                      ) : (
+                        'Não informado'
+                      )}
                     </p>
                   </div>
                 </div>
