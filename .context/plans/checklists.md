@@ -1778,10 +1778,10 @@ export async function deleteExecutions(executionIds: string[]) {
 - Output de `mcp_supabase_list_tables` mostrando novas tabelas
 
 ### Follow-up Actions
-- [ ] Atualizar `entrega1_tarefas.md` marcando itens 60-66 como concluídos
-- [ ] Atualizar `README.md` do plans com status
-- [ ] Preparar dados de seed (template padrão de abertura)
-- [ ] Documentar fluxo de checklist para usuários
+- [x] Atualizar `entrega1_tarefas.md` marcando itens 60-66 como concluídos
+- [x] Atualizar `README.md` do plans com status
+- [x] Preparar dados de seed (template padrão de abertura) → `projeto/seeds/checklist_abertura_padrao.sql`
+- [x] Documentar fluxo de checklist para usuários → `.context/docs/checklists-guia-usuario.md`
 
 ---
 

@@ -59,11 +59,11 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ## Checklists
 
-- [ ] Criar modelo de dados: `checklist_templates`, `checklist_questions`, `checklist_executions`, `checklist_answers`
-- [ ] Criar tela de configuração de checklist de abertura (admin)
-- [ ] Criar tela de execução de checklist de abertura
-- [ ] Criar tela de histórico de checklists executados
-- [ ] Usuário admin pode excluir checklists (unitário e em massa)
+- [x] Criar modelo de dados: `checklist_templates`, `checklist_questions`, `checklist_executions`, `checklist_answers`
+- [x] Criar tela de configuração de checklist de abertura (admin)
+- [x] Criar tela de execução de checklist de abertura
+- [x] Criar tela de histórico de checklists executados
+- [x] Usuário admin pode excluir checklists (unitário e em massa)
 
 ## Chamados — Compras
 

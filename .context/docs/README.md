@@ -13,6 +13,9 @@ Welcome to the repository knowledge base. Start with the project overview, then 
 - [Security & Compliance Notes](./security.md)
 - [Tooling & Productivity Guide](./tooling.md)
 
+## Guias de Usuário
+- [Checklists - Guia do Usuário](./checklists-guia-usuario.md)
+
 ## Repository Snapshot
 - `projeto/`
 
