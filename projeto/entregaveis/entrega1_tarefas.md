@@ -26,11 +26,17 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ## Gestão de Usuários
 
-- [ ] Criar modelo de dados: `users`, `departments`, `roles`, `user_roles`
-- [ ] Criar tela de listagem de usuários
-- [ ] Criar tela de cadastro/edição de usuário
-- [ ] Implementar RBAC (permissões por cargo/departamento)
-- [ ] Criar página de perfil do usuário
+- [x] Criar modelo de dados: `profiles`, `departments`, `roles`, `user_roles`
+- [x] Criar tela de listagem de usuários
+- [x] Criar tela de cadastro/edição de usuário
+- [x] Implementar RBAC (permissões por cargo/departamento)
+- [x] Criar página de perfil do usuário
+
+### Follow-ups (Gestão de Usuários)
+
+- [ ] Vincular usuários a unidades (após criar tabela `units`)
+- [ ] Implementar paginação server-side (avaliar quando > 50 usuários)
+- [ ] Adicionar logs de auditoria para ações de usuário
 
 ## Gestão de Unidades
 

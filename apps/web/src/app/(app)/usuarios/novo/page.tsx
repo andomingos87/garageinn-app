@@ -3,13 +3,14 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
-import { getDepartments, getRoles, checkIsAdmin } from '../actions'
+import { getDepartments, getRoles, checkIsAdmin, getUnits } from '../actions'
 import { NewUserForm } from './components/new-user-form'
 
 export default async function NewUserPage() {
-  const [departments, allRoles, isAdmin] = await Promise.all([
+  const [departments, allRoles, units, isAdmin] = await Promise.all([
     getDepartments(),
     getRoles(),
+    getUnits(),
     checkIsAdmin(),
   ])
 
@@ -44,7 +45,7 @@ export default async function NewUserPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <NewUserForm departments={departments} allRoles={allRoles} />
+            <NewUserForm departments={departments} allRoles={allRoles} units={units} />
           </CardContent>
         </Card>
       </div>

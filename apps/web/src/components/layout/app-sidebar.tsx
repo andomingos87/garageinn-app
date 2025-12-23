@@ -7,6 +7,7 @@ import {
   MessageSquareMore,
   Settings,
   Users,
+  LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,8 +24,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { RequireAdmin } from "@/components/auth/require-permission";
 
-const menuItems = [
+interface MenuItem {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+  requireAdmin?: boolean;
+}
+
+const menuItems: MenuItem[] = [
   {
     title: "Início",
     href: "/",
@@ -49,16 +58,41 @@ const menuItems = [
     title: "Usuários",
     href: "/usuarios",
     icon: Users,
+    requireAdmin: true,
   },
 ];
 
-const configItems = [
+const configItems: MenuItem[] = [
   {
     title: "Configurações",
     href: "/configuracoes",
     icon: Settings,
+    requireAdmin: true,
   },
 ];
+
+function MenuItemLink({ 
+  item, 
+  isActive 
+}: { 
+  item: MenuItem; 
+  isActive: boolean;
+}) {
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={isActive}
+        tooltip={item.title}
+      >
+        <Link href={item.href}>
+          <item.icon className="h-4 w-4" />
+          <span>{item.title}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -68,6 +102,26 @@ export function AppSidebar() {
       return pathname === "/";
     }
     return pathname.startsWith(href);
+  };
+
+  const renderMenuItem = (item: MenuItem) => {
+    const menuItemElement = (
+      <MenuItemLink 
+        key={item.href} 
+        item={item} 
+        isActive={isActive(item.href)} 
+      />
+    );
+
+    if (item.requireAdmin) {
+      return (
+        <RequireAdmin key={item.href}>
+          {menuItemElement}
+        </RequireAdmin>
+      );
+    }
+
+    return menuItemElement;
   };
 
   return (
@@ -93,20 +147,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item.href)}
-                    tooltip={item.title}
-                  >
-                    <Link href={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {menuItems.map(renderMenuItem)}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -114,20 +155,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
-          {configItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive(item.href)}
-                tooltip={item.title}
-              >
-                <Link href={item.href}>
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {configItems.map(renderMenuItem)}
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>

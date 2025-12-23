@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
-import { getUserById, getDepartments, getRoles, checkIsAdmin } from '../../actions'
+import { getUserById, getDepartments, getRoles, checkIsAdmin, getUnits, getUserUnits } from '../../actions'
 import { UserEditForm } from './components/user-edit-form'
 
 interface PageProps {
@@ -13,10 +13,12 @@ interface PageProps {
 export default async function EditUserPage({ params }: PageProps) {
   const { id } = await params
 
-  const [user, departments, allRoles, isAdmin] = await Promise.all([
+  const [user, departments, allRoles, units, userUnits, isAdmin] = await Promise.all([
     getUserById(id),
     getDepartments(),
     getRoles(),
+    getUnits(),
+    getUserUnits(id),
     checkIsAdmin(),
   ])
 
@@ -59,6 +61,8 @@ export default async function EditUserPage({ params }: PageProps) {
               user={user} 
               departments={departments} 
               allRoles={allRoles}
+              units={units}
+              userUnits={userUnits}
             />
           </CardContent>
         </Card>

@@ -3,6 +3,9 @@
  * 
  * Define as permissões disponíveis no sistema e a matriz de permissões
  * por cargo e departamento.
+ * 
+ * IMPORTANTE: Os nomes de cargos e departamentos devem corresponder EXATAMENTE
+ * aos valores cadastrados no banco de dados.
  */
 
 /** Tipos de permissão disponíveis no sistema */
@@ -40,8 +43,15 @@ export const GLOBAL_ROLE_PERMISSIONS: Record<string, Permission[]> = {
   'Administrador': ['admin:all'],
 }
 
-/** Permissões por cargo dentro de cada departamento */
+/** 
+ * Permissões por cargo dentro de cada departamento
+ * 
+ * NOTA: Os nomes devem corresponder EXATAMENTE ao banco de dados:
+ * - Departamentos: Operações, Compras e Manutenção, Financeiro, TI, RH, Comercial, Auditoria, Sinistros
+ * - Cargos comuns: Analista, Auxiliar, Coordenador, Gerente
+ */
 export const DEPARTMENT_ROLE_PERMISSIONS: Record<string, Record<string, Permission[]>> = {
+  // ===== OPERAÇÕES =====
   'Operações': {
     'Manobrista': [
       'tickets:read',
@@ -76,35 +86,21 @@ export const DEPARTMENT_ROLE_PERMISSIONS: Record<string, Record<string, Permissi
       'units:read',
       'units:update',
     ],
-    'Diretor': [
-      'admin:all',
-    ],
   },
-  'Compras': {
-    'Comprador': [
+
+  // ===== COMPRAS E MANUTENÇÃO =====
+  'Compras e Manutenção': {
+    'Auxiliar': [
+      'tickets:read',
+    ],
+    'Analista': [
       'tickets:read',
       'tickets:execute',
     ],
-    'Analista Júnior': [
-      'tickets:read',
-      'tickets:execute',
-    ],
-    'Analista Pleno': [
+    'Coordenador': [
       'tickets:read',
       'tickets:execute',
       'tickets:approve',
-    ],
-    'Analista Sênior': [
-      'tickets:read',
-      'tickets:execute',
-      'tickets:approve',
-      'tickets:triage',
-    ],
-    'Supervisor': [
-      'tickets:read',
-      'tickets:execute',
-      'tickets:approve',
-      'tickets:triage',
     ],
     'Gerente': [
       'tickets:read',
@@ -113,75 +109,18 @@ export const DEPARTMENT_ROLE_PERMISSIONS: Record<string, Record<string, Permissi
       'tickets:triage',
       'settings:read',
     ],
-    'Diretor': [
-      'admin:all',
-    ],
   },
-  'Manutenção': {
-    'Técnico': [
-      'tickets:read',
-      'tickets:execute',
-      'checklists:read',
-      'checklists:execute',
-    ],
-    'Analista Júnior': [
-      'tickets:read',
-      'tickets:execute',
-      'checklists:read',
-      'checklists:execute',
-    ],
-    'Analista Pleno': [
-      'tickets:read',
-      'tickets:execute',
-      'tickets:approve',
-      'checklists:read',
-      'checklists:execute',
-    ],
-    'Analista Sênior': [
-      'tickets:read',
-      'tickets:execute',
-      'tickets:approve',
-      'tickets:triage',
-      'checklists:read',
-      'checklists:execute',
-      'checklists:configure',
-    ],
-    'Supervisor': [
-      'tickets:read',
-      'tickets:execute',
-      'tickets:approve',
-      'tickets:triage',
-      'checklists:read',
-      'checklists:execute',
-      'checklists:configure',
-    ],
-    'Gerente': [
-      'tickets:read',
-      'tickets:execute',
-      'tickets:approve',
-      'tickets:triage',
-      'checklists:read',
-      'checklists:execute',
-      'checklists:configure',
-      'settings:read',
-    ],
-    'Diretor': [
-      'admin:all',
-    ],
-  },
+
+  // ===== FINANCEIRO =====
   'Financeiro': {
-    'Analista Júnior': [
+    'Auxiliar': [
       'tickets:read',
     ],
-    'Analista Pleno': [
-      'tickets:read',
-      'tickets:approve',
-    ],
-    'Analista Sênior': [
+    'Analista': [
       'tickets:read',
       'tickets:approve',
     ],
-    'Supervisor': [
+    'Coordenador': [
       'tickets:read',
       'tickets:approve',
     ],
@@ -190,61 +129,40 @@ export const DEPARTMENT_ROLE_PERMISSIONS: Record<string, Record<string, Permissi
       'tickets:approve',
       'settings:read',
     ],
-    'Diretor': [
-      'admin:all',
-    ],
   },
+
+  // ===== TI =====
   'TI': {
+    'Analista de Suporte': [
+      'tickets:read',
+      'tickets:execute',
+      'settings:read',
+    ],
     'Desenvolvedor': [
       'admin:all',
     ],
-    'Analista Júnior': [
-      'tickets:read',
-      'tickets:execute',
-      'settings:read',
-    ],
-    'Analista Pleno': [
-      'tickets:read',
-      'tickets:execute',
-      'settings:read',
-      'settings:update',
-    ],
-    'Analista Sênior': [
+    'Coordenador': [
       'tickets:read',
       'tickets:execute',
       'settings:read',
       'settings:update',
       'users:read',
-    ],
-    'Supervisor': [
-      'tickets:read',
-      'tickets:execute',
-      'settings:read',
-      'settings:update',
-      'users:read',
-      'users:update',
     ],
     'Gerente': [
       'admin:all',
     ],
-    'Diretor': [
-      'admin:all',
-    ],
   },
+
+  // ===== RH =====
   'RH': {
-    'Analista Júnior': [
+    'Auxiliar': [
       'users:read',
     ],
-    'Analista Pleno': [
-      'users:read',
-      'users:create',
-    ],
-    'Analista Sênior': [
+    'Analista': [
       'users:read',
       'users:create',
-      'users:update',
     ],
-    'Supervisor': [
+    'Coordenador': [
       'users:read',
       'users:create',
       'users:update',
@@ -256,41 +174,72 @@ export const DEPARTMENT_ROLE_PERMISSIONS: Record<string, Record<string, Permissi
       'users:delete',
       'settings:read',
     ],
-    'Diretor': [
-      'admin:all',
-    ],
   },
-  'Marketing': {
-    'Analista Júnior': [],
-    'Analista Pleno': [],
-    'Analista Sênior': [],
-    'Supervisor': [],
-    'Gerente': [
-      'settings:read',
-    ],
-    'Diretor': [
-      'admin:all',
-    ],
-  },
+
+  // ===== COMERCIAL =====
   'Comercial': {
-    'Analista Júnior': [
+    'Vendedor': [
       'units:read',
     ],
-    'Analista Pleno': [
+    'Analista': [
       'units:read',
     ],
-    'Analista Sênior': [
+    'Coordenador': [
       'units:read',
-    ],
-    'Supervisor': [
-      'units:read',
+      'tickets:read',
     ],
     'Gerente': [
       'units:read',
+      'tickets:read',
       'settings:read',
     ],
-    'Diretor': [
-      'admin:all',
+  },
+
+  // ===== AUDITORIA =====
+  'Auditoria': {
+    'Auditor': [
+      'tickets:read',
+      'checklists:read',
+    ],
+    'Auditor Sênior': [
+      'tickets:read',
+      'tickets:approve',
+      'checklists:read',
+    ],
+    'Coordenador': [
+      'tickets:read',
+      'tickets:approve',
+      'checklists:read',
+      'checklists:configure',
+    ],
+    'Gerente': [
+      'tickets:read',
+      'tickets:approve',
+      'checklists:read',
+      'checklists:configure',
+      'settings:read',
+    ],
+  },
+
+  // ===== SINISTROS =====
+  'Sinistros': {
+    'Auxiliar': [
+      'tickets:read',
+    ],
+    'Analista': [
+      'tickets:read',
+      'tickets:execute',
+    ],
+    'Coordenador': [
+      'tickets:read',
+      'tickets:execute',
+      'tickets:approve',
+    ],
+    'Gerente': [
+      'tickets:read',
+      'tickets:execute',
+      'tickets:approve',
+      'settings:read',
     ],
   },
 }

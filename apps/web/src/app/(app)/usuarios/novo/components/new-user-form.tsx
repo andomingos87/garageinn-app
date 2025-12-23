@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Loader2, Check, AlertCircle, CheckCircle } from 'lucide-react'
 import { createUser } from '../actions'
+import { UnitSelector } from '../../components/unit-selector'
+import type { UnitOption } from '../../actions'
 
 interface Department {
   id: string
@@ -21,12 +23,22 @@ interface Role {
   department_id: string | null
 }
 
+interface SelectedUnit {
+  unitId: string
+  isCoverage: boolean
+}
+
 interface NewUserFormProps {
   departments: Department[]
   allRoles: Role[]
+  units: UnitOption[]
 }
 
-export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
+// Cargos do departamento de Operações que requerem unidade
+const OPERATIONS_SINGLE_UNIT_ROLES = ['Manobrista', 'Encarregado']
+const OPERATIONS_MULTI_UNIT_ROLES = ['Supervisor']
+
+export function NewUserForm({ departments, allRoles, units }: NewUserFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -38,6 +50,39 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
   const [phone, setPhone] = useState('')
   const [cpf, setCpf] = useState('')
   const [selectedRoles, setSelectedRoles] = useState<string[]>([])
+  const [selectedUnits, setSelectedUnits] = useState<SelectedUnit[]>([])
+
+  // Determinar se o seletor de unidades deve aparecer e em qual modo
+  const unitSelectorConfig = useMemo(() => {
+    const selectedRoleNames = selectedRoles
+      .map((roleId) => allRoles.find((r) => r.id === roleId)?.name)
+      .filter((name): name is string => !!name)
+
+    const hasSingleUnitRole = selectedRoleNames.some((name) =>
+      OPERATIONS_SINGLE_UNIT_ROLES.includes(name)
+    )
+    const hasMultiUnitRole = selectedRoleNames.some((name) =>
+      OPERATIONS_MULTI_UNIT_ROLES.includes(name)
+    )
+
+    if (hasSingleUnitRole) {
+      return {
+        show: true,
+        mode: 'single' as const,
+        description: 'Manobristas e Encarregados devem estar vinculados a uma unidade.',
+      }
+    }
+
+    if (hasMultiUnitRole) {
+      return {
+        show: true,
+        mode: 'multiple' as const,
+        description: 'Supervisores podem cobrir múltiplas unidades.',
+      }
+    }
+
+    return { show: false, mode: 'single' as const, description: '' }
+  }, [selectedRoles, allRoles])
 
   // Group roles by department
   const globalRoles = allRoles.filter((r) => r.is_global)
@@ -49,14 +94,6 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
       acc[deptId].push(role)
       return acc
     }, {} as Record<string, Role[]>)
-
-  function toggleRole(roleId: string) {
-    setSelectedRoles((prev) =>
-      prev.includes(roleId)
-        ? prev.filter((id) => id !== roleId)
-        : [...prev, roleId]
-    )
-  }
 
   function formatPhone(value: string) {
     const digits = value.replace(/\D/g, '')
@@ -75,6 +112,28 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
     return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`
   }
 
+  // Limpar unidades quando o seletor é ocultado
+  function handleRoleToggle(roleId: string) {
+    const newSelectedRoles = selectedRoles.includes(roleId)
+      ? selectedRoles.filter((id) => id !== roleId)
+      : [...selectedRoles, roleId]
+
+    setSelectedRoles(newSelectedRoles)
+
+    // Se o seletor não deve mais aparecer, limpar as unidades
+    const newSelectedRoleNames = newSelectedRoles
+      .map((id) => allRoles.find((r) => r.id === id)?.name)
+      .filter((name): name is string => !!name)
+
+    const willShowSelector =
+      newSelectedRoleNames.some((name) => OPERATIONS_SINGLE_UNIT_ROLES.includes(name)) ||
+      newSelectedRoleNames.some((name) => OPERATIONS_MULTI_UNIT_ROLES.includes(name))
+
+    if (!willShowSelector) {
+      setSelectedUnits([])
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
@@ -82,6 +141,12 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
 
     if (!fullName || !email) {
       setError('Nome e email são obrigatórios')
+      return
+    }
+
+    // Validar unidades se necessário
+    if (unitSelectorConfig.show && selectedUnits.length === 0) {
+      setError('Selecione pelo menos uma unidade para cargos de Operações')
       return
     }
 
@@ -93,6 +158,7 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
         formData.set('phone', phone || '')
         formData.set('cpf', cpf.replace(/\D/g, '') || '')
         formData.set('roles', JSON.stringify(selectedRoles))
+        formData.set('units', JSON.stringify(selectedUnits))
 
         const result = await createUser(formData)
 
@@ -213,7 +279,7 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
                   key={role.id}
                   variant={selectedRoles.includes(role.id) ? 'default' : 'outline'}
                   className="cursor-pointer transition-colors"
-                  onClick={() => toggleRole(role.id)}
+                  onClick={() => handleRoleToggle(role.id)}
                 >
                   {selectedRoles.includes(role.id) && (
                     <Check className="mr-1 h-3 w-3" />
@@ -239,7 +305,7 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
                     key={role.id}
                     variant={selectedRoles.includes(role.id) ? 'secondary' : 'outline'}
                     className="cursor-pointer transition-colors"
-                    onClick={() => toggleRole(role.id)}
+                    onClick={() => handleRoleToggle(role.id)}
                   >
                     {selectedRoles.includes(role.id) && (
                       <Check className="mr-1 h-3 w-3" />
@@ -258,6 +324,21 @@ export function NewUserForm({ departments, allRoles }: NewUserFormProps) {
           </p>
         )}
       </div>
+
+      {/* Unit Selector - appears only for Operations roles */}
+      {unitSelectorConfig.show && (
+        <>
+          <Separator />
+          <UnitSelector
+            units={units}
+            selectedUnits={selectedUnits}
+            onChange={setSelectedUnits}
+            mode={unitSelectorConfig.mode}
+            label="Unidade(s) de Trabalho"
+            description={unitSelectorConfig.description}
+          />
+        </>
+      )}
 
       <Separator />
 

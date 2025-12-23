@@ -2,12 +2,22 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { UserWithRoles, UserRoleInfo, UserStatus } from '@/lib/supabase/database.types'
+import type { UserWithRoles, UserRoleInfo, UserStatus, UserUnitInfo, AuditLog } from '@/lib/supabase/database.types'
 
 export interface UsersFilters {
   search?: string
   status?: UserStatus | 'all'
   departmentId?: string
+  page?: number
+  limit?: number
+}
+
+export interface PaginatedUsers {
+  users: UserWithRoles[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
 }
 
 export interface UsersStats {
@@ -17,11 +27,26 @@ export interface UsersStats {
   inactive: number
 }
 
+export interface UnitOption {
+  id: string
+  name: string
+  code: string
+}
+
+export interface UserUnitInput {
+  unitId: string
+  isCoverage: boolean
+}
+
 /**
- * Busca lista de usuários com seus cargos e departamentos
+ * Busca lista de usuários com seus cargos e departamentos (com paginação)
  */
-export async function getUsers(filters?: UsersFilters): Promise<UserWithRoles[]> {
+export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> {
   const supabase = await createClient()
+
+  const page = filters?.page || 1
+  const limit = filters?.limit || 20
+  const offset = (page - 1) * limit
 
   let query = supabase
     .from('profiles')
@@ -45,9 +70,19 @@ export async function getUsers(filters?: UsersFilters): Promise<UserWithRoles[]>
             name
           )
         )
+      ),
+      user_units (
+        id,
+        is_coverage,
+        unit:units (
+          id,
+          name,
+          code
+        )
       )
-    `)
+    `, { count: 'exact' })
     .order('full_name')
+    .range(offset, offset + limit - 1)
 
   // Filtro de busca
   if (filters?.search) {
@@ -59,7 +94,7 @@ export async function getUsers(filters?: UsersFilters): Promise<UserWithRoles[]>
     query = query.eq('status', filters.status)
   }
 
-  const { data, error } = await query
+  const { data, error, count } = await query
 
   if (error) {
     console.error('Error fetching users:', error)
@@ -68,7 +103,7 @@ export async function getUsers(filters?: UsersFilters): Promise<UserWithRoles[]>
 
   // Transformar dados para o formato esperado
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const users: UserWithRoles[] = (data || []).map((profile: any) => {
+  let users: UserWithRoles[] = (data || []).map((profile: any) => {
     const roles: UserRoleInfo[] = (profile.user_roles || [])
       .filter((ur: any) => ur.role !== null)
       .map((ur: any) => ({
@@ -79,11 +114,15 @@ export async function getUsers(filters?: UsersFilters): Promise<UserWithRoles[]>
         is_global: ur.role.is_global ?? false,
       }))
 
-    // Filtrar por departamento se necessário
-    if (filters?.departmentId) {
-      const hasMatchingRole = roles.some(r => r.department_id === filters.departmentId)
-      if (!hasMatchingRole) return null
-    }
+    const units: UserUnitInfo[] = (profile.user_units || [])
+      .filter((uu: any) => uu.unit !== null)
+      .map((uu: any) => ({
+        id: uu.id,
+        unit_id: uu.unit.id,
+        unit_name: uu.unit.name,
+        unit_code: uu.unit.code,
+        is_coverage: uu.is_coverage ?? false,
+      }))
 
     return {
       id: profile.id,
@@ -96,10 +135,26 @@ export async function getUsers(filters?: UsersFilters): Promise<UserWithRoles[]>
       created_at: profile.created_at || '',
       updated_at: profile.updated_at || '',
       roles,
+      units,
     }
-  }).filter((u): u is UserWithRoles => u !== null)
+  })
 
-  return users
+  // Filtrar por departamento se necessário (client-side após paginação)
+  if (filters?.departmentId) {
+    users = users.filter(user => 
+      user.roles.some(r => r.department_id === filters.departmentId)
+    )
+  }
+
+  const total = count || 0
+
+  return {
+    users,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  }
 }
 
 /**
@@ -340,5 +395,128 @@ export async function checkIsAdmin(): Promise<boolean> {
   }
 
   return data === true
+}
+
+// ============================================
+// Funções de Unidades
+// ============================================
+
+/**
+ * Busca lista de unidades ativas
+ */
+export async function getUnits(): Promise<UnitOption[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('units')
+    .select('id, name, code')
+    .eq('status', 'active')
+    .order('name')
+
+  if (error) {
+    console.error('Error fetching units:', error)
+    return []
+  }
+
+  return data || []
+}
+
+/**
+ * Busca unidades vinculadas a um usuário
+ */
+export async function getUserUnits(userId: string): Promise<UserUnitInfo[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('user_units')
+    .select(`
+      id,
+      is_coverage,
+      unit:units (
+        id,
+        name,
+        code
+      )
+    `)
+    .eq('user_id', userId)
+
+  if (error) {
+    console.error('Error fetching user units:', error)
+    return []
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data || []).map((uu: any) => ({
+    id: uu.id,
+    unit_id: uu.unit.id,
+    unit_name: uu.unit.name,
+    unit_code: uu.unit.code,
+    is_coverage: uu.is_coverage ?? false,
+  }))
+}
+
+/**
+ * Atualiza unidades vinculadas a um usuário
+ */
+export async function updateUserUnits(userId: string, units: UserUnitInput[]) {
+  const supabase = await createClient()
+
+  // Remover vínculos existentes
+  const { error: deleteError } = await supabase
+    .from('user_units')
+    .delete()
+    .eq('user_id', userId)
+
+  if (deleteError) {
+    console.error('Error removing user units:', deleteError)
+    return { error: deleteError.message }
+  }
+
+  // Adicionar novos vínculos
+  if (units.length > 0) {
+    const unitInserts = units.map(u => ({
+      user_id: userId,
+      unit_id: u.unitId,
+      is_coverage: u.isCoverage,
+    }))
+
+    const { error: insertError } = await supabase
+      .from('user_units')
+      .insert(unitInserts)
+
+    if (insertError) {
+      console.error('Error adding user units:', insertError)
+      return { error: insertError.message }
+    }
+  }
+
+  revalidatePath('/usuarios')
+  revalidatePath(`/usuarios/${userId}`)
+  return { success: true }
+}
+
+// ============================================
+// Funções de Auditoria
+// ============================================
+
+/**
+ * Busca logs de auditoria de um usuário específico
+ */
+export async function getUserAuditLogs(userId: string): Promise<AuditLog[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('audit_logs')
+    .select('*')
+    .eq('entity_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50)
+
+  if (error) {
+    console.error('Error fetching audit logs:', error)
+    return []
+  }
+
+  return (data || []) as AuditLog[]
 }
 

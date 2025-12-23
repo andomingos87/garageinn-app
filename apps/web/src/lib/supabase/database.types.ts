@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json | null
+          new_data: Json | null
+          old_data: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_with_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       departments: {
         Row: {
           created_at: string | null
@@ -136,6 +187,97 @@ export type Database = {
           },
           {
             foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_with_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      units: {
+        Row: {
+          address: string
+          capacity: number | null
+          city: string | null
+          code: string
+          created_at: string | null
+          id: string
+          name: string
+          phone: string | null
+          state: string | null
+          status: string
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address: string
+          capacity?: number | null
+          city?: string | null
+          code: string
+          created_at?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string
+          capacity?: number | null
+          city?: string | null
+          code?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      user_units: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_coverage: boolean | null
+          unit_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_coverage?: boolean | null
+          unit_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_coverage?: boolean | null
+          unit_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_units_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_units_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_units_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_with_roles"
@@ -303,7 +445,30 @@ export interface UserRoleInfo {
   is_global: boolean
 }
 
-/** User profile with roles */
+/** Unit information */
+export interface Unit {
+  id: string
+  name: string
+  code: string
+  address: string
+  city: string | null
+  state: string | null
+  zip_code: string | null
+  phone: string | null
+  capacity: number | null
+  status: 'active' | 'inactive'
+}
+
+/** User unit link with unit details */
+export interface UserUnitInfo {
+  id: string
+  unit_id: string
+  unit_name: string
+  unit_code: string
+  is_coverage: boolean
+}
+
+/** User profile with roles and units */
 export interface UserWithRoles {
   id: string
   full_name: string
@@ -315,7 +480,24 @@ export interface UserWithRoles {
   created_at: string
   updated_at: string
   roles: UserRoleInfo[]
+  units?: UserUnitInfo[]
 }
 
 /** User status type */
 export type UserStatus = 'active' | 'inactive' | 'pending'
+
+/** Unit status type */
+export type UnitStatus = 'active' | 'inactive'
+
+/** Audit log entry */
+export interface AuditLog {
+  id: string
+  user_id: string | null
+  action: string
+  entity_type: string
+  entity_id: string
+  old_data: Record<string, unknown> | null
+  new_data: Record<string, unknown> | null
+  metadata: Record<string, unknown> | null
+  created_at: string
+}

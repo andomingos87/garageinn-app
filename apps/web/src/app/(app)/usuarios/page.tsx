@@ -5,9 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UserPlus } from 'lucide-react'
 import { getUsers, getUsersStats, getDepartments, checkIsAdmin } from './actions'
-import { UsersTable } from './components/users-table'
-import { UsersFilters } from './components/users-filters'
-import { UserStatsCards } from './components/user-stats-cards'
+import { UsersTable, UsersFilters, UserStatsCards, UsersPagination } from './components'
 import type { UserStatus } from '@/lib/supabase/database.types'
 import { redirect } from 'next/navigation'
 
@@ -16,6 +14,8 @@ interface PageProps {
     search?: string
     status?: string
     department?: string
+    page?: string
+    limit?: string
   }>
 }
 
@@ -26,9 +26,11 @@ async function UsersContent({ searchParams }: { searchParams: PageProps['searchP
     search: params.search,
     status: (params.status || 'all') as UserStatus | 'all',
     departmentId: params.department,
+    page: params.page ? parseInt(params.page, 10) : 1,
+    limit: params.limit ? parseInt(params.limit, 10) : 20,
   }
 
-  const [users, stats, departments] = await Promise.all([
+  const [paginatedUsers, stats, departments] = await Promise.all([
     getUsers(filters),
     getUsersStats(),
     getDepartments(),
@@ -50,7 +52,13 @@ async function UsersContent({ searchParams }: { searchParams: PageProps['searchP
           </div>
         </CardHeader>
         <CardContent>
-          <UsersTable users={users} />
+          <UsersTable users={paginatedUsers.users} />
+          <UsersPagination
+            page={paginatedUsers.page}
+            totalPages={paginatedUsers.totalPages}
+            total={paginatedUsers.total}
+            limit={paginatedUsers.limit}
+          />
         </CardContent>
       </Card>
     </>

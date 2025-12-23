@@ -2,6 +2,12 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { updateUserUnits } from '../actions'
+
+interface SelectedUnit {
+  unitId: string
+  isCoverage: boolean
+}
 
 /**
  * Cria um novo usuário no sistema via Edge Function
@@ -15,6 +21,7 @@ export async function createUser(formData: FormData) {
   const phone = formData.get('phone') as string
   const cpf = formData.get('cpf') as string
   const roles = JSON.parse(formData.get('roles') as string || '[]') as string[]
+  const units = JSON.parse(formData.get('units') as string || '[]') as SelectedUnit[]
 
   // Validação básica
   if (!full_name || !email) {
@@ -54,6 +61,15 @@ export async function createUser(formData: FormData) {
 
   if (data?.error) {
     return { error: data.error }
+  }
+
+  // Salvar unidades se houver
+  if (units.length > 0 && data?.user_id) {
+    const unitsResult = await updateUserUnits(data.user_id, units)
+    if (unitsResult.error) {
+      console.error('Erro ao salvar unidades:', unitsResult.error)
+      // Não falha a criação do usuário, apenas loga o erro
+    }
   }
 
   revalidatePath('/usuarios')

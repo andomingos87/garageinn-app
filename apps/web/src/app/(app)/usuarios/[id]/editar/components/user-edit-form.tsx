@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Loader2, Check, X } from 'lucide-react'
-import { updateUser, updateUserRoles } from '../../../actions'
-import type { UserWithRoles, UserStatus } from '@/lib/supabase/database.types'
+import { Loader2, Check } from 'lucide-react'
+import { updateUser, updateUserRoles, updateUserUnits } from '../../../actions'
+import type { UserWithRoles, UserStatus, UserUnitInfo } from '@/lib/supabase/database.types'
+import { UnitSelector } from '../../../components/unit-selector'
+import type { UnitOption } from '../../../actions'
 
 interface Department {
   id: string
@@ -22,13 +24,24 @@ interface Role {
   department_id: string | null
 }
 
+interface SelectedUnit {
+  unitId: string
+  isCoverage: boolean
+}
+
 interface UserEditFormProps {
   user: UserWithRoles
   departments: Department[]
   allRoles: Role[]
+  units: UnitOption[]
+  userUnits: UserUnitInfo[]
 }
 
-export function UserEditForm({ user, departments, allRoles }: UserEditFormProps) {
+// Cargos do departamento de Operações que requerem unidade
+const OPERATIONS_SINGLE_UNIT_ROLES = ['Manobrista', 'Encarregado']
+const OPERATIONS_MULTI_UNIT_ROLES = ['Supervisor']
+
+export function UserEditForm({ user, departments, allRoles, units, userUnits }: UserEditFormProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -41,6 +54,41 @@ export function UserEditForm({ user, departments, allRoles }: UserEditFormProps)
   const [selectedRoles, setSelectedRoles] = useState<string[]>(
     user.roles.map((r) => r.role_id)
   )
+  const [selectedUnits, setSelectedUnits] = useState<SelectedUnit[]>(
+    userUnits.map((u) => ({ unitId: u.unit_id, isCoverage: u.is_coverage }))
+  )
+
+  // Determinar se o seletor de unidades deve aparecer e em qual modo
+  const unitSelectorConfig = useMemo(() => {
+    const selectedRoleNames = selectedRoles
+      .map((roleId) => allRoles.find((r) => r.id === roleId)?.name)
+      .filter((name): name is string => !!name)
+
+    const hasSingleUnitRole = selectedRoleNames.some((name) =>
+      OPERATIONS_SINGLE_UNIT_ROLES.includes(name)
+    )
+    const hasMultiUnitRole = selectedRoleNames.some((name) =>
+      OPERATIONS_MULTI_UNIT_ROLES.includes(name)
+    )
+
+    if (hasSingleUnitRole) {
+      return {
+        show: true,
+        mode: 'single' as const,
+        description: 'Manobristas e Encarregados devem estar vinculados a uma unidade.',
+      }
+    }
+
+    if (hasMultiUnitRole) {
+      return {
+        show: true,
+        mode: 'multiple' as const,
+        description: 'Supervisores podem cobrir múltiplas unidades.',
+      }
+    }
+
+    return { show: false, mode: 'single' as const, description: '' }
+  }, [selectedRoles, allRoles])
 
   // Group roles by department
   const globalRoles = allRoles.filter((r) => r.is_global)
@@ -53,12 +101,25 @@ export function UserEditForm({ user, departments, allRoles }: UserEditFormProps)
       return acc
     }, {} as Record<string, Role[]>)
 
-  function toggleRole(roleId: string) {
-    setSelectedRoles((prev) =>
-      prev.includes(roleId)
-        ? prev.filter((id) => id !== roleId)
-        : [...prev, roleId]
-    )
+  function handleRoleToggle(roleId: string) {
+    const newSelectedRoles = selectedRoles.includes(roleId)
+      ? selectedRoles.filter((id) => id !== roleId)
+      : [...selectedRoles, roleId]
+
+    setSelectedRoles(newSelectedRoles)
+
+    // Se o seletor não deve mais aparecer, limpar as unidades
+    const newSelectedRoleNames = newSelectedRoles
+      .map((id) => allRoles.find((r) => r.id === id)?.name)
+      .filter((name): name is string => !!name)
+
+    const willShowSelector =
+      newSelectedRoleNames.some((name) => OPERATIONS_SINGLE_UNIT_ROLES.includes(name)) ||
+      newSelectedRoleNames.some((name) => OPERATIONS_MULTI_UNIT_ROLES.includes(name))
+
+    if (!willShowSelector) {
+      setSelectedUnits([])
+    }
   }
 
   function formatPhone(value: string) {
@@ -84,6 +145,12 @@ export function UserEditForm({ user, departments, allRoles }: UserEditFormProps)
     e.preventDefault()
     setError(null)
 
+    // Validar unidades se necessário
+    if (unitSelectorConfig.show && selectedUnits.length === 0) {
+      setError('Selecione pelo menos uma unidade para cargos de Operações')
+      return
+    }
+
     startTransition(async () => {
       try {
         // Update user data
@@ -104,6 +171,14 @@ export function UserEditForm({ user, departments, allRoles }: UserEditFormProps)
 
         if (rolesResult.error) {
           setError(rolesResult.error)
+          return
+        }
+
+        // Update units
+        const unitsResult = await updateUserUnits(user.id, selectedUnits)
+
+        if (unitsResult.error) {
+          setError(unitsResult.error)
           return
         }
 
@@ -230,7 +305,7 @@ export function UserEditForm({ user, departments, allRoles }: UserEditFormProps)
                   key={role.id}
                   variant={selectedRoles.includes(role.id) ? 'default' : 'outline'}
                   className="cursor-pointer transition-colors"
-                  onClick={() => toggleRole(role.id)}
+                  onClick={() => handleRoleToggle(role.id)}
                 >
                   {selectedRoles.includes(role.id) && (
                     <Check className="mr-1 h-3 w-3" />
@@ -256,7 +331,7 @@ export function UserEditForm({ user, departments, allRoles }: UserEditFormProps)
                     key={role.id}
                     variant={selectedRoles.includes(role.id) ? 'secondary' : 'outline'}
                     className="cursor-pointer transition-colors"
-                    onClick={() => toggleRole(role.id)}
+                    onClick={() => handleRoleToggle(role.id)}
                   >
                     {selectedRoles.includes(role.id) && (
                       <Check className="mr-1 h-3 w-3" />
@@ -269,6 +344,21 @@ export function UserEditForm({ user, departments, allRoles }: UserEditFormProps)
           )
         })}
       </div>
+
+      {/* Unit Selector - appears only for Operations roles */}
+      {unitSelectorConfig.show && (
+        <>
+          <Separator />
+          <UnitSelector
+            units={units}
+            selectedUnits={selectedUnits}
+            onChange={setSelectedUnits}
+            mode={unitSelectorConfig.mode}
+            label="Unidade(s) de Trabalho"
+            description={unitSelectorConfig.description}
+          />
+        </>
+      )}
 
       <Separator />
 
