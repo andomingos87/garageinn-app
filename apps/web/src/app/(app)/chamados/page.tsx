@@ -1,127 +1,132 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Suspense } from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Ticket } from 'lucide-react'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Plus } from "lucide-react";
+  getHubTickets,
+  getHubStats,
+  getDepartments,
+  getUnits,
+  type HubTicketFilters,
+} from './actions'
+import {
+  HubStatsCards,
+  HubFilters,
+  HubTable,
+  HubPagination,
+  NewTicketDialog,
+} from './components'
 
-export default function ChamadosPage() {
-  // Placeholder data
-  const chamados = [
-    {
-      id: "#1234",
-      titulo: "Solicitação de materiais de limpeza",
-      departamento: "Compras",
-      unidade: "Centro",
-      status: "Em Andamento",
-      prioridade: "Média",
-      criado: "20/12/2025",
-    },
-    {
-      id: "#1233",
-      titulo: "Reparo no portão automático",
-      departamento: "Manutenção",
-      unidade: "Shopping Norte",
-      status: "Priorizado",
-      prioridade: "Alta",
-      criado: "19/12/2025",
-    },
-    {
-      id: "#1232",
-      titulo: "Uniformes para novos colaboradores",
-      departamento: "RH",
-      unidade: "Aeroporto",
-      status: "Aguardando Triagem",
-      prioridade: "Baixa",
-      criado: "18/12/2025",
-    },
-    {
-      id: "#1231",
-      titulo: "Troca de lâmpadas LED",
-      departamento: "Manutenção",
-      unidade: "Centro",
-      status: "Resolvido",
-      prioridade: "Baixa",
-      criado: "17/12/2025",
-    },
-  ];
+interface PageProps {
+  searchParams: Promise<{
+    search?: string
+    department_id?: string
+    status?: string
+    priority?: string
+    unit_id?: string
+    page?: string
+  }>
+}
 
-  const getPriorityVariant = (prioridade: string) => {
-    switch (prioridade.toLowerCase()) {
-      case "alta":
-      case "urgente":
-        return "destructive";
-      case "média":
-        return "default";
-      default:
-        return "secondary";
-    }
-  };
+// Loading skeletons
+function StatsCardsSkeleton() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {[1, 2, 3, 4].map((i) => (
+        <Skeleton key={i} className="h-[120px] rounded-lg" />
+      ))}
+    </div>
+  )
+}
+
+function FiltersSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <Skeleton className="h-10 w-full max-w-md" />
+      <div className="hidden lg:flex items-center gap-2">
+        <Skeleton className="h-10 w-[160px]" />
+        <Skeleton className="h-10 w-[180px]" />
+        <Skeleton className="h-10 w-[160px]" />
+      </div>
+    </div>
+  )
+}
+
+function TableSkeleton() {
+  return <Skeleton className="h-[400px] rounded-lg" />
+}
+
+// Server components for data fetching
+async function StatsSection() {
+  const stats = await getHubStats()
+  return <HubStatsCards stats={stats} />
+}
+
+async function FiltersSection() {
+  const [departments, units] = await Promise.all([
+    getDepartments(),
+    getUnits(),
+  ])
+  return <HubFilters departments={departments} units={units} />
+}
+
+async function TicketsListSection({ filters }: { filters: HubTicketFilters }) {
+  const result = await getHubTickets(filters)
+  
+  return (
+    <>
+      <HubTable tickets={result.data} />
+      <HubPagination
+        currentPage={result.page}
+        totalCount={result.count}
+        limit={result.limit}
+      />
+    </>
+  )
+}
+
+export default async function ChamadosHubPage({ searchParams }: PageProps) {
+  const params = await searchParams
+  
+  const filters: HubTicketFilters = {
+    search: params.search,
+    department_id: params.department_id,
+    status: params.status,
+    priority: params.priority,
+    unit_id: params.unit_id,
+    page: params.page ? parseInt(params.page) : 1,
+    limit: 20,
+  }
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Chamados</h2>
-          <p className="text-muted-foreground">
-            Gerencie chamados de todos os departamentos
+          <div className="flex items-center gap-2">
+            <Ticket className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-semibold tracking-tight">Chamados</h2>
+          </div>
+          <p className="text-muted-foreground mt-1">
+            Hub central de chamados de todos os departamentos
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Novo Chamado
-        </Button>
+        <NewTicketDialog />
       </div>
 
-      {/* Chamados Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Todos os Chamados</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Título</TableHead>
-                <TableHead>Departamento</TableHead>
-                <TableHead>Unidade</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Prioridade</TableHead>
-                <TableHead>Criado em</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {chamados.map((chamado) => (
-                <TableRow key={chamado.id} className="cursor-pointer">
-                  <TableCell className="font-medium">{chamado.id}</TableCell>
-                  <TableCell>{chamado.titulo}</TableCell>
-                  <TableCell>{chamado.departamento}</TableCell>
-                  <TableCell>{chamado.unidade}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{chamado.status}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getPriorityVariant(chamado.prioridade)}>
-                      {chamado.prioridade}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {chamado.criado}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* Stats Cards */}
+      <Suspense fallback={<StatsCardsSkeleton />}>
+        <StatsSection />
+      </Suspense>
+
+      {/* Filters */}
+      <Suspense fallback={<FiltersSkeleton />}>
+        <FiltersSection />
+      </Suspense>
+
+      {/* Tickets Table */}
+      <Suspense fallback={<TableSkeleton />}>
+        <TicketsListSection filters={filters} />
+      </Suspense>
     </div>
-  );
+  )
 }

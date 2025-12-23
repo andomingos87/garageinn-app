@@ -402,23 +402,31 @@ export default async function ChamadosHubPage({ searchParams }: PageProps) {
      - RH → `/chamados/rh/novo`
 
 5. Status mapping (unificado para todos os departamentos):
-   ```typescript
-   const STATUS_MAP: Record<string, { label: string; variant: string }> = {
-     awaiting_triage: { label: 'Aguardando Triagem', variant: 'outline' },
-     prioritized: { label: 'Priorizado', variant: 'default' },
-     in_progress: { label: 'Em Andamento', variant: 'default' },
-     quoted: { label: 'Cotado', variant: 'secondary' },
-     approved: { label: 'Aprovado', variant: 'default' },
-     executing: { label: 'Em Execução', variant: 'default' },
-     resolved: { label: 'Resolvido', variant: 'success' },
-     closed: { label: 'Encerrado', variant: 'secondary' },
-     cancelled: { label: 'Cancelado', variant: 'destructive' },
-     denied: { label: 'Negado', variant: 'destructive' },
-   }
-   ```
+   - [x] Implementado em `components/status-badge.tsx`
+   - [x] Suporta todos os status de Compras e Manutenção
+   - [x] Badges coloridos com ícones
+
+**Componentes criados:**
+- `components/index.ts` - Barrel exports
+- `components/status-badge.tsx` - StatusBadge, PriorityBadge, DepartmentBadge
+- `components/hub-stats-cards.tsx` - Cards de estatísticas
+- `components/hub-filters.tsx` - Filtros (departamento, status, prioridade)
+- `components/hub-table.tsx` - Tabela de chamados com navegação
+- `components/hub-pagination.tsx` - Paginação server-side
+- `components/new-ticket-dialog.tsx` - Modal de novo chamado
+- `page.tsx` - Página principal com Suspense
+- `loading.tsx` - Skeleton de carregamento
+
+**Validação realizada:**
+- [x] Página carrega com dados reais do Supabase
+- [x] Stats cards mostram contagem correta
+- [x] Filtro por departamento funciona
+- [x] Navegação para detalhes funciona (Compras → /chamados/compras/[id], Manutenção → /chamados/manutencao/[id])
+- [x] Modal de novo chamado abre com opções de departamento
+- [x] Botão "Limpar" remove filtros ativos
 
 **Commit Checkpoint**
-- `git commit -m "feat(chamados): implement hub page with real data"` [pending]
+- `git commit -m "feat(chamados): implement hub page with real data"` [done]
 
 ---
 
