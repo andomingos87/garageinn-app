@@ -11,13 +11,19 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 6. **Return here** and pick the next plan in the queue. Always leave the README and plan files consistent with the work performed.
 
 ## Plan Queue (process in order)
-1. ~~[Autenticacao](./autenticacao.md)~~ ✅ Concluído
-2. ~~[Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)~~ ✅ Concluído
-3. ~~[Gestao Usuarios](./gestao-usuarios.md)~~ ✅ Concluído
-4. ~~[Gestao Usuarios Followups](./gestao-usuarios-followups.md)~~ ✅ Concluído
-5. ~~[Gestao Unidades](./gestao-unidades.md)~~ ✅ Concluído
-6. ~~[Checklists](./checklists.md)~~ ✅ Concluído
-7. [Chamados - Compras](./chamados-compras.md) ⏳ Próximo
+
+### ✅ Concluídos
+1. [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md) — ✅ Concluído
+2. [Autenticacao](./autenticacao.md) — ✅ Concluído
+3. [Gestao Usuarios](./gestao-usuarios.md) — ✅ Concluído
+4. [Gestao Unidades](./gestao-unidades.md) — ✅ Concluído
+5. [Checklists](./checklists.md) — ✅ Concluído
+6. [Gestao Usuarios Followups](./gestao-usuarios-followups.md) — ✅ Concluído
+
+### 🔄 Em Progresso / Pendentes
+7. [Chamados Compras](./chamados-compras.md) — ⏳ **PRÓXIMO** (Módulo de Chamados de Compras)
+8. Chamados Manutenção — 📋 Planejado
+9. Chamados RH — 📋 Planejado
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.
