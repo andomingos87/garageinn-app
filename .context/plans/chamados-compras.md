@@ -37,11 +37,11 @@ related_agents:
 
 | # | Tarefa | Status | Arquivos Principais |
 |---|--------|--------|---------------------|
-| 1 | Criar modelo de dados (migrations) | ⏳ Pendente | Migrations Supabase, `database.types.ts` |
-| 2 | Criar tela de abertura de chamado de Compras | ⏳ Pendente | `apps/web/src/app/(app)/chamados/compras/novo/` |
-| 3 | Criar tela de listagem de chamados de Compras | ⏳ Pendente | `apps/web/src/app/(app)/chamados/compras/page.tsx` |
-| 4 | Implementar fluxo de execução do chamado de Compras | ⏳ Pendente | `apps/web/src/app/(app)/chamados/compras/[ticketId]/` |
-| 5 | Implementar triagem e priorização | ⏳ Pendente | `actions.ts`, componentes de triagem |
+| 1 | Criar modelo de dados (migrations) | ✅ Concluído | Migrations Supabase, `database.types.ts` |
+| 2 | Criar tela de abertura de chamado de Compras | ✅ Concluído | `apps/web/src/app/(app)/chamados/compras/novo/` |
+| 3 | Criar tela de listagem de chamados de Compras | ✅ Concluído | `apps/web/src/app/(app)/chamados/compras/page.tsx` |
+| 4 | Implementar fluxo de execução do chamado de Compras | ✅ Concluído | `apps/web/src/app/(app)/chamados/compras/[ticketId]/` |
+| 5 | Implementar triagem e priorização | ✅ Concluído | `actions.ts`, componentes de triagem |
 | 6 | Implementar fluxo de aprovações (quando aplicável) | ⏳ Pendente | `ticket_approvals`, componentes de aprovação |
 | 7 | Implementar sistema de cotações | ⏳ Pendente | `ticket_quotations`, componentes de cotação |
 
@@ -1214,13 +1214,13 @@ export async function getUserUnits() {
 | attachments | File input (múltiplo) | Max 5MB cada | Não |
 
 ### Critérios de Aceite
-- [ ] Formulário validado no client e server
-- [ ] Chamado criado com status correto (com/sem aprovação)
-- [ ] Detalhes de compra vinculados
-- [ ] Aprovações criadas quando necessário
-- [ ] Upload de anexos funcional (Supabase Storage)
-- [ ] Redirect para detalhes após criação
-- [ ] Responsivo em mobile
+- [x] Formulário validado no client e server
+- [x] Chamado criado com status correto (com/sem aprovação)
+- [x] Detalhes de compra vinculados
+- [x] Aprovações criadas quando necessário
+- [ ] Upload de anexos funcional (Supabase Storage) — Implementação adiada para fase posterior
+- [x] Redirect para detalhes após criação
+- [x] Responsivo em mobile
 
 ---
 
@@ -1343,12 +1343,12 @@ export async function getPurchaseStats() {
 - Link para detalhes
 
 ### Critérios de Aceite
-- [ ] Listagem carrega corretamente
-- [ ] Filtros funcionam
-- [ ] Paginação funcional
-- [ ] Busca por número ou título
-- [ ] Visibilidade respeitada (RLS)
-- [ ] Responsivo em mobile
+- [x] Listagem carrega corretamente
+- [x] Filtros funcionam
+- [x] Paginação funcional
+- [x] Busca por número ou título
+- [x] Visibilidade respeitada (RLS)
+- [x] Responsivo em mobile
 
 ---
 
@@ -1515,12 +1515,12 @@ export async function changeTicketStatus(ticketId: string, newStatus: string, re
 ```
 
 ### Critérios de Aceite
-- [ ] Detalhes exibem todas informações
-- [ ] Sistema de cotações funcional
-- [ ] Transições de status respeitam regras
-- [ ] Timeline mostra histórico completo
-- [ ] Comentários podem ser adicionados
-- [ ] Anexos podem ser visualizados/baixados
+- [x] Detalhes exibem todas informações
+- [x] Sistema de cotações funcional
+- [x] Transições de status respeitam regras
+- [x] Timeline mostra histórico completo
+- [x] Comentários podem ser adicionados
+- [ ] Anexos podem ser visualizados/baixados (implementação adiada para fase posterior)
 
 ---
 
