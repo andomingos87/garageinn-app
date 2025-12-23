@@ -106,12 +106,12 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 > A página `/chamados` atualmente exibe dados mock. Objetivo: torná-la funcional como hub central.
 
-- [ ] Analisar e documentar requisitos para página "Chamados" funcional
-- [ ] Substituir dados mock por consulta real ao banco (todos os departamentos)
-- [ ] Implementar navegação para detalhes ao clicar no chamado
-- [ ] Implementar ação de abertura de novo chamado (escolha de tipo: Compras, Manutenção, RH)
-- [ ] Implementar filtros (departamento, status, prioridade, unidade)
-- [ ] Implementar paginação server-side
+- [x] Analisar e documentar requisitos para página "Chamados" funcional
+- [x] Substituir dados mock por consulta real ao banco (todos os departamentos)
+- [x] Implementar navegação para detalhes ao clicar no chamado
+- [x] Implementar ação de abertura de novo chamado (escolha de tipo: Compras, Manutenção, RH)
+- [x] Implementar filtros (departamento, status, prioridade, unidade)
+- [x] Implementar paginação server-side
 
 ## Configurações (Análise e Implementação)
 
