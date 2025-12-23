@@ -11,8 +11,10 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 6. **Return here** and pick the next plan in the queue. Always leave the README and plan files consistent with the work performed.
 
 ## Plan Queue (process in order)
-1. [Autenticacao](./autenticacao.md)
-2. [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)
+1. ~~[Autenticacao](./autenticacao.md)~~ ✅ Concluído
+2. ~~[Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)~~ ✅ Concluído
+3. [Gestão de Usuários](./gestao-usuarios.md) ⏳ Em andamento
+3. [Gestao Usuarios](./gestao-usuarios.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

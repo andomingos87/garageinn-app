@@ -1,32 +1,61 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Camera, Mail, Phone, Building2, Calendar } from "lucide-react";
+import { redirect } from 'next/navigation'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Mail, Phone, Building2, Calendar, Shield, Clock } from 'lucide-react'
+import { getCurrentUserProfile } from './actions'
+import { ProfileActions } from './components/profile-actions'
 
-export default function PerfilPage() {
-  // Placeholder data - will be replaced with actual user data
-  const user = {
-    nome: "João Silva",
-    email: "joao.silva@garageinn.com.br",
-    telefone: "(11) 99999-9999",
-    cpf: "***.***.***-12",
-    departamentos: [{ nome: "Operações", cargo: "Encarregado" }],
-    unidades: ["Centro"],
-    dataCadastro: "15/01/2025",
-    ultimoAcesso: "22/12/2025 às 08:30",
-    avatar: null,
-  };
-
-  const getInitials = (name: string) => {
+function getInitials(name: string) {
     return name
-      .split(" ")
+    .split(' ')
       .map((n) => n[0])
-      .join("")
+    .join('')
       .toUpperCase()
-      .slice(0, 2);
-  };
+    .slice(0, 2)
+}
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
+
+function formatDateTime(dateString: string) {
+  return new Date(dateString).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function formatCPF(cpf: string | null) {
+  if (!cpf) return '-'
+  return `***.***.***-${cpf.slice(-2)}`
+}
+
+export default async function PerfilPage() {
+  const profile = await getCurrentUserProfile()
+
+  if (!profile) {
+    redirect('/login')
+  }
+
+  // Agrupar roles
+  const globalRoles = profile.roles.filter((r) => r.is_global)
+  const departmentRoles = profile.roles.filter((r) => !r.is_global)
+
+  const rolesByDepartment = departmentRoles.reduce((acc, role) => {
+    const dept = role.department_name || 'Sem departamento'
+    if (!acc[dept]) acc[dept] = []
+    acc[dept].push(role)
+    return acc
+  }, {} as Record<string, typeof departmentRoles>)
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -41,31 +70,33 @@ export default function PerfilPage() {
       {/* Profile Card */}
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-6">
+          <div className="flex items-start gap-6">
             <div className="relative">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={user.avatar || ""} />
-                <AvatarFallback className="text-2xl">
-                  {getInitials(user.nome)}
+                <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name} />
+                <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                  {getInitials(profile.full_name)}
                 </AvatarFallback>
               </Avatar>
-              <Button
-                size="icon"
-                variant="secondary"
-                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full"
-              >
-                <Camera className="h-4 w-4" />
-                <span className="sr-only">Alterar foto</span>
-              </Button>
             </div>
-            <div className="space-y-1">
-              <CardTitle className="text-2xl">{user.nome}</CardTitle>
+            <div className="flex-1 space-y-2">
+              <CardTitle className="text-2xl">{profile.full_name}</CardTitle>
               <div className="flex flex-wrap gap-2">
-                {user.departamentos.map((dept, i) => (
-                  <Badge key={i} variant="secondary">
-                    {dept.cargo} - {dept.nome}
+                {globalRoles.map((role) => (
+                  <Badge key={role.role_id} variant="default">
+                    {role.role_name}
                   </Badge>
                 ))}
+                {Object.entries(rolesByDepartment).map(([dept, roles]) =>
+                  roles.map((role) => (
+                    <Badge key={role.role_id} variant="secondary">
+                      {role.role_name} - {dept}
+                    </Badge>
+                  ))
+                )}
+                {profile.roles.length === 0 && (
+                  <Badge variant="outline">Sem cargo definido</Badge>
+                )}
               </div>
             </div>
           </div>
@@ -75,68 +106,133 @@ export default function PerfilPage() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Dados de Contato</h3>
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              Dados de Contato
+            </h3>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{user.email}</p>
-                </div>
+                <p className="font-medium">{profile.email}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Telefone</p>
-                  <p className="font-medium">{user.telefone}</p>
-                </div>
+                <p className="font-medium">{profile.phone || '-'}</p>
               </div>
             </div>
           </div>
 
           <Separator />
 
-          {/* Work Info */}
+          {/* Professional Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Dados Profissionais</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="flex items-center gap-3">
-                <Building2 className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              <Shield className="h-4 w-4 text-muted-foreground" />
+              Dados Profissionais
+            </h3>
+            
+            {globalRoles.length > 0 && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Unidade(s)</p>
-                  <p className="font-medium">{user.unidades.join(", ")}</p>
+                <p className="text-sm text-muted-foreground mb-2">Cargos Globais</p>
+                <div className="flex flex-wrap gap-2">
+                  {globalRoles.map((role) => (
+                    <Badge key={role.role_id} variant="default">
+                      {role.role_name}
+                    </Badge>
+                  ))}
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Data de Cadastro
-                  </p>
-                  <p className="font-medium">{user.dataCadastro}</p>
+            )}
+
+            {Object.entries(rolesByDepartment).map(([dept, roles]) => (
+              <div key={dept}>
+                <p className="text-sm text-muted-foreground mb-2">{dept}</p>
+                <div className="flex flex-wrap gap-2">
+                  {roles.map((role) => (
+                    <Badge key={role.role_id} variant="outline">
+                      {role.role_name}
+                    </Badge>
+                  ))}
                 </div>
               </div>
-            </div>
+            ))}
+
+            {profile.roles.length === 0 && (
+              <p className="text-muted-foreground text-sm">
+                Você ainda não possui cargos atribuídos. Entre em contato com o administrador.
+              </p>
+            )}
           </div>
 
           <Separator />
 
           {/* Security Info */}
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Segurança</h3>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>CPF: {user.cpf}</p>
-              <p>Último acesso: {user.ultimoAcesso}</p>
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              Informações de Segurança
+            </h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-sm text-muted-foreground">CPF</p>
+                <p className="font-medium">{formatCPF(profile.cpf)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Status da Conta</p>
+                <Badge
+                  variant={
+                    profile.status === 'active'
+                      ? 'default'
+                      : profile.status === 'pending'
+                      ? 'secondary'
+                      : 'outline'
+                  }
+                  className={
+                    profile.status === 'active'
+                      ? 'bg-success hover:bg-success/90'
+                      : profile.status === 'pending'
+                      ? 'bg-warning hover:bg-warning/90'
+                      : ''
+                  }
+                >
+                  {profile.status === 'active'
+                    ? 'Ativa'
+                    : profile.status === 'pending'
+                    ? 'Pendente'
+                    : 'Inativa'}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Dates */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              Histórico
+            </h3>
+            <div className="grid gap-4 sm:grid-cols-2 text-sm">
+              <div>
+                <p className="text-muted-foreground">Cadastrado em</p>
+                <p className="font-medium">{formatDate(profile.created_at)}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Última atualização</p>
+                <p className="font-medium">{formatDateTime(profile.updated_at)}</p>
+              </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <Button variant="outline">Alterar Telefone</Button>
-            <Button variant="destructive">Sair</Button>
-          </div>
+          <ProfileActions 
+            currentPhone={profile.phone} 
+            currentAvatarUrl={profile.avatar_url}
+            userName={profile.full_name}
+          />
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

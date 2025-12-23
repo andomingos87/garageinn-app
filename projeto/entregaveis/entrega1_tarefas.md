@@ -17,12 +17,12 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ## Autenticação
 
-- [ ] Configurar Supabase Auth
-- [ ] Criar tela de Login
-- [ ] Criar tela de Recuperação de Senha
-- [ ] Implementar middleware de proteção de rotas
-- [ ] Criação de usuário admin
-- [ ] Impersonação para usuário admin
+- [x] Configurar Supabase Auth
+- [x] Criar tela de Login
+- [x] Criar tela de Recuperação de Senha
+- [x] Implementar middleware de proteção de rotas
+- [x] Criação de usuário admin
+- [x] Impersonação para usuário admin
 
 ## Gestão de Usuários
 

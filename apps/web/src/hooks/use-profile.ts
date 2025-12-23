@@ -3,18 +3,22 @@
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "./use-auth";
 import { useEffect, useState } from "react";
+import type { UserRoleInfo } from "@/lib/supabase/database.types";
 
 interface Profile {
   id: string;
   full_name: string;
   email: string;
+  phone: string | null;
+  cpf: string | null;
   avatar_url: string | null;
-  status: string | null;
+  status: 'active' | 'inactive' | 'pending';
+  roles: UserRoleInfo[];
 }
 
 /**
- * Hook to get the current user's profile data.
- * Combines auth user with profile table data.
+ * Hook to get the current user's profile data with roles.
+ * Combines auth user with profile table data and user_roles.
  */
 export function useProfile() {
   const { user, isLoading: authLoading } = useAuth();
@@ -33,7 +37,26 @@ export function useProfile() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, email, avatar_url, status")
+        .select(`
+          id, 
+          full_name, 
+          email,
+          phone,
+          cpf, 
+          avatar_url, 
+          status,
+          user_roles (
+            role:roles (
+              id,
+              name,
+              is_global,
+              department:departments (
+                id,
+                name
+              )
+            )
+          )
+        `)
         .eq("id", user.id)
         .single();
 
@@ -44,11 +67,35 @@ export function useProfile() {
           id: user.id,
           full_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Usuário",
           email: user.email || "",
+          phone: null,
+          cpf: null,
           avatar_url: user.user_metadata?.avatar_url || null,
-          status: null,
+          status: 'pending',
+          roles: [],
         });
       } else {
-        setProfile(data);
+        // Transform roles data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const roles: UserRoleInfo[] = (data.user_roles || [])
+          .filter((ur: any) => ur.role !== null)
+          .map((ur: any) => ({
+            role_id: ur.role.id,
+            role_name: ur.role.name,
+            department_id: ur.role.department?.id ?? null,
+            department_name: ur.role.department?.name ?? null,
+            is_global: ur.role.is_global ?? false,
+          }));
+
+        setProfile({
+          id: data.id,
+          full_name: data.full_name,
+          email: data.email,
+          phone: data.phone,
+          cpf: data.cpf,
+          avatar_url: data.avatar_url,
+          status: (data.status || 'pending') as Profile['status'],
+          roles,
+        });
       }
 
       setIsLoading(false);
@@ -65,4 +112,3 @@ export function useProfile() {
     user,
   };
 }
-

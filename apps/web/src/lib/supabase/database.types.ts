@@ -134,11 +134,32 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_with_roles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      users_with_roles: {
+        Row: {
+          avatar_url: string | null
+          cpf: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string | null
+          phone: string | null
+          roles: Json | null
+          status: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
@@ -269,3 +290,32 @@ export type CompositeTypes<
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
+// ============================================
+// Custom Types for Application
+// ============================================
+
+/** Role information with department details */
+export interface UserRoleInfo {
+  role_id: string
+  role_name: string
+  department_id: string | null
+  department_name: string | null
+  is_global: boolean
+}
+
+/** User profile with roles */
+export interface UserWithRoles {
+  id: string
+  full_name: string
+  email: string
+  phone: string | null
+  cpf: string | null
+  avatar_url: string | null
+  status: 'active' | 'inactive' | 'pending'
+  created_at: string
+  updated_at: string
+  roles: UserRoleInfo[]
+}
+
+/** User status type */
+export type UserStatus = 'active' | 'inactive' | 'pending'

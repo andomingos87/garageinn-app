@@ -1,0 +1,1 @@
+Valide essas tarefas, vendo se foram implementadas e teste-as.
