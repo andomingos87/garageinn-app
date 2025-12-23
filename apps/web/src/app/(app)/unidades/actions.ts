@@ -463,3 +463,109 @@ export async function getUnitMetrics(unitId: string): Promise<UnitMetrics> {
   }
 }
 
+// ============================================
+// Unit History (Audit Log)
+// ============================================
+
+export interface UnitHistoryEntry {
+  id: string
+  action: string
+  user_name: string | null
+  user_avatar: string | null
+  changes: {
+    field: string
+    old_value: string | null
+    new_value: string | null
+  }[]
+  created_at: string
+}
+
+/**
+ * Busca histórico de alterações de uma unidade (audit log)
+ */
+export async function getUnitHistory(unitId: string): Promise<UnitHistoryEntry[]> {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('audit_logs')
+    .select(`
+      id,
+      action,
+      old_data,
+      new_data,
+      created_at,
+      user:profiles!audit_logs_user_id_fkey (
+        full_name,
+        avatar_url
+      )
+    `)
+    .eq('entity_type', 'unit')
+    .eq('entity_id', unitId)
+    .order('created_at', { ascending: false })
+    .limit(20)
+  
+  if (error) {
+    console.error('Error fetching unit history:', error)
+    return []
+  }
+  
+  // Map field names to friendly labels
+  const fieldLabels: Record<string, string> = {
+    name: 'Nome',
+    code: 'Código',
+    address: 'Endereço',
+    city: 'Cidade',
+    state: 'Estado',
+    zip_code: 'CEP',
+    phone: 'Telefone',
+    email: 'Email',
+    capacity: 'Capacidade',
+    status: 'Status',
+    cnpj: 'CNPJ',
+    neighborhood: 'Bairro',
+    region: 'Região',
+    administrator: 'Administradora',
+    supervisor_name: 'Supervisor',
+  }
+  
+  // Fields to ignore in change detection (internal/system fields)
+  const ignoredFields = ['id', 'created_at', 'updated_at']
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data || []).map((entry: any) => {
+    const changes: UnitHistoryEntry['changes'] = []
+    
+    if (entry.action === 'unit.update' && entry.old_data && entry.new_data) {
+      // Detect changed fields
+      for (const key of Object.keys(entry.new_data)) {
+        if (ignoredFields.includes(key)) continue
+        
+        const oldVal = entry.old_data[key]
+        const newVal = entry.new_data[key]
+        
+        // Compare values (handle null/undefined)
+        if (oldVal !== newVal) {
+          changes.push({
+            field: fieldLabels[key] || key,
+            old_value: oldVal?.toString() || null,
+            new_value: newVal?.toString() || null,
+          })
+        }
+      }
+    } else if (entry.action === 'unit.insert') {
+      changes.push({ field: 'Criação', old_value: null, new_value: 'Unidade criada' })
+    } else if (entry.action === 'unit.delete') {
+      changes.push({ field: 'Exclusão', old_value: null, new_value: 'Unidade excluída' })
+    }
+    
+    return {
+      id: entry.id,
+      action: entry.action,
+      user_name: entry.user?.full_name || 'Sistema',
+      user_avatar: entry.user?.avatar_url || null,
+      changes,
+      created_at: entry.created_at,
+    }
+  })
+}
+

@@ -19,10 +19,11 @@ import {
   MapPinned,
   Briefcase,
 } from 'lucide-react'
-import { checkIsAdmin, getUnitById, getUnitStaff, getUnitMetrics } from '../actions'
+import { checkIsAdmin, getUnitById, getUnitStaff, getUnitMetrics, getUnitHistory } from '../actions'
 import { UnitStatusBadge } from '../components/unit-status-badge'
 import { UnitStatusActions } from './components/unit-status-actions'
 import { UnitMetricsCard } from './components/unit-metrics'
+import { UnitHistoryCard } from './components/unit-history'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -36,10 +37,11 @@ export default async function UnitDetailsPage({ params }: PageProps) {
     redirect('/')
   }
 
-  const [unit, staff, metrics] = await Promise.all([
+  const [unit, staff, metrics, history] = await Promise.all([
     getUnitById(id),
     getUnitStaff(id),
     getUnitMetrics(id),
+    getUnitHistory(id),
   ])
 
   if (!unit) {
@@ -275,6 +277,9 @@ export default async function UnitDetailsPage({ params }: PageProps) {
               )}
             </CardContent>
           </Card>
+
+          {/* History (Audit Log) */}
+          <UnitHistoryCard history={history} />
         </div>
 
         {/* Sidebar */}

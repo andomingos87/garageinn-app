@@ -30,7 +30,7 @@ related_agents:
 |---|--------|--------|------------|---------------------|
 | 1 | Adicionar campo de email na unidade | ✅ Concluída | Baixa | Migration, `unit-form.tsx`, `database.types.ts` |
 | 2 | Implementar métricas da unidade | ✅ Concluída | Média | `unit-metrics.tsx`, `actions.ts` |
-| 3 | Histórico de alterações (audit log) | ⏳ Pendente | Alta | `unit-history.tsx`, `audit_logs` table |
+| 3 | Histórico de alterações (audit log) | ✅ Concluída | Alta | `unit-history.tsx`, `audit_logs` table |
 | 4 | Vincular supervisores após importar | ⏳ Pendente | Média | `actions.ts`, função de vinculação |
 
 ---
@@ -566,10 +566,10 @@ export function UnitHistoryCard({ history }: UnitHistoryCardProps) {
 - Renderizar card de histórico na seção principal (abaixo da equipe)
 
 ### Critérios de Aceite
-- [ ] Trigger de auditoria registra INSERT/UPDATE/DELETE
-- [ ] Histórico exibe últimas 20 alterações
-- [ ] Cada entrada mostra usuário, data, ação e campos alterados
-- [ ] RLS permite apenas admins verem o histórico
+- [x] Trigger de auditoria registra INSERT/UPDATE/DELETE
+- [x] Histórico exibe últimas 20 alterações
+- [x] Cada entrada mostra usuário, data, ação e campos alterados
+- [x] RLS permite apenas admins verem o histórico
 
 ---
 
