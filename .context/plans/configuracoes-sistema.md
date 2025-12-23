@@ -44,7 +44,7 @@ related_agents:
 | Unidades | `/configuracoes/unidades` | ✅ Redirect para `/unidades` | Média |
 | Checklists | `/configuracoes/checklists` | ✅ Redirect para `/checklists/configurar` | Baixa |
 | Chamados | `/configuracoes/chamados` | ✅ Implementado | Alta |
-| Permissões | `/configuracoes/permissoes` | ❌ Não existe | Alta |
+| Permissões | `/configuracoes/permissoes` | ✅ Implementado (read-only) | Alta |
 | Sistema | `/configuracoes/sistema` | ❌ Não existe | Baixa |
 
 ## Análise do Banco de Dados
@@ -191,11 +191,11 @@ configuracoes/
 **Objetivo:** Interface visual para gerenciar permissões por cargo
 
 **Funcionalidades:**
-- [ ] Matriz de permissões: cargos (linhas) x permissões (colunas)
-- [ ] Visualizar permissões atuais de cada cargo
-- [ ] Editar permissões (toggle on/off)
-- [ ] Filtrar por departamento
-- [ ] Destacar cargos globais (admin)
+- [x] Matriz de permissões: cargos (linhas) x permissões (colunas)
+- [x] Visualizar permissões atuais de cada cargo
+- [ ] Editar permissões (toggle on/off) — *Fase 2: requer migração para banco*
+- [x] Filtrar por departamento
+- [x] Destacar cargos globais (admin)
 
 **Desafio técnico:** Permissões estão hardcoded em `permissions.ts`. Opções:
 1. **Manter hardcoded** - Interface apenas visualiza, edição requer deploy
@@ -370,12 +370,12 @@ export async function getDepartments() {
 - [x] Testar fluxo completo
 
 ### Tarefa 3: Permissões
-- [ ] Criar estrutura de pastas
-- [ ] Implementar `actions.ts` (leitura)
-- [ ] Implementar matriz de permissões
-- [ ] Implementar filtro por departamento
-- [ ] Destacar cargos globais
-- [ ] Testar visualização
+- [x] Criar estrutura de pastas
+- [x] Implementar `actions.ts` (leitura)
+- [x] Implementar matriz de permissões
+- [x] Implementar filtro por departamento
+- [x] Destacar cargos globais
+- [x] Testar visualização
 
 ### Tarefa 4: Checklists
 - [x] Implementar redirect para `/checklists/configurar`
