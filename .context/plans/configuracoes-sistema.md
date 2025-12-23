@@ -41,7 +41,7 @@ related_agents:
 | Módulo | Rota | Status | Prioridade |
 |--------|------|--------|------------|
 | Departamentos e Cargos | `/configuracoes/departamentos` | ✅ Implementado | Alta |
-| Unidades | `/configuracoes/unidades` | ❌ Não existe | Média |
+| Unidades | `/configuracoes/unidades` | ✅ Redirect para `/unidades` | Média |
 | Checklists | `/configuracoes/checklists` | ⚠️ Redirecionar para `/checklists/configurar` | Baixa |
 | Chamados | `/configuracoes/chamados` | ❌ Não existe | Alta |
 | Permissões | `/configuracoes/permissoes` | ❌ Não existe | Alta |
@@ -131,14 +131,17 @@ configuracoes/
 **Objetivo:** Configurações específicas de unidades (não CRUD de unidades, que já existe em `/unidades`)
 
 **Funcionalidades:**
-- [ ] Configurar templates de checklist padrão por unidade
-- [ ] Configurar horários de funcionamento
-- [ ] Definir supervisores de cobertura
-- [ ] Configurações de notificação por unidade
+- [x] Configurar templates de checklist padrão por unidade (via `unit_checklist_templates`)
+- [x] Configurar horários de funcionamento (dados na tabela `units`)
+- [x] Definir supervisores de cobertura (via `user_units.is_coverage`)
+- [x] Configurações de notificação por unidade (gerenciadas em `/unidades/[id]`)
 
-**Decisão:** Pode ser um redirect para `/unidades` com tab de configurações, ou página separada para configurações globais de unidades.
+**Decisão:** ✅ Implementado como redirect para `/unidades` - as configurações específicas de cada unidade são gerenciadas na página de detalhes da unidade.
 
-**Alternativa simplificada:** Redirecionar para `/unidades` com filtro de configurações avançadas.
+**Implementação:** Redirect simples para `/unidades` pois todas as funcionalidades já existem:
+- Templates de checklist: tabela `unit_checklist_templates` + página `/checklists/configurar`
+- Equipe e supervisores: página `/unidades/[id]` com listagem de equipe vinculada
+- Edição de dados: página `/unidades/[id]/editar`
 
 ---
 
@@ -378,8 +381,8 @@ export async function getDepartments() {
 - [ ] Implementar redirect para `/checklists/configurar`
 
 ### Tarefa 5: Unidades
-- [ ] Avaliar escopo real necessário
-- [ ] Implementar conforme decisão
+- [x] Avaliar escopo real necessário
+- [x] Implementar conforme decisão (redirect para `/unidades`)
 
 ### Tarefa 6: Sistema
 - [ ] Criar migration para `system_settings`
