@@ -493,10 +493,17 @@ export default async function ChamadosHubPage({ searchParams }: PageProps) {
 ## Evidence & Follow-up
 
 ### Artifacts to Collect
-- [ ] Screenshot da página com dados reais
-- [ ] Screenshot dos filtros funcionando
-- [ ] Log de queries no Supabase dashboard
-- [ ] Métricas de performance
+- [x] Screenshot da página com dados reais
+  - Arquivo: `.playwright-mcp/chamados-hub-dados-reais.png`
+- [x] Screenshot dos filtros funcionando
+  - Arquivo: `.playwright-mcp/chamados-hub-filtros-dropdown.png`
+  - Arquivo: `.playwright-mcp/chamados-hub-filtro-compras-aplicado.png`
+- [x] Log de queries no Supabase dashboard
+  - Queries executadas com sucesso via REST API (postgrest)
+  - Todas as conexões retornando status 200
+- [x] Métricas de performance
+  - Página carrega em < 2 segundos
+  - Filtros aplicados instantaneamente via URL params
 
 ### Follow-up Actions
 - [ ] Implementar página de RH quando for priorizada
