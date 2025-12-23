@@ -15,6 +15,7 @@ Welcome to the repository knowledge base. Start with the project overview, then 
 
 ## Guias de Usuário
 - [Checklists - Guia do Usuário](./checklists-guia-usuario.md)
+- [Chamados de Manutenção - Guia do Usuário](./chamados-manutencao-guia-usuario.md)
 
 ## Repository Snapshot
 - `projeto/`

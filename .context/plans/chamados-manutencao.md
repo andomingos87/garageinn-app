@@ -1271,9 +1271,9 @@ export async function getManutencaoDepartmentMembers() {
 
 ### Follow-up Actions
 - [x] Atualizar `entrega1_tarefas.md` marcando itens 78-80 como concluídos
-- [ ] Atualizar `README.md` do plans com status
+- [x] Atualizar `README.md` do plans com status
 - [x] Preparar dados de seed (assuntos de Manutenção)
-- [ ] Documentar fluxo de chamados para usuários
+- [x] Documentar fluxo de chamados para usuários
 
 ---
 
