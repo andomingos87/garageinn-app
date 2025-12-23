@@ -131,13 +131,10 @@ export async function getMaintenanceTickets(filters?: TicketFilters) {
   const limit = filters?.limit || 20
   const offset = (page - 1) * limit
   
-  const manutencaoDept = await getManutencaoDepartment()
-  if (!manutencaoDept) return { data: [], count: 0, page, limit }
-  
+  // Use the maintenance-specific view that includes maintenance details
   let query = supabase
-    .from('tickets_with_details')
+    .from('tickets_maintenance_with_details')
     .select('*', { count: 'exact' })
-    .eq('department_id', manutencaoDept.id)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
   
@@ -159,6 +156,10 @@ export async function getMaintenanceTickets(filters?: TicketFilters) {
   
   if (filters?.assigned_to && filters.assigned_to !== 'all') {
     query = query.eq('assigned_to_id', filters.assigned_to)
+  }
+  
+  if (filters?.maintenance_type && filters.maintenance_type !== 'all') {
+    query = query.eq('maintenance_type', filters.maintenance_type)
   }
   
   if (filters?.search) {
@@ -227,8 +228,9 @@ export async function getMaintenanceStats(): Promise<TicketStats> {
 export async function getMaintenanceTicketById(ticketId: string) {
   const supabase = await createClient()
   
+  // Use the maintenance-specific view that includes maintenance details
   const { data, error } = await supabase
-    .from('tickets_with_details')
+    .from('tickets_maintenance_with_details')
     .select('*')
     .eq('id', ticketId)
     .single()

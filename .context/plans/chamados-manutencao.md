@@ -40,7 +40,7 @@ related_agents:
 |---|--------|--------|---------------------|
 | 1 | Criar modelo de dados específico (migrations) | ✅ Concluída | Migrations Supabase, `database.types.ts` |
 | 2 | Criar tela de abertura de chamado de Manutenção | ✅ Concluída | `apps/web/src/app/(app)/chamados/manutencao/novo/` |
-| 3 | Criar tela de listagem de chamados de Manutenção | ⏳ Pendente | `apps/web/src/app/(app)/chamados/manutencao/page.tsx` |
+| 3 | Criar tela de listagem de chamados de Manutenção | ✅ Concluída | `apps/web/src/app/(app)/chamados/manutencao/page.tsx` |
 | 4 | Implementar fluxo de execução do chamado de Manutenção | ⏳ Pendente | `apps/web/src/app/(app)/chamados/manutencao/[ticketId]/` |
 | 5 | Implementar triagem e priorização | ⏳ Pendente | `actions.ts`, `triage-dialog.tsx`, `ticket-actions.tsx` |
 
@@ -816,12 +816,12 @@ export async function getMaintenanceStats() {
 - Link para detalhes
 
 ### Critérios de Aceite
-- [ ] Listagem carrega corretamente
-- [ ] Filtros funcionam (incluindo filtro por tipo de manutenção)
-- [ ] Paginação funcional
-- [ ] Busca por número ou título
-- [ ] Visibilidade respeitada (RLS)
-- [ ] Responsivo em mobile
+- [x] Listagem carrega corretamente
+- [x] Filtros funcionam (incluindo filtro por tipo de manutenção)
+- [x] Paginação funcional
+- [x] Busca por número ou título
+- [x] Visibilidade respeitada (RLS)
+- [x] Responsivo em mobile
 
 ---
 
