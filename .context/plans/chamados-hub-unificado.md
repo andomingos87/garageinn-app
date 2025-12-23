@@ -228,13 +228,19 @@ export async function getUnits() {
 ```
 
 2. Verificar índices no banco de dados:
-   - Índice em `tickets.department_id`
-   - Índice em `tickets.status`
-   - Índice em `tickets.created_at`
-   - Índice em `tickets.unit_id`
+   - [x] Índice em `tickets.department_id` (`idx_tickets_department_id`)
+   - [x] Índice em `tickets.status` (`idx_tickets_status`)
+   - [x] Índice em `tickets.created_at` (`idx_tickets_created_at` DESC)
+   - [x] Índice em `tickets.unit_id` (`idx_tickets_unit_id`)
+
+**Validação realizada:**
+- Query `getHubTickets` testada: retorna chamados com todos os campos
+- Query `getHubStats` testada: contagem por status funcionando
+- Query `getDepartments` testada: retorna Compras, Manutenção, RH
+- Query `getUnits` testada: retorna unidades ativas
 
 **Commit Checkpoint**
-- `git commit -m "feat(chamados): add server actions for hub page"` [pending]
+- `git commit -m "feat(chamados): add server actions for hub page"` [done]
 
 ---
 
