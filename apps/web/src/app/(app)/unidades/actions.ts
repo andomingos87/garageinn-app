@@ -569,3 +569,291 @@ export async function getUnitHistory(unitId: string): Promise<UnitHistoryEntry[]
   })
 }
 
+// ============================================
+// Supervisor Linking
+// ============================================
+
+export interface SupervisorLinkResult {
+  unitId: string
+  unitName: string
+  supervisorName: string
+  status: 'linked' | 'not_found' | 'already_linked' | 'error'
+  userId?: string
+  userName?: string
+  error?: string
+}
+
+export interface SupervisorLinkPreview {
+  total: number
+  canLink: number
+  notFound: number
+  alreadyLinked: number
+  results: SupervisorLinkResult[]
+}
+
+/**
+ * Preview dos vínculos que serão criados (sem modificar dados)
+ */
+export async function previewSupervisorLinks(): Promise<SupervisorLinkPreview> {
+  const supabase = await createClient()
+  
+  // Buscar unidades com supervisor_name preenchido
+  const { data: unitsWithSupervisor, error: unitsError } = await supabase
+    .from('units')
+    .select('id, name, supervisor_name')
+    .not('supervisor_name', 'is', null)
+    .neq('supervisor_name', '')
+    .order('name')
+  
+  if (unitsError) throw new Error(`Erro ao buscar unidades: ${unitsError.message}`)
+  
+  // Buscar todos os profiles para match
+  const { data: profiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+  
+  if (profilesError) throw new Error(`Erro ao buscar profiles: ${profilesError.message}`)
+  
+  // Buscar vínculos existentes
+  const { data: existingLinks } = await supabase
+    .from('user_units')
+    .select('user_id, unit_id')
+  
+  // Criar mapa de nomes para IDs e nomes (normalizado para comparação)
+  const profileMap = new Map<string, { id: string, name: string }>()
+  profiles?.forEach(p => {
+    profileMap.set(p.full_name.toLowerCase().trim(), { id: p.id, name: p.full_name })
+  })
+  
+  // Criar set de vínculos existentes
+  const existingLinksSet = new Set<string>()
+  existingLinks?.forEach(link => {
+    existingLinksSet.add(`${link.user_id}-${link.unit_id}`)
+  })
+  
+  const results: SupervisorLinkResult[] = []
+  let canLink = 0, notFound = 0, alreadyLinked = 0
+  
+  for (const unit of unitsWithSupervisor || []) {
+    const supervisorNameNormalized = unit.supervisor_name!.toLowerCase().trim()
+    const profile = profileMap.get(supervisorNameNormalized)
+    
+    if (!profile) {
+      results.push({
+        unitId: unit.id,
+        unitName: unit.name,
+        supervisorName: unit.supervisor_name!,
+        status: 'not_found',
+      })
+      notFound++
+      continue
+    }
+    
+    // Verificar se já existe vínculo
+    if (existingLinksSet.has(`${profile.id}-${unit.id}`)) {
+      results.push({
+        unitId: unit.id,
+        unitName: unit.name,
+        supervisorName: unit.supervisor_name!,
+        status: 'already_linked',
+        userId: profile.id,
+        userName: profile.name,
+      })
+      alreadyLinked++
+      continue
+    }
+    
+    results.push({
+      unitId: unit.id,
+      unitName: unit.name,
+      supervisorName: unit.supervisor_name!,
+      status: 'linked', // Será "linked" quando executar
+      userId: profile.id,
+      userName: profile.name,
+    })
+    canLink++
+  }
+  
+  return {
+    total: unitsWithSupervisor?.length || 0,
+    canLink,
+    notFound,
+    alreadyLinked,
+    results,
+  }
+}
+
+/**
+ * Executa a vinculação de supervisores às unidades
+ */
+export async function linkSupervisorsFromImport(): Promise<{
+  total: number
+  linked: number
+  notFound: number
+  alreadyLinked: number
+  errors: number
+  results: SupervisorLinkResult[]
+}> {
+  const supabase = await createClient()
+  
+  // Buscar unidades com supervisor_name preenchido
+  const { data: unitsWithSupervisor, error: unitsError } = await supabase
+    .from('units')
+    .select('id, name, supervisor_name')
+    .not('supervisor_name', 'is', null)
+    .neq('supervisor_name', '')
+  
+  if (unitsError) throw new Error(`Erro ao buscar unidades: ${unitsError.message}`)
+  
+  // Buscar todos os profiles para match
+  const { data: profiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+  
+  if (profilesError) throw new Error(`Erro ao buscar profiles: ${profilesError.message}`)
+  
+  // Criar mapa de nomes para IDs (normalizado para comparação)
+  const profileMap = new Map<string, { id: string, name: string }>()
+  profiles?.forEach(p => {
+    profileMap.set(p.full_name.toLowerCase().trim(), { id: p.id, name: p.full_name })
+  })
+  
+  const results: SupervisorLinkResult[] = []
+  let linked = 0, notFound = 0, alreadyLinked = 0, errors = 0
+  
+  for (const unit of unitsWithSupervisor || []) {
+    const supervisorNameNormalized = unit.supervisor_name!.toLowerCase().trim()
+    const profile = profileMap.get(supervisorNameNormalized)
+    
+    if (!profile) {
+      results.push({
+        unitId: unit.id,
+        unitName: unit.name,
+        supervisorName: unit.supervisor_name!,
+        status: 'not_found',
+      })
+      notFound++
+      continue
+    }
+    
+    // Verificar se já existe vínculo
+    const { data: existing } = await supabase
+      .from('user_units')
+      .select('id')
+      .eq('user_id', profile.id)
+      .eq('unit_id', unit.id)
+      .maybeSingle()
+    
+    if (existing) {
+      results.push({
+        unitId: unit.id,
+        unitName: unit.name,
+        supervisorName: unit.supervisor_name!,
+        status: 'already_linked',
+        userId: profile.id,
+        userName: profile.name,
+      })
+      alreadyLinked++
+      continue
+    }
+    
+    // Criar vínculo (is_coverage = true para supervisores)
+    const { error: insertError } = await supabase
+      .from('user_units')
+      .insert({
+        user_id: profile.id,
+        unit_id: unit.id,
+        is_coverage: true,
+      })
+    
+    if (insertError) {
+      results.push({
+        unitId: unit.id,
+        unitName: unit.name,
+        supervisorName: unit.supervisor_name!,
+        status: 'error',
+        error: insertError.message,
+      })
+      errors++
+    } else {
+      results.push({
+        unitId: unit.id,
+        unitName: unit.name,
+        supervisorName: unit.supervisor_name!,
+        status: 'linked',
+        userId: profile.id,
+        userName: profile.name,
+      })
+      linked++
+    }
+  }
+  
+  revalidatePath('/unidades')
+  
+  return {
+    total: unitsWithSupervisor?.length || 0,
+    linked,
+    notFound,
+    alreadyLinked,
+    errors,
+    results,
+  }
+}
+
+/**
+ * Conta unidades com supervisor_name que precisam de atenção
+ * (sem match de usuário ou match sem vínculo criado)
+ */
+export async function countUnlinkedSupervisors(): Promise<number> {
+  const supabase = await createClient()
+  
+  // Buscar unidades com supervisor_name preenchido
+  const { data: unitsWithSupervisor } = await supabase
+    .from('units')
+    .select('id, supervisor_name')
+    .not('supervisor_name', 'is', null)
+    .neq('supervisor_name', '')
+  
+  if (!unitsWithSupervisor || unitsWithSupervisor.length === 0) return 0
+  
+  // Buscar todos os profiles para match
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+  
+  // Buscar vínculos existentes
+  const { data: existingLinks } = await supabase
+    .from('user_units')
+    .select('user_id, unit_id')
+  
+  // Criar mapa de nomes para IDs
+  const profileMap = new Map<string, string>()
+  profiles?.forEach(p => {
+    profileMap.set(p.full_name.toLowerCase().trim(), p.id)
+  })
+  
+  // Criar set de vínculos existentes
+  const existingLinksSet = new Set<string>()
+  existingLinks?.forEach(link => {
+    existingLinksSet.add(`${link.user_id}-${link.unit_id}`)
+  })
+  
+  // Contar unidades que precisam de atenção (não encontrado + pode vincular)
+  let needsAttention = 0
+  for (const unit of unitsWithSupervisor) {
+    const supervisorNameNormalized = unit.supervisor_name!.toLowerCase().trim()
+    const userId = profileMap.get(supervisorNameNormalized)
+    
+    if (!userId) {
+      // Supervisor não encontrado - precisa cadastrar usuário
+      needsAttention++
+    } else if (!existingLinksSet.has(`${userId}-${unit.id}`)) {
+      // Match encontrado mas não vinculado - pode vincular
+      needsAttention++
+    }
+    // Se já está vinculado, não conta
+  }
+  
+  return needsAttention
+}
+

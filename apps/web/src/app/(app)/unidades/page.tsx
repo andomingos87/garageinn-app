@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus, Upload } from 'lucide-react'
-import { getUnits, getUnitsStats, getCities, getRegions, checkIsAdmin } from './actions'
+import { Plus, Upload, Link2 } from 'lucide-react'
+import { getUnits, getUnitsStats, getCities, getRegions, checkIsAdmin, countUnlinkedSupervisors } from './actions'
 import { UnitsFilters, UnitsGrid, UnitsStatsCards } from './components'
 import type { UnitStatus } from '@/lib/supabase/database.types'
 
@@ -128,6 +128,9 @@ export default async function UnidadesPage({ searchParams }: PageProps) {
     redirect('/')
   }
 
+  // Check if there are supervisors that can be linked
+  const unlinkedSupervisorsCount = await countUnlinkedSupervisors()
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -139,6 +142,14 @@ export default async function UnidadesPage({ searchParams }: PageProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {unlinkedSupervisorsCount > 0 && (
+            <Button variant="outline" asChild>
+              <Link href="/unidades/vincular-supervisores">
+                <Link2 className="mr-2 h-4 w-4" />
+                Vincular Supervisores
+              </Link>
+            </Button>
+          )}
           <Button variant="outline" asChild>
             <Link href="/unidades/importar">
               <Upload className="mr-2 h-4 w-4" />

@@ -31,7 +31,7 @@ related_agents:
 | 1 | Adicionar campo de email na unidade | ✅ Concluída | Baixa | Migration, `unit-form.tsx`, `database.types.ts` |
 | 2 | Implementar métricas da unidade | ✅ Concluída | Média | `unit-metrics.tsx`, `actions.ts` |
 | 3 | Histórico de alterações (audit log) | ✅ Concluída | Alta | `unit-history.tsx`, `audit_logs` table |
-| 4 | Vincular supervisores após importar | ⏳ Pendente | Média | `actions.ts`, função de vinculação |
+| 4 | Vincular supervisores após importar | ✅ Concluída | Média | `actions.ts`, `vincular-supervisores/page.tsx` |
 
 ---
 
@@ -728,12 +728,12 @@ export async function linkSupervisorsFromImport(): Promise<{
 - Apenas visível se existirem unidades com `supervisor_name` não vinculado
 
 ### Critérios de Aceite
-- [ ] Função identifica unidades com supervisor_name
-- [ ] Match case-insensitive com full_name de profiles
-- [ ] Vínculo criado com is_coverage = true
-- [ ] Não duplica vínculos existentes
-- [ ] Relatório mostra resultado (linked/not_found/already_linked/errors)
-- [ ] Interface de preview antes de confirmar
+- [x] Função identifica unidades com supervisor_name
+- [x] Match case-insensitive com full_name de profiles
+- [x] Vínculo criado com is_coverage = true
+- [x] Não duplica vínculos existentes
+- [x] Relatório mostra resultado (linked/not_found/already_linked/errors)
+- [x] Interface de preview antes de confirmar
 
 ---
 
