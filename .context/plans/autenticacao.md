@@ -63,14 +63,14 @@ Configurar o Supabase Auth para funcionar com Next.js 15 App Router usando `@sup
   - `apps/web/src/lib/supabase/middleware.ts` — Helper para refresh de sessão
 
 #### 1.2 Configurar Supabase Auth no Dashboard
-- [ ] Acessar Supabase Dashboard → Authentication → Providers
-- [ ] Habilitar Email provider (já padrão)
-- [ ] Configurar Site URL: `http://localhost:3000` (dev) e URL de produção
-- [ ] Configurar Redirect URLs: `http://localhost:3000/auth/callback`
-- [ ] Configurar Email Templates em português:
-  - [ ] Confirmation Email (Magic Link)
-  - [ ] Reset Password Email
-  - [ ] Change Email Address
+- [x] Acessar Supabase Dashboard → Authentication → Providers
+- [x] Habilitar Email provider (já padrão)
+- [x] Configurar Site URL: `http://localhost:3000` (dev) e URL de produção
+- [x] Configurar Redirect URLs: `http://localhost:3000/auth/callback`
+- [x] Configurar Email Templates em português:
+  - [x] Confirmation Email (Magic Link) — `apps/web/email-templates/confirmation-email.html`
+  - [x] Reset Password Email — `apps/web/email-templates/reset-password-email.html`
+  - [x] Change Email Address — `apps/web/email-templates/change-email.html`
 
 #### 1.3 Criar Auth Callback Route
 - **Arquivo:** `apps/web/src/app/auth/callback/route.ts`
