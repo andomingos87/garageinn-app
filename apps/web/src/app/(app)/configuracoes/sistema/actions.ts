@@ -85,7 +85,7 @@ export async function getSystemSettings(): Promise<SystemSettingsMap> {
     }
   }
 
-  return settings as SystemSettingsMap
+  return settings as unknown as SystemSettingsMap
 }
 
 /**
