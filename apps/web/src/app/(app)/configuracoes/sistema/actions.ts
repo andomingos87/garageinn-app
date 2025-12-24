@@ -76,17 +76,16 @@ export async function getSystemSettings(): Promise<SystemSettingsMap> {
   }
 
   // Monta o objeto de configurações a partir dos dados
-  const settings: SystemSettingsMap = { ...DEFAULT_SETTINGS }
+  const settings = { ...DEFAULT_SETTINGS } as Record<string, unknown>
 
   for (const setting of data || []) {
-    const key = setting.key as keyof SystemSettingsMap
-    if (key in settings) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      settings[key] = setting.value as any
+    const key = setting.key
+    if (key in DEFAULT_SETTINGS) {
+      settings[key] = setting.value
     }
   }
 
-  return settings
+  return settings as SystemSettingsMap
 }
 
 /**

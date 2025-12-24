@@ -6,10 +6,10 @@ Este guia detalha o processo de deploy da aplicação GarageInn na plataforma Ve
 
 Antes de iniciar o deploy, certifique-se de ter:
 
-- [ ] Conta na [Vercel](https://vercel.com)
-- [ ] Conta no [GitHub](https://github.com) (ou GitLab/Bitbucket)
-- [ ] Projeto Supabase configurado e funcionando
-- [ ] Repositório Git com o código do projeto
+- [x] Conta na [Vercel](https://vercel.com)
+- [x] Conta no [GitHub](https://github.com) (ou GitLab/Bitbucket)
+- [x] Projeto Supabase configurado e funcionando
+- [x] Repositório Git com o código do projeto
 
 ## 🚀 Métodos de Deploy
 
