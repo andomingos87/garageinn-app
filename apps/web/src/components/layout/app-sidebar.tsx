@@ -36,7 +36,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   {
     title: "Início",
-    href: "/",
+    href: "/dashboard",
     icon: Home,
   },
   {
@@ -98,8 +98,8 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
     }
     return pathname.startsWith(href);
   };
@@ -127,7 +127,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border p-4">
-        <Link href="/" className="flex items-center">
+        <Link href="/dashboard" className="flex items-center">
           <div className="relative h-8 w-32">
             <Image
               src="/logo-garageinn.png"

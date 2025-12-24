@@ -117,7 +117,7 @@ export default function DepartamentosPage() {
           Você não tem permissão para acessar esta página.
         </p>
         <Button asChild>
-          <Link href="/">Voltar ao Início</Link>
+          <Link href="/dashboard">Voltar ao Início</Link>
         </Button>
       </div>
     )

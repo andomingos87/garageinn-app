@@ -24,7 +24,7 @@ export default function TicketNotFound() {
           </Link>
         </Button>
         <Button asChild>
-          <Link href="/" className="gap-2">
+          <Link href="/dashboard" className="gap-2">
             <Home className="h-4 w-4" />
             Ir para Home
           </Link>
