@@ -2508,3 +2508,116 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+// ============================================
+// Custom Types (não gerados automaticamente)
+// ============================================
+
+/**
+ * Status possíveis de um usuário
+ */
+export type UserStatus = 'active' | 'pending' | 'inactive'
+
+/**
+ * Status possíveis de uma unidade
+ */
+export type UnitStatus = 'active' | 'inactive'
+
+/**
+ * Unidade básica
+ */
+export interface Unit {
+  id: string
+  code: string
+  name: string
+  address: string
+  city: string | null
+  state: string | null
+  zip_code: string | null
+  neighborhood: string | null
+  phone: string | null
+  email: string | null
+  cnpj: string | null
+  capacity: number | null
+  region: string | null
+  administrator: string | null
+  supervisor_name: string | null
+  status: UnitStatus
+  created_at: string | null
+  updated_at: string | null
+}
+
+/**
+ * Membro da equipe de uma unidade
+ */
+export interface UnitStaffMember {
+  user_id: string
+  user_name: string
+  user_email: string
+  user_avatar: string | null
+  is_coverage: boolean
+  role_name: string | null
+  department_name: string | null
+}
+
+/**
+ * Unidade com contagem de equipe
+ */
+export interface UnitWithStaffCount extends Unit {
+  staff_count: number
+  staff?: UnitStaffMember[]
+}
+
+/**
+ * Informações de cargo de um usuário
+ */
+export interface UserRoleInfo {
+  role_id: string
+  role_name: string
+  department_id: string | null
+  department_name: string | null
+  is_global: boolean
+}
+
+/**
+ * Informações de unidade vinculada a um usuário
+ */
+export interface UserUnitInfo {
+  id: string
+  unit_id: string
+  unit_name: string
+  unit_code: string
+  is_coverage: boolean
+}
+
+/**
+ * Usuário com seus cargos
+ */
+export interface UserWithRoles {
+  id: string
+  full_name: string
+  email: string
+  phone: string | null
+  cpf: string | null
+  avatar_url: string | null
+  status: UserStatus
+  created_at: string
+  updated_at: string
+  roles: UserRoleInfo[]
+  units?: UserUnitInfo[]
+}
+
+/**
+ * Log de auditoria
+ */
+export interface AuditLog {
+  id: string
+  user_id: string | null
+  entity_type: string
+  entity_id: string
+  action: string
+  old_data: Json | null
+  new_data: Json | null
+  metadata: Json | null
+  created_at: string | null
+}

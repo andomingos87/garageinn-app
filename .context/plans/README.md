@@ -18,12 +18,13 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 5. [Checklists](./checklists.md)
 6. [Configuracoes Sistema](./configuracoes-sistema.md)
 7. [Dashboard Dados Reais](./dashboard-dados-reais.md)
-8. [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)
-9. [Gestao Unidades](./gestao-unidades.md)
-10. [Gestao Usuarios](./gestao-usuarios.md)
-11. [Gestao Usuarios Followups](./gestao-usuarios-followups.md)
-12. [Ui Design System Refinements](./ui-design-system-refinements.md)
-13. [Unidades Followups](./unidades-followups.md)
+8. [Deploy Bugfix](./deploy-bugfix.md)
+9. [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)
+10. [Gestao Unidades](./gestao-unidades.md)
+11. [Gestao Usuarios](./gestao-usuarios.md)
+12. [Gestao Usuarios Followups](./gestao-usuarios-followups.md)
+13. [Ui Design System Refinements](./ui-design-system-refinements.md)
+14. [Unidades Followups](./unidades-followups.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.
