@@ -91,8 +91,8 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ## UI/Design System (Refinamentos)
 
-- [ ] Ajustar logo na sidebar (remover texto "GAPP", tornar logo proporcional)
-- [ ] Corrigir cor do componente Skeleton (vermelho → cinza suave)
+- [x] Ajustar logo na sidebar (remover texto "GAPP", tornar logo proporcional)
+- [x] Corrigir cor do componente Skeleton (vermelho → cinza suave)
 
 ## Dashboard
 
@@ -117,11 +117,22 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 > A página `/configuracoes` lista 6 módulos. Verificar quais estão funcionais.
 
-- [ ] Testar e documentar estado atual da página "Configurações"
-- [ ] Verificar/implementar sub-página: Departamentos e Cargos
-- [ ] Verificar/implementar sub-página: Unidades (configurações)
-- [ ] Verificar/implementar sub-página: Checklists (já existe em `/checklists/configurar`)
-- [ ] Verificar/implementar sub-página: Chamados (tipos e fluxos)
-- [ ] Verificar/implementar sub-página: Permissões
-- [ ] Verificar/implementar sub-página: Sistema (configurações gerais)
+- [x] Testar e documentar estado atual da página "Configurações"
+- [x] Verificar/implementar sub-página: Departamentos e Cargos
+- [x] Verificar/implementar sub-página: Unidades (configurações)
+- [x] Verificar/implementar sub-página: Checklists (já existe em `/checklists/configurar`)
+- [x] Verificar/implementar sub-página: Chamados (tipos e fluxos)
+- [x] Verificar/implementar sub-página: Permissões
+- [x] Verificar/implementar sub-página: Sistema (configurações gerais)
+
+## Gestão Avançada de Usuários (Admin)
+
+> Funcionalidades administrativas adicionais para gerenciamento de usuários.
+
+- [ ] Implementar exclusão de usuário (soft delete)
+- [ ] Adicionar confirmação antes de excluir usuário
+- [ ] Implementar reenvio de email de convite para usuários pendentes
+- [ ] Permitir edição de email do usuário (para reenvio de convite)
+- [ ] Validar unicidade do novo email antes de salvar
+- [ ] Adicionar indicador visual de status do convite (pendente, aceito, expirado)
 

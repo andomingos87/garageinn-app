@@ -2,14 +2,17 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { UserWithRoles, UserRoleInfo, UserStatus, UserUnitInfo, AuditLog } from '@/lib/supabase/database.types'
+import type { UserWithRoles, UserRoleInfo, UserStatus, UserUnitInfo, AuditLog, InvitationStatus } from '@/lib/supabase/database.types'
+import { getInvitationStatus } from '@/lib/supabase/database.types'
 
 export interface UsersFilters {
   search?: string
   status?: UserStatus | 'all'
+  invitationStatus?: InvitationStatus | 'all'
   departmentId?: string
   page?: number
   limit?: number
+  includeDeleted?: boolean
 }
 
 export interface PaginatedUsers {
@@ -60,6 +63,9 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
       status,
       created_at,
       updated_at,
+      deleted_at,
+      invitation_sent_at,
+      invitation_expires_at,
       user_roles (
         role:roles (
           id,
@@ -83,6 +89,11 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
     `, { count: 'exact' })
     .order('full_name')
     .range(offset, offset + limit - 1)
+
+  // Por padrão, não incluir usuários deletados
+  if (!filters?.includeDeleted) {
+    query = query.is('deleted_at', null)
+  }
 
   // Filtro de busca
   if (filters?.search) {
@@ -134,6 +145,9 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
       status: (profile.status || 'pending') as UserStatus,
       created_at: profile.created_at || '',
       updated_at: profile.updated_at || '',
+      deleted_at: profile.deleted_at || null,
+      invitation_sent_at: profile.invitation_sent_at || null,
+      invitation_expires_at: profile.invitation_expires_at || null,
       roles,
       units,
     }
@@ -144,6 +158,14 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
     users = users.filter(user => 
       user.roles.some(r => r.department_id === filters.departmentId)
     )
+  }
+
+  // Filtrar por status do convite se necessário
+  if (filters?.invitationStatus && filters.invitationStatus !== 'all') {
+    users = users.filter(user => {
+      const status = getInvitationStatus(user)
+      return status === filters.invitationStatus
+    })
   }
 
   const total = count || 0
@@ -248,6 +270,9 @@ export async function getUserById(userId: string): Promise<UserWithRoles | null>
       status,
       created_at,
       updated_at,
+      deleted_at,
+      invitation_sent_at,
+      invitation_expires_at,
       user_roles (
         role:roles (
           id,
@@ -289,6 +314,9 @@ export async function getUserById(userId: string): Promise<UserWithRoles | null>
     status: (profile.status || 'pending') as UserStatus,
     created_at: profile.created_at || '',
     updated_at: profile.updated_at || '',
+    deleted_at: profile.deleted_at || null,
+    invitation_sent_at: profile.invitation_sent_at || null,
+    invitation_expires_at: profile.invitation_expires_at || null,
     roles,
   }
 }
@@ -518,5 +546,230 @@ export async function getUserAuditLogs(userId: string): Promise<AuditLog[]> {
   }
 
   return (data || []) as AuditLog[]
+}
+
+// ============================================
+// Funções de Gestão Avançada de Usuários
+// ============================================
+
+/**
+ * Soft delete de um usuário (não remove fisicamente, apenas marca como excluído)
+ */
+export async function softDeleteUser(userId: string) {
+  const supabase = await createClient()
+
+  // Usar a função SQL que já cuida de tudo
+  const { data, error } = await supabase.rpc('soft_delete_user', {
+    p_user_id: userId,
+  })
+
+  if (error) {
+    console.error('Error soft deleting user:', error)
+    return { error: error.message }
+  }
+
+  if (!data) {
+    return { error: 'Usuário não encontrado ou já foi excluído' }
+  }
+
+  revalidatePath('/usuarios')
+  return { success: true }
+}
+
+/**
+ * Restaura um usuário excluído (soft delete)
+ */
+export async function restoreDeletedUser(userId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.rpc('restore_deleted_user', {
+    p_user_id: userId,
+  })
+
+  if (error) {
+    console.error('Error restoring user:', error)
+    return { error: error.message }
+  }
+
+  if (!data) {
+    return { error: 'Usuário não encontrado ou não está excluído' }
+  }
+
+  revalidatePath('/usuarios')
+  return { success: true }
+}
+
+/**
+ * Reenvia o convite para um usuário pendente
+ */
+export async function resendInvitation(userId: string) {
+  const supabase = await createClient()
+
+  // Buscar dados do usuário
+  const { data: user, error: userError } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, status, deleted_at')
+    .eq('id', userId)
+    .single()
+
+  if (userError || !user) {
+    return { error: 'Usuário não encontrado' }
+  }
+
+  if (user.deleted_at) {
+    return { error: 'Não é possível reenviar convite para um usuário excluído' }
+  }
+
+  if (user.status === 'active') {
+    return { error: 'Usuário já está ativo, não precisa de convite' }
+  }
+
+  // Obter o token do usuário atual para passar para a Edge Function
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  if (!session?.access_token) {
+    return { error: 'Sessão expirada. Por favor, faça login novamente.' }
+  }
+
+  // Chamar a Edge Function para reenviar o convite
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const response = await fetch(`${supabaseUrl}/functions/v1/resend-invite`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      email: user.email,
+      full_name: user.full_name,
+    }),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    console.error('Erro ao reenviar convite:', data)
+    return { error: data.error || 'Erro ao reenviar convite' }
+  }
+
+  // Atualizar timestamps do convite
+  const now = new Date()
+  const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 dias
+
+  await supabase
+    .from('profiles')
+    .update({
+      invitation_sent_at: now.toISOString(),
+      invitation_expires_at: expiresAt.toISOString(),
+      updated_at: now.toISOString(),
+    })
+    .eq('id', userId)
+
+  revalidatePath('/usuarios')
+  revalidatePath(`/usuarios/${userId}`)
+  return { success: true, message: 'Convite reenviado com sucesso!' }
+}
+
+/**
+ * Atualiza o email de um usuário
+ * IMPORTANTE: Isso também atualiza o email no auth.users
+ */
+export async function updateUserEmail(userId: string, newEmail: string) {
+  const supabase = await createClient()
+
+  // Validar email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(newEmail)) {
+    return { error: 'Email inválido' }
+  }
+
+  // Verificar se o email já está em uso
+  const { data: existingUser } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', newEmail)
+    .neq('id', userId)
+    .single()
+
+  if (existingUser) {
+    return { error: 'Este email já está em uso por outro usuário' }
+  }
+
+  // Obter o token do usuário atual para passar para a Edge Function
+  const { data: { session } } = await supabase.auth.getSession()
+  
+  if (!session?.access_token) {
+    return { error: 'Sessão expirada. Por favor, faça login novamente.' }
+  }
+
+  // Chamar a Edge Function para atualizar o email no auth
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const response = await fetch(`${supabaseUrl}/functions/v1/update-user-email`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({
+      user_id: userId,
+      new_email: newEmail,
+    }),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    console.error('Erro ao atualizar email:', data)
+    return { error: data.error || 'Erro ao atualizar email' }
+  }
+
+  revalidatePath('/usuarios')
+  revalidatePath(`/usuarios/${userId}`)
+  return { success: true, message: 'Email atualizado com sucesso!' }
+}
+
+/**
+ * Busca estatísticas de usuários incluindo contagem por status de convite
+ */
+export async function getUsersStatsExtended(): Promise<UsersStats & { 
+  invitationPending: number
+  invitationExpired: number 
+}> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('status, invitation_sent_at, invitation_expires_at, deleted_at')
+    .is('deleted_at', null)
+
+  if (error) {
+    console.error('Error fetching user stats:', error)
+    return { total: 0, active: 0, pending: 0, inactive: 0, invitationPending: 0, invitationExpired: 0 }
+  }
+
+  const now = new Date()
+  const stats = (data || []).reduce(
+    (acc, profile) => {
+      acc.total++
+      if (profile.status === 'active') acc.active++
+      else if (profile.status === 'pending') {
+        acc.pending++
+        // Verificar status do convite
+        if (profile.invitation_sent_at) {
+          if (profile.invitation_expires_at && new Date(profile.invitation_expires_at) < now) {
+            acc.invitationExpired++
+          } else {
+            acc.invitationPending++
+          }
+        }
+      }
+      else if (profile.status === 'inactive') acc.inactive++
+      return acc
+    },
+    { total: 0, active: 0, pending: 0, inactive: 0, invitationPending: 0, invitationExpired: 0 }
+  )
+
+  return stats
 }
 

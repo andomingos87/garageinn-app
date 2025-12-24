@@ -3,4 +3,8 @@ export { UsersFilters } from './users-filters'
 export { UserStatsCards } from './user-stats-cards'
 export { UnitSelector } from './unit-selector'
 export { UsersPagination } from './users-pagination'
+export { InvitationStatusBadge } from './invitation-status-badge'
+export { DeleteUserDialog } from './delete-user-dialog'
+export { EditEmailDialog } from './edit-email-dialog'
+export { ResendInviteDialog } from './resend-invite-dialog'
 

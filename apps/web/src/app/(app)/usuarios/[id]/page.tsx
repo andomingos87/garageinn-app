@@ -12,13 +12,14 @@ import {
   Building2,
   Calendar,
   Pencil,
-  UserCheck,
-  UserX,
   Shield,
+  Send,
 } from 'lucide-react'
 import { getUserById, checkIsAdmin } from '../actions'
 import { UserStatusActions } from './components/user-status-actions'
+import { InvitationStatusBadge } from '../components/invitation-status-badge'
 import type { UserStatus } from '@/lib/supabase/database.types'
+import { getInvitationStatus } from '@/lib/supabase/database.types'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -77,6 +78,7 @@ export default async function UserDetailPage({ params }: PageProps) {
   }
 
   const statusConfig = getStatusConfig(user.status)
+  const invitationStatus = getInvitationStatus(user)
 
   // Agrupar roles por tipo
   const globalRoles = user.roles.filter((r) => r.is_global)
@@ -126,11 +128,16 @@ export default async function UserDetailPage({ params }: PageProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <CardTitle className="text-2xl">{user.full_name}</CardTitle>
                   <Badge variant="secondary" className={statusConfig.className}>
                     {statusConfig.label}
                   </Badge>
+                  <InvitationStatusBadge
+                    status={invitationStatus}
+                    sentAt={user.invitation_sent_at}
+                    expiresAt={user.invitation_expires_at}
+                  />
                 </div>
                 <p className="text-muted-foreground">{user.email}</p>
               </div>
@@ -230,7 +237,13 @@ export default async function UserDetailPage({ params }: PageProps) {
               <CardTitle className="text-base">Ações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <UserStatusActions userId={user.id} currentStatus={user.status} />
+              <UserStatusActions 
+                userId={user.id} 
+                userName={user.full_name}
+                userEmail={user.email}
+                currentStatus={user.status}
+                invitationStatus={invitationStatus}
+              />
             </CardContent>
           </Card>
 

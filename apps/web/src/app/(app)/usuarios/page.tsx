@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UserPlus } from 'lucide-react'
-import { getUsers, getUsersStats, getDepartments, checkIsAdmin } from './actions'
+import { getUsers, getUsersStatsExtended, getDepartments, checkIsAdmin } from './actions'
 import { UsersTable, UsersFilters, UserStatsCards, UsersPagination } from './components'
 import type { UserStatus } from '@/lib/supabase/database.types'
 import { redirect } from 'next/navigation'
@@ -32,7 +32,7 @@ async function UsersContent({ searchParams }: { searchParams: PageProps['searchP
 
   const [paginatedUsers, stats, departments] = await Promise.all([
     getUsers(filters),
-    getUsersStats(),
+    getUsersStatsExtended(),
     getDepartments(),
   ])
 

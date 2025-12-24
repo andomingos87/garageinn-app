@@ -2603,8 +2603,39 @@ export interface UserWithRoles {
   status: UserStatus
   created_at: string
   updated_at: string
+  deleted_at: string | null
+  invitation_sent_at: string | null
+  invitation_expires_at: string | null
   roles: UserRoleInfo[]
   units?: UserUnitInfo[]
+}
+
+/**
+ * Status do convite do usuário
+ */
+export type InvitationStatus = 'not_sent' | 'pending' | 'expired' | 'accepted'
+
+/**
+ * Helper para calcular status do convite
+ */
+export function getInvitationStatus(user: Pick<UserWithRoles, 'status' | 'invitation_sent_at' | 'invitation_expires_at'>): InvitationStatus {
+  // Se já está ativo, o convite foi aceito
+  if (user.status === 'active') {
+    return 'accepted'
+  }
+  
+  // Se não tem data de envio, convite não foi enviado
+  if (!user.invitation_sent_at) {
+    return 'not_sent'
+  }
+  
+  // Se tem data de expiração e já passou, está expirado
+  if (user.invitation_expires_at && new Date(user.invitation_expires_at) < new Date()) {
+    return 'expired'
+  }
+  
+  // Caso contrário, está pendente
+  return 'pending'
 }
 
 /**

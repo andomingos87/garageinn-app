@@ -13,6 +13,7 @@ Templates de email em HTML para configurar no Supabase Auth.
 | Template | Arquivo | Uso |
 |----------|---------|-----|
 | Confirm signup | `confirmation-email.html` | Email de confirmação/Magic Link para novos usuários |
+| Invite user | `invite-email.html` | Email de convite para novos usuários |
 | Reset password | `reset-password-email.html` | Email para redefinir senha |
 | Change email address | `change-email.html` | Email para confirmar alteração de email |
 
