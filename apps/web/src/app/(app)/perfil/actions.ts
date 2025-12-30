@@ -26,6 +26,9 @@ export async function getCurrentUserProfile(): Promise<UserWithRoles | null> {
       status,
       created_at,
       updated_at,
+      deleted_at,
+      invitation_sent_at,
+      invitation_expires_at,
       user_roles (
         role:roles (
           id,
@@ -67,6 +70,9 @@ export async function getCurrentUserProfile(): Promise<UserWithRoles | null> {
     status: (profile.status || 'pending') as UserStatus,
     created_at: profile.created_at || '',
     updated_at: profile.updated_at || '',
+    deleted_at: profile.deleted_at,
+    invitation_sent_at: profile.invitation_sent_at,
+    invitation_expires_at: profile.invitation_expires_at,
     roles,
   }
 }
