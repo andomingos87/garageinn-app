@@ -9,7 +9,11 @@ export interface ActionResult {
 
 /**
  * Server action to request password reset.
- * Sends a magic link to the user's email.
+ * Sends a recovery email to the user.
+ * 
+ * IMPORTANTE: O Supabase redireciona com tokens no hash fragment (#access_token=...)
+ * que não são acessíveis pelo servidor. Por isso, redirecionamos diretamente para
+ * /redefinir-senha onde o componente cliente (NewPasswordForm) processa o hash.
  */
 export async function requestPasswordReset(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
@@ -23,8 +27,9 @@ export async function requestPasswordReset(formData: FormData): Promise<ActionRe
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    // Go through callback to exchange PKCE code for session first
-    redirectTo: `${siteUrl}/auth/callback?next=/redefinir-senha`,
+    // Redireciona diretamente para a página de redefinição
+    // O NewPasswordForm processa o hash fragment no cliente
+    redirectTo: `${siteUrl}/redefinir-senha`,
   });
 
   if (error) {

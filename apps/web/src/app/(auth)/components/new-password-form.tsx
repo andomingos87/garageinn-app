@@ -2,129 +2,178 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { updatePassword } from "../redefinir-senha/actions";
-import { useActionState } from "react";
 import { Loader2, AlertCircle, Eye, EyeOff, CheckCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-
-const initialState = {
-  error: undefined as string | undefined,
-};
+import { useRouter } from "next/navigation";
 
 export function NewPasswordForm() {
-  const [state, formAction, isPending] = useActionState(
-    async (_prevState: typeof initialState, formData: FormData) => {
-      const result = await updatePassword(formData);
-      return { error: result.error };
-    },
-    initialState
-  );
-
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isProcessingToken, setIsProcessingToken] = useState(true);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    const processHashToken = async () => {
-      try {
-        // Verificar se há hash na URL
-        const hash = window.location.hash;
-        
-        if (!hash || hash.length <= 1) {
-          // Verificar se já existe uma sessão válida
-          const supabase = createClient();
-          const { data: { session } } = await supabase.auth.getSession();
-          
-          if (session) {
-            setSessionReady(true);
+    const supabase = createClient();
+    let isSubscribed = true;
+
+    // Escutar eventos de autenticação - abordagem recomendada pelo Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!isSubscribed) return;
+
+        console.log("Auth event:", event);
+
+        if (event === "PASSWORD_RECOVERY") {
+          // Sessão estabelecida via link de recuperação
+          // Limpar hash da URL por segurança
+          window.history.replaceState(null, "", window.location.pathname);
+          setSessionReady(true);
+          setIsProcessingToken(false);
+        } else if (event === "SIGNED_IN" && session) {
+          // Fallback: usuário já estava logado ou sessão restaurada
+          setSessionReady(true);
+          setIsProcessingToken(false);
+        } else if (event === "TOKEN_REFRESHED" && session) {
+          // Token foi atualizado, sessão válida
+          setSessionReady(true);
+          setIsProcessingToken(false);
+        }
+      }
+    );
+
+    // Verificar se já existe sessão (usuário acessou diretamente ou hash já foi processado)
+    const checkExistingSession = async () => {
+      // Dar tempo para o Supabase processar o hash automaticamente
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      if (!isSubscribed) return;
+
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        setSessionReady(true);
+        setIsProcessingToken(false);
+        // Limpar hash se ainda existir
+        if (window.location.hash) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+        return;
+      }
+
+      // Se não há sessão e não há hash, mostrar erro
+      const hash = window.location.hash;
+      if (!hash || hash.length <= 1) {
+        setTokenError("Link inválido ou expirado. Solicite um novo link de redefinição de senha.");
+        setIsProcessingToken(false);
+        return;
+      }
+
+      // Se há hash mas sessão não foi estabelecida após timeout, tentar processamento manual
+      const hashParams = new URLSearchParams(hash.substring(1));
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+
+      if (accessToken && refreshToken) {
+        try {
+          const { error: setError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (setError) {
+            console.error("Erro ao definir sessão:", setError);
+            setTokenError("Link expirado ou inválido. Solicite um novo link de redefinição.");
             setIsProcessingToken(false);
             return;
           }
-          
-          setTokenError("Link inválido ou expirado. Solicite um novo link de redefinição de senha.");
+
+          // Sessão estabelecida com sucesso
+          window.history.replaceState(null, "", window.location.pathname);
+          setSessionReady(true);
           setIsProcessingToken(false);
-          return;
-        }
-
-        // Parse dos parâmetros do hash
-        const hashParams = new URLSearchParams(hash.substring(1));
-        const accessToken = hashParams.get("access_token");
-        const refreshToken = hashParams.get("refresh_token");
-        const type = hashParams.get("type");
-
-        // Verificar se é um link de recovery
-        if (type !== "recovery") {
-          // Pode ser magiclink ou outro tipo, ainda assim tentar processar
-          console.log("Token type:", type);
-        }
-
-        if (!accessToken) {
-          setTokenError("Token de acesso não encontrado. Solicite um novo link.");
+        } catch (err) {
+          console.error("Erro ao processar token:", err);
+          setTokenError("Ocorreu um erro inesperado. Tente novamente.");
           setIsProcessingToken(false);
-          return;
         }
-
-        // Criar cliente Supabase e estabelecer sessão
-        const supabase = createClient();
-        
-        // O Supabase SSR client deve processar automaticamente o hash
-        // Mas vamos garantir chamando getSession que força o processamento
-        const { data, error } = await supabase.auth.getSession();
-
-        if (error) {
-          console.error("Erro ao processar sessão:", error);
-          setTokenError("Erro ao processar o link. Tente novamente ou solicite um novo link.");
-          setIsProcessingToken(false);
-          return;
-        }
-
-        if (!data.session) {
-          // Tentar setSession manualmente se getSession não funcionou
-          if (refreshToken) {
-            const { error: setError } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-
-            if (setError) {
-              console.error("Erro ao definir sessão:", setError);
-              setTokenError("Link expirado ou inválido. Solicite um novo link de redefinição.");
-              setIsProcessingToken(false);
-              return;
-            }
-          } else {
-            // Sem refresh token, tentar verificar o OTP
-            const { error: verifyError } = await supabase.auth.verifyOtp({
-              token_hash: accessToken,
-              type: "recovery",
-            });
-
-            if (verifyError) {
-              console.error("Erro ao verificar OTP:", verifyError);
-              setTokenError("Link expirado ou inválido. Solicite um novo link de redefinição.");
-              setIsProcessingToken(false);
-              return;
-            }
+      } else {
+        // Aguardar mais um pouco para o onAuthStateChange disparar
+        setTimeout(() => {
+          if (!isSubscribed) return;
+          if (!sessionReady && isProcessingToken) {
+            setTokenError("Não foi possível verificar o link. Solicite um novo link de redefinição.");
+            setIsProcessingToken(false);
           }
-        }
-
-        // Limpar o hash da URL para segurança
-        window.history.replaceState(null, "", window.location.pathname);
-        
-        setSessionReady(true);
-        setIsProcessingToken(false);
-      } catch (err) {
-        console.error("Erro ao processar token:", err);
-        setTokenError("Ocorreu um erro inesperado. Tente novamente.");
-        setIsProcessingToken(false);
+        }, 3000);
       }
     };
 
-    processHashToken();
-  }, []);
+    checkExistingSession();
+
+    return () => {
+      isSubscribed = false;
+      subscription.unsubscribe();
+    };
+  }, [sessionReady, isProcessingToken]);
+
+  // Handler para atualizar senha no cliente (não server action)
+  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormError(null);
+    setIsPending(true);
+
+    const formData = new FormData(e.currentTarget);
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    // Validações
+    if (!password || !confirmPassword) {
+      setFormError("Todos os campos são obrigatórios");
+      setIsPending(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setFormError("A senha deve ter pelo menos 6 caracteres");
+      setIsPending(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setFormError("As senhas não coincidem");
+      setIsPending(false);
+      return;
+    }
+
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        if (error.message.includes("should be different")) {
+          setFormError("A nova senha deve ser diferente da anterior");
+        } else if (error.message.includes("Auth session missing")) {
+          setFormError("Sessão expirada. Solicite um novo link de redefinição.");
+        } else {
+          setFormError(error.message);
+        }
+        setIsPending(false);
+        return;
+      }
+
+      // Sucesso! Redirecionar para login
+      router.push("/login?message=password_updated");
+    } catch (err) {
+      console.error("Erro ao atualizar senha:", err);
+      setFormError("Ocorreu um erro inesperado. Tente novamente.");
+      setIsPending(false);
+    }
+  }, [router]);
 
   // Mostrar loading enquanto processa o token
   if (isProcessingToken) {
@@ -165,7 +214,7 @@ export function NewPasswordForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {/* Success indicator */}
       <div className="flex items-center gap-2 p-3 text-sm text-green-700 bg-green-50 rounded-md border border-green-200">
         <CheckCircle className="h-4 w-4 shrink-0" />
@@ -173,10 +222,10 @@ export function NewPasswordForm() {
       </div>
 
       {/* Error message */}
-      {state.error && (
+      {formError && (
         <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
           <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>{state.error}</span>
+          <span>{formError}</span>
         </div>
       )}
 
