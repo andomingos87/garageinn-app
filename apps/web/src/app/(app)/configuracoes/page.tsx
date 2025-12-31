@@ -14,6 +14,7 @@ import {
   Settings,
   Shield,
   Users,
+  Shirt,
 } from "lucide-react";
 
 export default function ConfiguracoesPage() {
@@ -47,6 +48,12 @@ export default function ConfiguracoesPage() {
       description: "Gerencie permissões por cargo",
       icon: Shield,
       href: "/configuracoes/permissoes",
+    },
+    {
+      title: "Uniformes",
+      description: "Gerencie estoque de uniformes",
+      icon: Shirt,
+      href: "/configuracoes/uniformes",
     },
     {
       title: "Sistema",

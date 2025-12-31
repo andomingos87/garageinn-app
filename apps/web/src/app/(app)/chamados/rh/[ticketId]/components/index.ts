@@ -1,0 +1,8 @@
+export { TicketRHInfo } from './ticket-rh-info'
+export { TicketHeader } from '@/app/(app)/chamados/compras/[ticketId]/components/ticket-header'
+export { TicketTimeline } from '@/app/(app)/chamados/compras/[ticketId]/components/ticket-timeline'
+export { RHTicketComments } from './rh-ticket-comments'
+export { RHTicketApprovals } from './rh-ticket-approvals'
+export { RHTicketActions } from './rh-ticket-actions'
+export { RHTriageDialog } from './rh-triage-dialog'
+export { UniformDeliveryDialog } from './uniform-delivery-dialog'

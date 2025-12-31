@@ -47,8 +47,6 @@ const TICKET_TYPES = [
     bgColor: 'bg-green-100',
     hoverBg: 'hover:bg-green-50',
     borderColor: 'border-green-200',
-    disabled: true,
-    disabledMessage: 'Em breve',
   },
 ]
 
