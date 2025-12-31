@@ -1011,3 +1011,232 @@ export async function updateClaimPurchaseStatus(
   return { success: true }
 }
 
+// ============================================
+// Maintenance Integration Functions (Fase 5)
+// ============================================
+
+/**
+ * Cria um chamado de manutenção a partir de um sinistro
+ * Usado para sinistros de estrutura/equipamento que precisam de reparo
+ */
+export async function createMaintenanceFromClaim(ticketId: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'Não autenticado' }
+  }
+  
+  // Buscar dados do sinistro
+  const { data: ticket, error: ticketFetchError } = await supabase
+    .from('tickets')
+    .select(`
+      *,
+      unit:units(id, name, code),
+      category:ticket_categories(id, name)
+    `)
+    .eq('id', ticketId)
+    .single()
+  
+  if (ticketFetchError || !ticket) {
+    console.error('Error fetching ticket:', ticketFetchError)
+    return { error: 'Sinistro não encontrado' }
+  }
+  
+  // Buscar detalhes do sinistro separadamente
+  const { data: claimDetailsData, error: claimError } = await supabase
+    .from('ticket_claim_details')
+    .select('*')
+    .eq('ticket_id', ticketId)
+    .single()
+  
+  if (claimError || !claimDetailsData) {
+    console.error('Error fetching claim details:', claimError)
+    return { error: 'Detalhes do sinistro não encontrados' }
+  }
+  
+  const claimDetails = claimDetailsData
+  
+  // Verificar se já existe um chamado de manutenção vinculado
+  if (claimDetails.related_maintenance_ticket_id) {
+    return { error: 'Já existe um chamado de manutenção vinculado a este sinistro' }
+  }
+  
+  // Buscar departamento de Manutenção
+  const { data: manutencaoDept } = await supabase
+    .from('departments')
+    .select('id')
+    .eq('name', 'Manutenção')
+    .single()
+  
+  if (!manutencaoDept) {
+    return { error: 'Departamento de Manutenção não encontrado' }
+  }
+  
+  // Buscar categoria de manutenção adequada (Estrutura ou Equipamentos)
+  const { data: categories } = await supabase
+    .from('ticket_categories')
+    .select('id, name')
+    .eq('department_id', manutencaoDept.id)
+    .eq('status', 'active')
+  
+  // Tentar encontrar categoria compatível
+  let categoryId = null
+  if (categories && categories.length > 0) {
+    // Priorizar categorias que contenham palavras-chave
+    const keywords = ['estrutura', 'equipamento', 'reparo', 'geral']
+    for (const keyword of keywords) {
+      const found = categories.find(c => 
+        c.name.toLowerCase().includes(keyword)
+      )
+      if (found) {
+        categoryId = found.id
+        break
+      }
+    }
+    // Se não encontrou, usar a primeira
+    if (!categoryId) {
+      categoryId = categories[0].id
+    }
+  }
+  
+  // Montar título e descrição
+  const maintenanceTitle = `[Sinistro #${ticket.ticket_number}] Reparo - ${ticket.title}`
+  const maintenanceDescription = `
+Chamado de manutenção gerado a partir do Sinistro #${ticket.ticket_number}.
+
+**Descrição do Sinistro:**
+${ticket.description}
+
+**Local da Ocorrência:**
+${claimDetails.location_description || 'Não informado'}
+
+**Tipo de Ocorrência:**
+${claimDetails.occurrence_type || 'Não informado'}
+
+**Veículo Envolvido:**
+${claimDetails.vehicle_plate || 'Não informado'}
+
+---
+Este chamado foi criado automaticamente pelo sistema de sinistros.
+  `.trim()
+  
+  // Criar ticket de manutenção
+  const { data: maintenanceTicket, error: ticketError } = await supabase
+    .from('tickets')
+    .insert({
+      title: maintenanceTitle.substring(0, 200), // Limitar tamanho
+      description: maintenanceDescription,
+      department_id: manutencaoDept.id,
+      category_id: categoryId,
+      unit_id: ticket.unit_id,
+      created_by: user.id,
+      status: 'awaiting_triage',
+      priority: ticket.priority,
+      perceived_urgency: ticket.perceived_urgency
+    })
+    .select()
+    .single()
+  
+  if (ticketError || !maintenanceTicket) {
+    console.error('Error creating maintenance ticket:', ticketError)
+    return { error: ticketError?.message || 'Erro ao criar chamado de manutenção' }
+  }
+  
+  // Criar detalhes de manutenção
+  const { error: detailsError } = await supabase
+    .from('ticket_maintenance_details')
+    .insert({
+      ticket_id: maintenanceTicket.id,
+      subject_id: categoryId,
+      maintenance_type: 'corretiva',
+      location_description: claimDetails.location_description || null,
+      equipment_affected: null
+    })
+  
+  if (detailsError) {
+    console.error('Error creating maintenance details:', detailsError)
+    // Rollback: deletar ticket
+    await supabase.from('tickets').delete().eq('id', maintenanceTicket.id)
+    return { error: detailsError.message }
+  }
+  
+  // Vincular o chamado de manutenção ao sinistro
+  const { error: linkError } = await supabase
+    .from('ticket_claim_details')
+    .update({ related_maintenance_ticket_id: maintenanceTicket.id })
+    .eq('id', claimDetails.id)
+  
+  if (linkError) {
+    console.error('Error linking maintenance to claim:', linkError)
+    // Não faz rollback, apenas avisa
+  }
+  
+  // Registrar no histórico do sinistro
+  await supabase.from('ticket_history').insert({
+    ticket_id: ticketId,
+    user_id: user.id,
+    action: 'maintenance_created',
+    new_value: `Chamado de Manutenção #${maintenanceTicket.ticket_number}`,
+    metadata: { 
+      maintenance_ticket_id: maintenanceTicket.id,
+      maintenance_ticket_number: maintenanceTicket.ticket_number
+    }
+  })
+  
+  // Registrar no histórico do chamado de manutenção
+  await supabase.from('ticket_history').insert({
+    ticket_id: maintenanceTicket.id,
+    user_id: user.id,
+    action: 'created_from_claim',
+    new_value: `Sinistro #${ticket.ticket_number}`,
+    metadata: { 
+      claim_ticket_id: ticketId,
+      claim_ticket_number: ticket.ticket_number
+    }
+  })
+  
+  revalidatePath(`/chamados/sinistros/${ticketId}`)
+  revalidatePath('/chamados/manutencao')
+  
+  return { 
+    success: true, 
+    maintenanceTicketId: maintenanceTicket.id,
+    maintenanceTicketNumber: maintenanceTicket.ticket_number
+  }
+}
+
+/**
+ * Busca chamado de manutenção vinculado ao sinistro
+ */
+export async function getLinkedMaintenanceTicket(ticketId: string) {
+  const supabase = await createClient()
+  
+  // Buscar o claim_details para pegar o related_maintenance_ticket_id
+  const { data: claimDetails } = await supabase
+    .from('ticket_claim_details')
+    .select('related_maintenance_ticket_id')
+    .eq('ticket_id', ticketId)
+    .single()
+  
+  if (!claimDetails?.related_maintenance_ticket_id) {
+    return null
+  }
+  
+  // Buscar dados do chamado de manutenção
+  const { data: maintenanceTicket } = await supabase
+    .from('tickets')
+    .select(`
+      id,
+      ticket_number,
+      title,
+      status,
+      priority,
+      created_at
+    `)
+    .eq('id', claimDetails.related_maintenance_ticket_id)
+    .single()
+  
+  return maintenanceTicket || null
+}
+

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
-import { getClaimTicketDetails } from './actions'
+import { getClaimTicketDetails, getLinkedMaintenanceTicket } from './actions'
+import { canTriageClaimTicket, getSinistrosDepartmentMembers } from '../actions'
 import {
   ClaimHeader,
   ClaimInfo,
@@ -11,6 +12,10 @@ import {
   ClaimTimeline,
   ClaimAttachments,
   ClaimPurchases,
+  ClaimApprovals,
+  ClaimMaintenanceLink,
+  ClaimStatusActions,
+  ClaimTriageDialog,
 } from './components'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
@@ -111,14 +116,47 @@ async function isClaimManager(): Promise<boolean> {
   })
 }
 
+// Função para obter o role do usuário atual para aprovações
+async function getCurrentUserRole(): Promise<string | undefined> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) return undefined
+  
+  // Buscar perfil e roles do usuário
+  const { data: userRoles } = await supabase
+    .from('user_roles')
+    .select(`
+      role:roles!role_id(name)
+    `)
+    .eq('user_id', user.id)
+  
+  if (!userRoles) return undefined
+  
+  // Retornar o role mais relevante para aprovação
+  const approvalRoles = ['Gerente', 'Supervisor', 'Encarregado']
+  
+  for (const approvalRole of approvalRoles) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hasRole = userRoles.some(ur => (ur.role as any)?.name === approvalRole)
+    if (hasRole) return approvalRole
+  }
+  
+  return undefined
+}
+
 export default async function SinistroDetailsPage({ params }: PageProps) {
   const { ticketId } = await params
   
   // Buscar dados em paralelo
-  const [ticket, canManage, isManager] = await Promise.all([
+  const [ticket, canManage, isManager, currentUserRole, linkedMaintenance, canTriage, departmentMembers] = await Promise.all([
     getClaimTicketDetails(ticketId),
     canManageClaim(),
-    isClaimManager()
+    isClaimManager(),
+    getCurrentUserRole(),
+    getLinkedMaintenanceTicket(ticketId),
+    canTriageClaimTicket(),
+    getSinistrosDepartmentMembers()
   ])
   
   if (!ticket) {
@@ -144,10 +182,54 @@ export default async function SinistroDetailsPage({ params }: PageProps) {
     claimDetails.customer_email
   )
   
+  // Verificar se tem aprovações pendentes
+  const hasApprovals = ticket.approvals && ticket.approvals.length > 0
+  const isAwaitingApproval = ticket.status.startsWith('awaiting_approval_')
+  
+  // Verificar se está aguardando triagem
+  const isAwaitingTriage = ticket.status === 'awaiting_triage'
+  
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
       <ClaimHeader ticket={ticket} />
+      
+      {/* Botão de Triagem - mostrar quando aguardando triagem e usuário pode triar */}
+      {isAwaitingTriage && canTriage && (
+        <div className="flex justify-end">
+          <ClaimTriageDialog
+            ticketId={ticketId}
+            ticketNumber={ticket.ticket_number}
+            ticketTitle={ticket.title}
+            perceivedUrgency={ticket.perceived_urgency}
+            occurrenceType={claimDetails?.occurrence_type}
+            departmentMembers={departmentMembers}
+          />
+        </div>
+      )}
+      
+      {/* Aprovações - mostrar se existirem aprovações */}
+      {hasApprovals && (
+        <ClaimApprovals
+          ticketId={ticketId}
+          approvals={ticket.approvals as Array<{
+            id: string
+            approval_level: number
+            approval_role: string
+            status: string
+            notes: string | null
+            decision_at: string | null
+            created_at: string
+            approver: {
+              id: string
+              full_name: string
+              avatar_url: string | null
+            } | null
+          }>}
+          ticketStatus={ticket.status}
+          currentUserRole={currentUserRole}
+        />
+      )}
       
       {/* Conteúdo Principal com Tabs */}
       <Tabs defaultValue="details" className="w-full">
@@ -272,6 +354,21 @@ export default async function SinistroDetailsPage({ params }: PageProps) {
                   </div>
                 )}
               </div>
+              
+              {/* Link para Manutenção */}
+              <ClaimMaintenanceLink
+                ticketId={ticketId}
+                linkedTicket={linkedMaintenance}
+                canCreate={canManage}
+                categoryName={ticket.category?.name}
+              />
+              
+              {/* Ações de Status */}
+              <ClaimStatusActions
+                ticketId={ticketId}
+                currentStatus={ticket.status}
+                canManage={canManage}
+              />
               
               {/* Timeline resumida (últimos 5 eventos) */}
               <ClaimTimeline 

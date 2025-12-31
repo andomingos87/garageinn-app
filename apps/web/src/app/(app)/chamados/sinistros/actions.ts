@@ -506,6 +506,178 @@ export async function getCurrentUser() {
 
 import { statusTransitions, statusLabels } from './constants'
 
+// ============================================
+// Triage Functions
+// ============================================
+
+/**
+ * Busca departamento de Sinistros (helper)
+ */
+async function getSinistrosDepartmentId() {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('departments')
+    .select('id')
+    .eq('name', 'Sinistros')
+    .single()
+  
+  if (error) {
+    console.error('Error fetching Sinistros department:', error)
+    return null
+  }
+  
+  return data?.id || null
+}
+
+/**
+ * Verifica se o usuário pode triar sinistros
+ */
+export async function canTriageClaimTicket(): Promise<boolean> {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return false
+  
+  // Verificar se é admin
+  const { data: isAdmin } = await supabase.rpc('is_admin')
+  if (isAdmin) return true
+  
+  // Buscar roles do usuário
+  const { data: userRoles } = await supabase
+    .from('user_roles')
+    .select(`
+      role:roles!role_id(
+        name,
+        department:departments!department_id(name)
+      )
+    `)
+    .eq('user_id', user.id)
+  
+  if (!userRoles) return false
+  
+  // Verificar se tem cargo de triagem (Supervisor, Gerente, Coordenador) no departamento de Sinistros
+  const triageRoles = ['Supervisor', 'Gerente', 'Coordenador', 'Analista']
+  
+  return userRoles.some(ur => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const role = ur.role as any
+    const roleName = role?.name
+    const deptName = role?.department?.name?.toLowerCase()
+    
+    return triageRoles.includes(roleName) && deptName === 'sinistros'
+  })
+}
+
+/**
+ * Lista membros do departamento de Sinistros
+ */
+export async function getSinistrosDepartmentMembers() {
+  const supabase = await createClient()
+  
+  const sinistrosDeptId = await getSinistrosDepartmentId()
+  if (!sinistrosDeptId) return []
+  
+  const { data } = await supabase
+    .from('user_roles')
+    .select(`
+      user:profiles!user_id(id, full_name, email, avatar_url),
+      role:roles!role_id(name, department_id)
+    `)
+  
+  // Filtrar por departamento de Sinistros, removendo duplicatas
+  const membersMap = new Map<string, { id: string; full_name: string; email: string; avatar_url: string | null; role: string }>()
+  
+  data?.forEach((d: Record<string, unknown>) => {
+    const role = d.role as { department_id: string; name: string } | null
+    const user = d.user as { id: string; full_name: string; email: string; avatar_url: string | null } | null
+    
+    if (role && user && role.department_id === sinistrosDeptId) {
+      // Se já existe, não sobrescreve (mantém o primeiro cargo encontrado)
+      if (!membersMap.has(user.id)) {
+        membersMap.set(user.id, {
+          ...user,
+          role: role.name
+        })
+      }
+    }
+  })
+  
+  return Array.from(membersMap.values())
+}
+
+/**
+ * Triar sinistro
+ */
+export async function triageClaimTicket(ticketId: string, formData: FormData) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'Não autenticado' }
+  }
+  
+  // Verificar permissão de triagem
+  const canTriage = await canTriageClaimTicket()
+  if (!canTriage) {
+    return { error: 'Sem permissão para triar sinistros' }
+  }
+  
+  // Extrair dados do formulário
+  const priority = formData.get('priority') as string
+  const assigned_to = formData.get('assigned_to') as string | null
+  const due_date = formData.get('due_date') as string | null
+  
+  // Validações
+  if (!priority) {
+    return { error: 'Prioridade é obrigatória' }
+  }
+  
+  // Verificar se o ticket existe e está aguardando triagem
+  const { data: ticket } = await supabase
+    .from('tickets')
+    .select('status')
+    .eq('id', ticketId)
+    .single()
+  
+  if (!ticket) {
+    return { error: 'Sinistro não encontrado' }
+  }
+  
+  if (ticket.status !== 'awaiting_triage') {
+    return { error: 'Este sinistro não está aguardando triagem' }
+  }
+  
+  // Atualizar ticket
+  const { error } = await supabase
+    .from('tickets')
+    .update({
+      priority,
+      assigned_to: assigned_to && assigned_to !== '' ? assigned_to : null,
+      due_date: due_date || null,
+      status: 'in_analysis' // Avança para análise após triagem
+    })
+    .eq('id', ticketId)
+  
+  if (error) {
+    console.error('Error triaging claim ticket:', error)
+    return { error: error.message }
+  }
+  
+  // Registrar no histórico
+  await supabase.from('ticket_history').insert({
+    ticket_id: ticketId,
+    user_id: user.id,
+    action: 'triaged',
+    new_value: `Prioridade: ${priority}`,
+    metadata: { priority, assigned_to, due_date }
+  })
+  
+  revalidatePath(`/chamados/sinistros/${ticketId}`)
+  revalidatePath('/chamados/sinistros')
+  return { success: true }
+}
+
 /**
  * Muda status do sinistro
  */
