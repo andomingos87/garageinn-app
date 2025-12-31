@@ -14,6 +14,7 @@ export async function getClaimTicketDetails(ticketId: string) {
   const supabase = await createClient()
   
   // Buscar ticket com detalhes
+  // Nota: Usamos !ticket_id para especificar qual FK usar (há 2 FKs entre tickets e ticket_claim_details)
   const { data: ticket, error: ticketError } = await supabase
     .from('tickets')
     .select(`
@@ -22,7 +23,7 @@ export async function getClaimTicketDetails(ticketId: string) {
       category:ticket_categories(id, name),
       creator:profiles!created_by(id, full_name, avatar_url, email),
       assignee:profiles!assigned_to(id, full_name, avatar_url, email),
-      claim_details:ticket_claim_details(*)
+      claim_details:ticket_claim_details!ticket_id(*)
     `)
     .eq('id', ticketId)
     .single()

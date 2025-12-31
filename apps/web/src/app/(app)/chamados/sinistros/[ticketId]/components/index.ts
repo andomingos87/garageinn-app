@@ -1,5 +1,8 @@
-// Placeholder para componentes da página de detalhes
-// Serão implementados na Fase 3
-
-export {}
-
+export { ClaimHeader } from './claim-header'
+export { ClaimInfo } from './claim-info'
+export { ClaimVehicle } from './claim-vehicle'
+export { ClaimCustomer } from './claim-customer'
+export { ClaimThirdParty } from './claim-third-party'
+export { ClaimCommunications } from './claim-communications'
+export { ClaimTimeline } from './claim-timeline'
+export { ClaimAttachments } from './claim-attachments'

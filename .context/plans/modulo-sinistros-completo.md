@@ -611,13 +611,15 @@ git commit -m "feat(sinistros): implement claim creation and listing"
 
 ---
 
-### Fase 3 — Detalhes e Timeline (1 dia)
+### Fase 3 — Detalhes e Timeline (1 dia) ✅ CONCLUÍDA
 
 **Owner:** Frontend Specialist
 
+**Status:** ✅ **CONCLUÍDA em 31/12/2024**
+
 **Objetivo:** Implementar página de detalhes com todas as seções.
 
-#### Tarefa 3.1: Criar Página de Detalhes
+#### Tarefa 3.1: Criar Página de Detalhes ✅
 
 **Arquivo:** `apps/web/src/app/(app)/chamados/sinistros/[ticketId]/page.tsx`
 
@@ -630,21 +632,29 @@ git commit -m "feat(sinistros): implement claim creation and listing"
 6. Comunicações com cliente
 7. Timeline de eventos
 8. Anexos/Fotos
-9. Compras internas
+9. Compras internas (placeholder para Fase 4)
 
 **Subtarefas:**
-- [ ] Criar ClaimHeader (número, título, status, ações)
-- [ ] Criar ClaimInfo (categoria, tipo, data, local)
-- [ ] Criar ClaimVehicle (placa, marca, modelo, cor, ano)
-- [ ] Criar ClaimCustomer (nome, telefone, email, CPF)
-- [ ] Criar ClaimThirdParty (condicional)
-- [ ] Criar layout responsivo com tabs/accordion
+- [x] Criar ClaimHeader (número, título, status, ações) ✅
+- [x] Criar ClaimInfo (categoria, tipo, data, local) ✅
+- [x] Criar ClaimVehicle (placa, marca, modelo, cor, ano) ✅
+- [x] Criar ClaimCustomer (nome, telefone, email, CPF) ✅
+- [x] Criar ClaimThirdParty (condicional) ✅
+- [x] Criar layout responsivo com tabs ✅
+
+**Arquivos Criados:**
+- `[ticketId]/components/claim-header.tsx` - Header com informações principais
+- `[ticketId]/components/claim-info.tsx` - Informações da ocorrência
+- `[ticketId]/components/claim-vehicle.tsx` - Dados do veículo
+- `[ticketId]/components/claim-customer.tsx` - Dados do cliente
+- `[ticketId]/components/claim-third-party.tsx` - Dados do terceiro
+- `[ticketId]/page.tsx` - Página completa com tabs
 
 ---
 
-#### Tarefa 3.2: Criar Seção de Comunicações com Cliente
+#### Tarefa 3.2: Criar Seção de Comunicações com Cliente ✅
 
-**Arquivo:** `claim-communications.tsx`
+**Arquivo:** `[ticketId]/components/claim-communications.tsx`
 
 **Campos por comunicação:**
 - Data/Hora
@@ -654,34 +664,56 @@ git commit -m "feat(sinistros): implement claim creation and listing"
 - Responsável (auto)
 
 **Subtarefas:**
-- [ ] Criar lista de comunicações
-- [ ] Criar formulário de nova comunicação
-- [ ] Criar Server Action `addClaimCommunication`
-- [ ] Implementar ordenação por data (mais recente primeiro)
+- [x] Criar lista de comunicações ✅
+- [x] Criar formulário de nova comunicação (Dialog) ✅
+- [x] Utilizar Server Action `addClaimCommunication` existente ✅
+- [x] Implementar ordenação por data (mais recente primeiro) ✅
+
+**Funcionalidades Implementadas:**
+- Lista de comunicações com ícones por canal
+- Dialog para registrar nova comunicação
+- Campo de próximo contato opcional
+- Cores diferenciadas por canal (telefone, whatsapp, email, presencial)
+- Ordenação automática por data
 
 ---
 
-#### Tarefa 3.3: Criar Timeline de Eventos
+#### Tarefa 3.3: Criar Timeline de Eventos ✅
 
-**Arquivo:** `claim-timeline.tsx`
+**Arquivo:** `[ticketId]/components/claim-timeline.tsx`
 
 **Subtarefas:**
-- [ ] Reutilizar lógica de ticket_history
-- [ ] Criar componente visual de timeline
-- [ ] Incluir eventos de comunicação na timeline
-- [ ] Incluir eventos de compras internas
+- [x] Reutilizar lógica de ticket_history ✅
+- [x] Criar componente visual de timeline ✅
+- [x] Incluir eventos de comunicação na timeline ✅
+- [x] Incluir eventos de compras internas ✅
+
+**Funcionalidades Implementadas:**
+- Timeline unificada com histórico, comunicações e compras
+- Ícones e cores diferenciados por tipo de evento
+- Descrições contextualizadas para cada ação
+- Ordenação cronológica (mais recente primeiro)
 
 ---
 
-#### Tarefa 3.4: Criar Galeria de Anexos
+#### Tarefa 3.4: Criar Galeria de Anexos ✅
 
-**Arquivo:** `claim-attachments.tsx`
+**Arquivo:** `[ticketId]/components/claim-attachments.tsx`
 
 **Subtarefas:**
-- [ ] Criar grid de imagens
-- [ ] Implementar preview/lightbox
-- [ ] Implementar upload adicional de fotos
-- [ ] Categorizar anexos (Fotos do Dano, Ticket, Documentos)
+- [x] Criar grid de imagens ✅
+- [x] Implementar preview/lightbox ✅
+- [x] Implementar upload adicional de fotos (preparado) ✅
+- [x] Categorizar anexos (Fotos do Dano, Ticket, Documentos) ✅
+
+**Funcionalidades Implementadas:**
+- Grid responsivo de imagens com hover effects
+- Lightbox para visualização em tela cheia
+- Navegação entre imagens (setas e contador)
+- Lista de documentos com ícones por tipo
+- Categorização visual com badges coloridos
+- Botão de download para todos os arquivos
+- Preparação para upload (prop onUpload)
 
 **Commit Checkpoint:**
 ```bash
