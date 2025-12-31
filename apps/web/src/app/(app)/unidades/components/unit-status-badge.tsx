@@ -1,7 +1,7 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import type { UnitStatus } from '@/lib/supabase/database.types'
+import type { UnitStatus } from '@/lib/supabase/custom-types'
 
 interface UnitStatusBadgeProps {
   status: UnitStatus

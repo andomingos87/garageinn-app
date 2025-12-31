@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { UnitStatusBadge } from './unit-status-badge'
-import type { UnitWithStaffCount } from '@/lib/supabase/database.types'
+import type { UnitWithStaffCount } from '@/lib/supabase/custom-types'
 
 interface UnitCardProps {
   unit: UnitWithStaffCount

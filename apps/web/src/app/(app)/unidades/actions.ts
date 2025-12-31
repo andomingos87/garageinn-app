@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { Unit, UnitWithStaffCount, UnitStatus, UnitStaffMember } from '@/lib/supabase/database.types'
+import type { Unit, UnitWithStaffCount, UnitStatus, UnitStaffMember } from '@/lib/supabase/custom-types'
 
 // ============================================
 // Types

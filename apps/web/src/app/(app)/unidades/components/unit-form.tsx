@@ -15,7 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Loader2, Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import type { Unit, UnitStatus } from '@/lib/supabase/database.types'
+import type { Unit, UnitStatus } from '@/lib/supabase/custom-types'
 
 interface UnitFormProps {
   unit?: Unit | null

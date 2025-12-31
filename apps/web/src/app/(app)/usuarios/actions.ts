@@ -2,8 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { UserWithRoles, UserRoleInfo, UserStatus, UserUnitInfo, AuditLog, InvitationStatus } from '@/lib/supabase/database.types'
-import { getInvitationStatus } from '@/lib/supabase/database.types'
+import type { UserWithRoles, UserRoleInfo, UserStatus, UserUnitInfo, AuditLog, InvitationStatus } from '@/lib/supabase/custom-types'
+import { getInvitationStatus } from '@/lib/supabase/custom-types'
 
 export interface UsersFilters {
   search?: string

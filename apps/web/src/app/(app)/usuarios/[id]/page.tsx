@@ -18,8 +18,8 @@ import {
 import { getUserById, checkIsAdmin } from '../actions'
 import { UserStatusActions } from './components/user-status-actions'
 import { InvitationStatusBadge } from '../components/invitation-status-badge'
-import type { UserStatus } from '@/lib/supabase/database.types'
-import { getInvitationStatus } from '@/lib/supabase/database.types'
+import type { UserStatus } from '@/lib/supabase/custom-types'
+import { getInvitationStatus } from '@/lib/supabase/custom-types'
 
 interface PageProps {
   params: Promise<{ id: string }>

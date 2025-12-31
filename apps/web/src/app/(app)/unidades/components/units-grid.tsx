@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { UnitCard } from './unit-card'
 import { updateUnitStatus } from '../actions'
-import type { UnitWithStaffCount, UnitStatus } from '@/lib/supabase/database.types'
+import type { UnitWithStaffCount, UnitStatus } from '@/lib/supabase/custom-types'
 
 interface UnitsGridProps {
   units: UnitWithStaffCount[]

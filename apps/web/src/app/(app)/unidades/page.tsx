@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Plus, Upload, Link2 } from 'lucide-react'
 import { getUnits, getUnitsStats, getCities, getRegions, checkIsAdmin, countUnlinkedSupervisors } from './actions'
 import { UnitsFilters, UnitsGrid, UnitsStatsCards } from './components'
-import type { UnitStatus } from '@/lib/supabase/database.types'
+import type { UnitStatus } from '@/lib/supabase/custom-types'
 
 interface PageProps {
   searchParams: Promise<{

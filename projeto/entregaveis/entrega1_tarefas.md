@@ -78,10 +78,10 @@ Fonte: [PRD](../PRD.md) → seção **9. Roadmap de Desenvolvimento** → **Entr
 
 ## Chamados — RH (Uniformes e Gerais)
 
-- [ ] Criar tela de abertura de chamado de RH
-- [ ] Criar tela de listagem de chamados de RH
-- [ ] Implementar fluxo de execução do chamado de RH
-- [ ] Implementar gestão de uniformes (compra, estoque, retirada)
+- [x] Criar tela de abertura de chamado de RH
+- [x] Criar tela de listagem de chamados de RH
+- [x] Implementar fluxo de execução do chamado de RH
+- [x] Implementar gestão de uniformes (compra, estoque, retirada)
 
 ## Admin
 

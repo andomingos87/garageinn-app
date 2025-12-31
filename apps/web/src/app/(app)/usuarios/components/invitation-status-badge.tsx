@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Clock, CheckCircle2, AlertCircle, Mail } from 'lucide-react'
-import type { InvitationStatus } from '@/lib/supabase/database.types'
+import type { InvitationStatus } from '@/lib/supabase/custom-types'
 
 interface InvitationStatusBadgeProps {
   status: InvitationStatus

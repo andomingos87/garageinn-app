@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { UserPlus } from 'lucide-react'
 import { getUsers, getUsersStatsExtended, getDepartments, checkIsAdmin } from './actions'
 import { UsersTable, UsersFilters, UserStatsCards, UsersPagination } from './components'
-import type { UserStatus } from '@/lib/supabase/database.types'
+import type { UserStatus } from '@/lib/supabase/custom-types'
 import { redirect } from 'next/navigation'
 
 interface PageProps {

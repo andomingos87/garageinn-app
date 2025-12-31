@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Power, Loader2 } from 'lucide-react'
 import { updateUnitStatus } from '../../actions'
-import type { UnitStatus } from '@/lib/supabase/database.types'
+import type { UnitStatus } from '@/lib/supabase/custom-types'
 
 interface UnitStatusActionsProps {
   unitId: string

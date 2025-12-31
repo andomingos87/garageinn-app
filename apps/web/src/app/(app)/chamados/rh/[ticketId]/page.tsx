@@ -57,10 +57,7 @@ export default async function DetalheChamadoRHPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       {/* Header with Title, Status and Actions */}
-      <TicketHeader 
-        ticket={ticket} 
-        backHref="/chamados/rh"
-      />
+      <TicketHeader ticket={ticket} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column: Info and Details */}

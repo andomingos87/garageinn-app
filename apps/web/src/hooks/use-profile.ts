@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "./use-auth";
 import { useEffect, useState } from "react";
-import type { UserRoleInfo } from "@/lib/supabase/database.types";
+import type { UserRoleInfo } from "@/lib/supabase/custom-types";
 
 interface Profile {
   id: string;

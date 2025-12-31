@@ -27,8 +27,8 @@ import { InvitationStatusBadge } from './invitation-status-badge'
 import { DeleteUserDialog } from './delete-user-dialog'
 import { EditEmailDialog } from './edit-email-dialog'
 import { ResendInviteDialog } from './resend-invite-dialog'
-import type { UserWithRoles, UserStatus } from '@/lib/supabase/database.types'
-import { getInvitationStatus } from '@/lib/supabase/database.types'
+import type { UserWithRoles, UserStatus } from '@/lib/supabase/custom-types'
+import { getInvitationStatus } from '@/lib/supabase/custom-types'
 
 interface UsersTableProps {
   users: UserWithRoles[]

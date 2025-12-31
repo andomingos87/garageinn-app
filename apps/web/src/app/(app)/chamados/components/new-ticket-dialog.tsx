@@ -54,8 +54,7 @@ export function NewTicketDialog() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
 
-  const handleSelect = (href: string, disabled?: boolean) => {
-    if (disabled) return
+  const handleSelect = (href: string) => {
     setOpen(false)
     router.push(href)
   }
@@ -81,27 +80,18 @@ export function NewTicketDialog() {
             return (
               <button
                 key={type.id}
-                onClick={() => handleSelect(type.href, type.disabled)}
-                disabled={type.disabled}
+                onClick={() => handleSelect(type.href)}
                 className={cn(
                   'flex items-start gap-4 p-4 rounded-lg border text-left transition-colors',
                   type.borderColor,
-                  type.hoverBg,
-                  type.disabled && 'opacity-50 cursor-not-allowed'
+                  type.hoverBg
                 )}
               >
                 <div className={cn('p-2 rounded-md', type.bgColor)}>
                   <Icon className={cn('h-5 w-5', type.color)} />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-medium">{type.name}</h4>
-                    {type.disabled && type.disabledMessage && (
-                      <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
-                        {type.disabledMessage}
-                      </span>
-                    )}
-                  </div>
+                  <h4 className="font-medium">{type.name}</h4>
                   <p className="text-sm text-muted-foreground mt-0.5">
                     {type.description}
                   </p>

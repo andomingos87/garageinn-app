@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { UserCheck, UserX, Loader2, Send, Mail, Trash2 } from 'lucide-react'
 import { updateUserStatus } from '../../actions'
 import { DeleteUserDialog, EditEmailDialog, ResendInviteDialog } from '../../components'
-import type { UserStatus, InvitationStatus } from '@/lib/supabase/database.types'
+import type { UserStatus, InvitationStatus } from '@/lib/supabase/custom-types'
 
 interface UserStatusActionsProps {
   userId: string

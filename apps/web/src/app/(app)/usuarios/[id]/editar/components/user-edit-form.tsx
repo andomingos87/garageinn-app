@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Loader2, Check } from 'lucide-react'
 import { updateUser, updateUserRoles, updateUserUnits } from '../../../actions'
-import type { UserWithRoles, UserStatus, UserUnitInfo } from '@/lib/supabase/database.types'
+import type { UserWithRoles, UserStatus, UserUnitInfo } from '@/lib/supabase/custom-types'
 import { UnitSelector } from '../../../components/unit-selector'
 import type { UnitOption } from '../../../actions'
 

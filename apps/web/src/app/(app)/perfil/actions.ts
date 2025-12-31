@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { UserWithRoles, UserRoleInfo, UserStatus } from '@/lib/supabase/database.types'
+import type { UserWithRoles, UserRoleInfo, UserStatus } from '@/lib/supabase/custom-types'
 
 /**
  * Busca o perfil do usuário atual
