@@ -722,77 +722,82 @@ git commit -m "feat(sinistros): implement claim details and timeline"
 
 ---
 
-### Fase 4 — Compras Internas (1.5 dias)
+### Fase 4 — Compras Internas (1.5 dias) ✅ CONCLUÍDA
 
 **Owner:** Backend Specialist + Frontend Specialist
 
+**Status:** ✅ **CONCLUÍDA em 31/12/2024**
+
 **Objetivo:** Implementar sistema completo de compras internas de peças.
 
-#### Tarefa 4.1: Criar Server Actions de Compras
+#### Tarefa 4.1: Criar Server Actions de Compras ✅
 
 **Arquivo:** `[ticketId]/actions.ts`
 
 **Subtarefas:**
-- [ ] Implementar `createClaimPurchase`
-- [ ] Implementar `addClaimPurchaseItem`
-- [ ] Implementar `removeClaimPurchaseItem`
-- [ ] Implementar `getClaimPurchases`
+- [x] Implementar `createClaimPurchase` ✅
+- [x] Implementar `addClaimPurchaseItem` ✅
+- [x] Implementar `removeClaimPurchaseItem` ✅
+- [x] Implementar `getClaimPurchases` ✅
 
 ---
 
-#### Tarefa 4.2: Criar Server Actions de Cotações
+#### Tarefa 4.2: Criar Server Actions de Cotações ✅
 
 **Subtarefas:**
-- [ ] Implementar `addClaimQuotation`
-- [ ] Implementar `selectClaimQuotation`
-- [ ] Implementar `getAccreditedSuppliers`
-- [ ] Implementar validação de mínimo 2 cotações
+- [x] Implementar `addClaimQuotation` ✅
+- [x] Implementar `selectClaimQuotation` ✅
+- [x] Implementar `getAccreditedSuppliers` ✅
+- [x] Implementar validação de mínimo 2 cotações ✅
 
 ---
 
-#### Tarefa 4.3: Criar Server Actions de Aprovação de Compra
+#### Tarefa 4.3: Criar Server Actions de Aprovação de Compra ✅
 
 **Regra:** Apenas Gerente de Sinistros pode aprovar.
 
 **Subtarefas:**
-- [ ] Implementar `approveClaimPurchase`
-- [ ] Implementar verificação de permissão (Gerente)
-- [ ] Implementar verificação de mínimo 2 cotações
-- [ ] Implementar transição de status
+- [x] Implementar `approveClaimPurchase` ✅
+- [x] Implementar verificação de permissão (Gerente) ✅
+- [x] Implementar verificação de mínimo 2 cotações ✅
+- [x] Implementar transição de status ✅
+- [x] Implementar `updateClaimPurchaseStatus` ✅
 
 ---
 
-#### Tarefa 4.4: Criar Formulário de Nova Compra
+#### Tarefa 4.4: Criar Formulário de Nova Compra ✅
 
 **Arquivo:** `claim-purchase-form.tsx`
 
 **Campos:**
 - Título
 - Descrição
+- Prazo Desejado
 - Itens (nome, quantidade, unidade, preço estimado)
 
 **Subtarefas:**
-- [ ] Criar formulário com lista dinâmica de itens
-- [ ] Implementar adição/remoção de itens
-- [ ] Calcular total estimado
-- [ ] Integrar com Server Action
+- [x] Criar formulário com lista dinâmica de itens ✅
+- [x] Implementar adição/remoção de itens ✅
+- [x] Calcular total estimado ✅
+- [x] Integrar com Server Action ✅
 
 ---
 
-#### Tarefa 4.5: Criar Lista de Compras Internas
+#### Tarefa 4.5: Criar Lista de Compras Internas ✅
 
 **Arquivo:** `claim-purchases.tsx`
 
 **Subtarefas:**
-- [ ] Criar card de compra com status
-- [ ] Exibir itens da compra
-- [ ] Exibir cotações recebidas
-- [ ] Indicar cotação selecionada
-- [ ] Botões de ação (adicionar cotação, aprovar)
+- [x] Criar card de compra com status ✅
+- [x] Exibir itens da compra (tabela expandível) ✅
+- [x] Exibir cotações recebidas ✅
+- [x] Indicar cotação selecionada ✅
+- [x] Botões de ação (adicionar cotação, aprovar, atualizar status) ✅
+- [x] Dialog de aprovação/rejeição com observações ✅
 
 ---
 
-#### Tarefa 4.6: Criar Formulário de Cotação
+#### Tarefa 4.6: Criar Formulário de Cotação ✅
 
 **Arquivo:** `claim-quotation-form.tsx`
 
@@ -807,21 +812,51 @@ git commit -m "feat(sinistros): implement claim details and timeline"
 - Observações
 
 **Subtarefas:**
-- [ ] Criar formulário com autocomplete de fornecedores
-- [ ] Implementar modo híbrido (credenciado/livre)
-- [ ] Integrar com Server Action
+- [x] Criar formulário com autocomplete de fornecedores ✅
+- [x] Implementar modo híbrido (credenciado/livre) ✅
+- [x] Integrar com Server Action ✅
+- [x] Formatação de CNPJ, telefone e moeda ✅
 
 ---
 
-#### Tarefa 4.7: Criar Tela de Cadastro de Fornecedores
+#### Tarefa 4.7: Criar Tela de Cadastro de Fornecedores ✅
 
 **Arquivo:** `apps/web/src/app/(app)/configuracoes/fornecedores/page.tsx`
 
 **Subtarefas:**
-- [ ] Criar listagem de fornecedores
-- [ ] Criar formulário de cadastro/edição
-- [ ] Implementar filtro por categoria
-- [ ] Implementar ativação/desativação
+- [x] Criar listagem de fornecedores ✅
+- [x] Criar formulário de cadastro/edição ✅
+- [x] Implementar filtro por categoria ✅
+- [x] Implementar filtro por status (ativo/inativo) ✅
+- [x] Implementar busca por nome/CNPJ/contato ✅
+- [x] Implementar ativação/desativação ✅
+- [x] Implementar exclusão com validação de cotações vinculadas ✅
+
+**Arquivos Criados:**
+- `configuracoes/fornecedores/page.tsx` - Página principal
+- `configuracoes/fornecedores/actions.ts` - Server Actions (CRUD)
+- `configuracoes/fornecedores/constants.ts` - Categorias e constantes
+- `configuracoes/fornecedores/loading.tsx` - Loading skeleton
+- `configuracoes/fornecedores/components/supplier-form-dialog.tsx` - Formulário
+- `configuracoes/fornecedores/components/supplier-table.tsx` - Tabela
+- `configuracoes/fornecedores/components/supplier-filters.tsx` - Filtros
+- `configuracoes/fornecedores/components/index.ts` - Exports
+
+**Categorias de Fornecedores:**
+- Oficina Mecânica
+- Autopeças
+- Funilaria e Pintura
+- Vidraçaria Automotiva
+- Eletricista Automotivo
+- Borracharia
+- Lavagem/Estética
+- Guincho/Reboque
+- Seguradora
+- Construção/Reforma
+- Elétrica Predial
+- Hidráulica
+- Serralheria
+- Outro
 
 **Commit Checkpoint:**
 ```bash

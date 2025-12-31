@@ -10,6 +10,7 @@ import {
   ClaimCommunications,
   ClaimTimeline,
   ClaimAttachments,
+  ClaimPurchases,
 } from './components'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
@@ -74,13 +75,50 @@ async function canManageClaim(): Promise<boolean> {
   return userRoles.some(ur => manageRoles.includes((ur.role as any)?.name))
 }
 
+// Função para verificar se usuário é gerente de sinistros (pode aprovar compras)
+async function isClaimManager(): Promise<boolean> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) return false
+  
+  // Buscar perfil e roles do usuário com departamento
+  const { data: userRoles } = await supabase
+    .from('user_roles')
+    .select(`
+      role:roles!role_id(
+        name,
+        department:departments!department_id(name)
+      )
+    `)
+    .eq('user_id', user.id)
+  
+  if (!userRoles) return false
+  
+  // Verifica se é Gerente de Sinistros ou Admin/Desenvolvedor/Diretor
+  return userRoles.some(ur => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const role = ur.role as any
+    const roleName = role?.name?.toLowerCase()
+    const deptName = role?.department?.name?.toLowerCase()
+    
+    return (
+      (roleName === 'gerente' && deptName === 'sinistros') ||
+      roleName === 'administrador' ||
+      roleName === 'desenvolvedor' ||
+      roleName === 'diretor'
+    )
+  })
+}
+
 export default async function SinistroDetailsPage({ params }: PageProps) {
   const { ticketId } = await params
   
   // Buscar dados em paralelo
-  const [ticket, canManage] = await Promise.all([
+  const [ticket, canManage, isManager] = await Promise.all([
     getClaimTicketDetails(ticketId),
-    canManageClaim()
+    canManageClaim(),
+    isClaimManager()
   ])
   
   if (!ticket) {
@@ -293,18 +331,76 @@ export default async function SinistroDetailsPage({ params }: PageProps) {
         
         {/* Tab: Compras Internas */}
         <TabsContent value="purchases" className="mt-6">
-          <div className="p-8 text-center text-muted-foreground border rounded-lg bg-muted/30">
-            <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">Compras Internas</h3>
-            <p className="text-sm">
-              O sistema de compras internas será implementado na Fase 4.
-            </p>
-            {ticket.purchases.length > 0 && (
-              <p className="text-sm mt-2">
-                {ticket.purchases.length} compra(s) registrada(s)
-              </p>
-            )}
-          </div>
+          <ClaimPurchases
+            ticketId={ticketId}
+            purchases={ticket.purchases as Array<{
+              id: string
+              purchase_number: number
+              title: string
+              description: string | null
+              status: string
+              estimated_total: number | null
+              approved_total: number | null
+              due_date: string | null
+              approved_at: string | null
+              completed_at: string | null
+              rejection_reason: string | null
+              created_at: string
+              assigned: {
+                id: string
+                full_name: string
+                avatar_url: string | null
+              } | null
+              approver: {
+                id: string
+                full_name: string
+                avatar_url: string | null
+              } | null
+              creator: {
+                id: string
+                full_name: string
+                avatar_url: string | null
+              } | null
+              items: Array<{
+                id: string
+                item_name: string
+                description: string | null
+                quantity: number
+                unit_of_measure: string
+                estimated_unit_price: number | null
+                final_unit_price: number | null
+              }>
+              quotations: Array<{
+                id: string
+                supplier_id: string | null
+                supplier_name: string
+                supplier_cnpj: string | null
+                supplier_contact: string | null
+                supplier_phone: string | null
+                total_price: number
+                payment_terms: string | null
+                delivery_deadline: string | null
+                validity_date: string | null
+                notes: string | null
+                status: string
+                is_selected: boolean
+                created_at: string
+                supplier: {
+                  id: string
+                  name: string
+                  cnpj: string | null
+                  category: string | null
+                } | null
+                creator: {
+                  id: string
+                  full_name: string
+                  avatar_url: string | null
+                } | null
+              }>
+            }>}
+            canManage={canManage}
+            isManager={isManager}
+          />
         </TabsContent>
         
         {/* Tab: Histórico */}
