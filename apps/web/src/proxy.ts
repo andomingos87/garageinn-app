@@ -10,10 +10,10 @@ function isPublicRoute(pathname: string): boolean {
   return publicRoutes.some((route) => pathname.startsWith(route));
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for static assets and Next.js internals
+  // Skip proxy for static assets and Next.js internals
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||

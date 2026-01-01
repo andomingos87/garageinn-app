@@ -2,8 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Updates the session in middleware.
- * Call this from your middleware.ts to refresh auth tokens.
+ * Updates the session in proxy.
+ * Call this from your proxy.ts to refresh auth tokens.
  */
 export async function updateSession(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
