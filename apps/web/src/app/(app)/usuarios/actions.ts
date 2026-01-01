@@ -425,6 +425,21 @@ export async function checkIsAdmin(): Promise<boolean> {
   return data === true
 }
 
+/**
+ * Obtém o ID do usuário atual
+ */
+export async function getCurrentUserId(): Promise<string | undefined> {
+  const supabase = await createClient()
+
+  const { data: { user }, error } = await supabase.auth.getUser()
+
+  if (error || !user) {
+    return undefined
+  }
+
+  return user.id
+}
+
 // ============================================
 // Funções de Unidades
 // ============================================

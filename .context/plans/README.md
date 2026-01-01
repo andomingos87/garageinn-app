@@ -26,12 +26,14 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 13. [Gestao Unidades](./gestao-unidades.md)
 14. [Gestao Usuarios](./gestao-usuarios.md)
 15. [Gestao Usuarios Followups](./gestao-usuarios-followups.md)
-16. [Modulo Sinistros](./modulo-sinistros.md)
-17. [Modulo Sinistros Completo](./modulo-sinistros-completo.md)
-18. [Modulo Sinistros V2](./modulo-sinistros-v2.md)
-19. [Rh Uniformes](./rh-uniformes.md)
-20. [Ui Design System Refinements](./ui-design-system-refinements.md)
-21. [Unidades Followups](./unidades-followups.md)
+16. [Implementacao Impersonacao](./implementacao-impersonacao.md)
+17. [Modulo Sinistros](./modulo-sinistros.md)
+18. [Modulo Sinistros Completo](./modulo-sinistros-completo.md)
+19. [Revisao Impersonacao](./revisao-impersonacao.md)
+20. [Rh Uniformes](./rh-uniformes.md)
+21. [Security Advisors Pending](./security-advisors-pending.md)
+22. [Ui Design System Refinements](./ui-design-system-refinements.md)
+23. [Unidades Followups](./unidades-followups.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

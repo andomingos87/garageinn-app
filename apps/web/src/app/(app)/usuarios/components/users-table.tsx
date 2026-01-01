@@ -21,17 +21,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { MoreHorizontal, Eye, Pencil, UserCheck, UserX, Users, Trash2, Send, Mail } from 'lucide-react'
+import { MoreHorizontal, Eye, Pencil, UserCheck, UserX, Users, Trash2, Send, Mail, UserCog } from 'lucide-react'
 import { updateUserStatus } from '../actions'
 import { InvitationStatusBadge } from './invitation-status-badge'
 import { DeleteUserDialog } from './delete-user-dialog'
 import { EditEmailDialog } from './edit-email-dialog'
 import { ResendInviteDialog } from './resend-invite-dialog'
+import { ImpersonateDialog } from './impersonate-dialog'
+import { usePermissions } from '@/hooks/use-permissions'
 import type { UserWithRoles, UserStatus } from '@/lib/supabase/custom-types'
 import { getInvitationStatus } from '@/lib/supabase/custom-types'
 
 interface UsersTableProps {
   users: UserWithRoles[]
+  currentUserId?: string
 }
 
 function getInitials(name: string) {
@@ -99,14 +102,18 @@ function getDepartments(roles: UserWithRoles['roles']) {
 }
 
 interface DialogState {
-  type: 'delete' | 'edit-email' | 'resend-invite' | null
+  type: 'delete' | 'edit-email' | 'resend-invite' | 'impersonate' | null
   user: UserWithRoles | null
 }
 
-export function UsersTable({ users }: UsersTableProps) {
+export function UsersTable({ users, currentUserId }: UsersTableProps) {
   const router = useRouter()
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null)
   const [dialogState, setDialogState] = useState<DialogState>({ type: null, user: null })
+  const { can, isLoading: permissionsLoading, isAdmin } = usePermissions()
+  
+  // Admin sempre pode impersonar, ou usuário com permissão específica
+  const canImpersonate = !permissionsLoading && (isAdmin || can('users:impersonate'))
 
   async function handleStatusChange(userId: string, newStatus: UserStatus) {
     setLoadingUserId(userId)
@@ -248,6 +255,12 @@ export function UsersTable({ users }: UsersTableProps) {
                         <Mail className="mr-2 h-4 w-4" />
                         Alterar Email
                       </DropdownMenuItem>
+                      {canImpersonate && currentUserId && user.id !== currentUserId && user.status === 'active' && (
+                        <DropdownMenuItem onClick={() => openDialog('impersonate', user)}>
+                          <UserCog className="mr-2 h-4 w-4" />
+                          Personificar
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuSeparator />
                       {canResendInvite && (
                         <DropdownMenuItem onClick={() => openDialog('resend-invite', user)}>
@@ -316,6 +329,16 @@ export function UsersTable({ users }: UsersTableProps) {
             userEmail={dialogState.user.email}
             onSuccess={handleDialogSuccess}
           />
+          {currentUserId && (
+            <ImpersonateDialog
+              open={dialogState.type === 'impersonate'}
+              onOpenChange={(open) => !open && closeDialog()}
+              userId={dialogState.user.id}
+              userName={dialogState.user.full_name}
+              userEmail={dialogState.user.email}
+              currentUserId={currentUserId}
+            />
+          )}
         </>
       )}
     </>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { UserPlus } from 'lucide-react'
-import { getUsers, getUsersStatsExtended, getDepartments, checkIsAdmin } from './actions'
+import { getUsers, getUsersStatsExtended, getDepartments, checkIsAdmin, getCurrentUserId } from './actions'
 import { UsersTable, UsersFilters, UserStatsCards, UsersPagination } from './components'
 import type { UserStatus } from '@/lib/supabase/custom-types'
 import { redirect } from 'next/navigation'
@@ -30,10 +30,11 @@ async function UsersContent({ searchParams }: { searchParams: PageProps['searchP
     limit: params.limit ? parseInt(params.limit, 10) : 20,
   }
 
-  const [paginatedUsers, stats, departments] = await Promise.all([
+  const [paginatedUsers, stats, departments, currentUserId] = await Promise.all([
     getUsers(filters),
     getUsersStatsExtended(),
     getDepartments(),
+    getCurrentUserId(),
   ])
 
   return (
@@ -52,7 +53,7 @@ async function UsersContent({ searchParams }: { searchParams: PageProps['searchP
           </div>
         </CardHeader>
         <CardContent>
-          <UsersTable users={paginatedUsers.users} />
+          <UsersTable users={paginatedUsers.users} currentUserId={currentUserId} />
           <UsersPagination
             page={paginatedUsers.page}
             totalPages={paginatedUsers.totalPages}
