@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Gapp",
+    "slug": "gapp-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "scheme": "gapp",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF3D3D"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.garageinn.gapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF3D3D"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.garageinn.gapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "gapp-mobile"
+      }
+    },
+    "plugins": []
+  }
+}

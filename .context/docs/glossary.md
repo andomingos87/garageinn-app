@@ -7,6 +7,11 @@ List project-specific terminology, acronyms, domain entities, and user personas.
 - **Projeto** — Refers to a structured initiative or task container within the application, encompassing resources, timelines, and collaborators. It is central to the domain model and surfaces in modules like `projeto/models.py` and API endpoints under `/api/projetos/`.
 - **Tarefa** — A specific actionable item or sub-unit within a Projeto, including details like status, assignee, and deadlines. Defined in the task management workflow and related to `projeto/tasks.py`.
 
+## Mobile Terms
+- **Theme Tokens** — Design system primitives (colors, typography, spacing) used to maintain visual consistency across the mobile app. Defined in `apps/mobile/src/theme/`.
+- **Primary Color** — The main brand color for Garageinn: vermelho vibrante `#FF3D3D` (HSL: 0, 95%, 60%). Used for CTAs, active states, and brand elements.
+- **Gapp** — Nome do aplicativo mobile Garageinn para operações de campo (Checklists, Chamados, Perfil).
+
 ## Acronyms & Abbreviations
 - **API** — Application Programming Interface; a set of protocols for building and integrating software applications. Used extensively for backend-frontend communication in this repository, particularly in RESTful endpoints defined in `projeto/api/`.
 

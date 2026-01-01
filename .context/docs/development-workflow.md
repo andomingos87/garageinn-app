@@ -33,6 +33,35 @@ All changes must be submitted via Pull Requests (PRs) on GitHub. Key checklists 
 
 PRs require at least one approval from a maintainer before merging. Enforce branch protection on `main` to prevent direct pushes. Reference [AGENTS.md](../../AGENTS.md) for agent collaboration tips during reviews, such as using AI-assisted code suggestions.
 
+## Mobile Development (Gapp)
+
+### Setup
+```bash
+cd apps/mobile
+npm install
+cp .env.example .env  # Configure Supabase credentials
+npm start
+```
+
+### Observability Stack (MVP)
+Para o MVP mobile, a observabilidade será implementada com:
+
+| Ferramenta | Propósito | Status |
+|------------|-----------|--------|
+| **Sentry** | Crash reporting e error tracking | Planejado (Phase 2) |
+| **Console logs** | Debug em desenvolvimento | Implementado |
+| **Expo Dev Tools** | Debugging e performance profiling | Disponível |
+
+**Decisões tomadas:**
+- Sentry escolhido por integração nativa com Expo e SDK leve
+- Logs não devem conter PII (CPF, tokens, senhas)
+- Contexto de usuário/sessão incluído nos logs (sem dados sensíveis)
+
+### FAQ Mobile
+- **Q: Qual SDK Expo usar?** A: SDK 54 (última estável em Jan/2026)
+- **Q: Observabilidade provider?** A: Sentry para crash reporting, console para dev
+- **Q: Offline mode?** A: Rascunho local + reenvio (não cache completo)
+
 ## Onboarding Tasks
 New contributors should:
 - Fork the repository and clone their fork.
