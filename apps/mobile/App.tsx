@@ -2,87 +2,90 @@
  * Gapp Mobile - Main App Entry
  * 
  * Aplicativo mobile Garageinn para operações de campo.
+ * Inclui navegação, tema e observabilidade.
  */
 
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, useColorScheme } from 'react-native';
-import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent, Badge, Loading } from './src/components/ui';
-import { colors, typography, spacing, useThemeColors } from './src/theme';
+import { useColorScheme, View, ActivityIndicator, StyleSheet } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function App() {
+// Navigation
+import { NavigationContainer, RootNavigator } from './src/navigation';
+
+// Observability
+import { 
+  initSentry, 
+  withSentry, 
+  logger, 
+  useAppStateTracking,
+} from './src/lib/observability';
+
+// Theme
+import { colors } from './src/theme';
+
+// Initialize Sentry before any rendering
+initSentry();
+
+function AppContent() {
   const colorScheme = useColorScheme();
-  const themeColors = useThemeColors();
+  const [isReady, setIsReady] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Track app state changes (foreground/background)
+  useAppStateTracking();
+
+  useEffect(() => {
+    logger.info('App starting', { colorScheme });
+    
+    // Simular verificação de autenticação
+    const checkAuth = async () => {
+      try {
+        // TODO: Implementar verificação real de autenticação
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Por enquanto, sempre autenticado para testes de navegação
+        setIsAuthenticated(true);
+        logger.info('Auth check completed', { isAuthenticated: true });
+      } catch (error) {
+        logger.error('Auth check failed', { error: (error as Error).message });
+        setIsAuthenticated(false);
+      } finally {
+        setIsReady(true);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  // Loading state
+  if (!isReady) {
+    return (
+      <View style={[styles.loadingContainer, { 
+        backgroundColor: colorScheme === 'dark' ? colors.dark.background : colors.light.background 
+      }]}>
+        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+      </View>
+    );
+  }
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: themeColors.foreground }]}>
-          Gapp Mobile
-        </Text>
-        <Text style={[styles.subtitle, { color: themeColors.mutedForeground }]}>
-          Garageinn - Operações de Campo
-        </Text>
-
-        <Card style={styles.card}>
-          <CardHeader>
-            <CardTitle>Épico 0 - Fundação</CardTitle>
-            <CardDescription>
-              Projeto Expo + TypeScript configurado com sucesso!
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <View style={styles.badgeRow}>
-              <Badge variant="success">Concluído</Badge>
-              <Badge variant="default">MVP</Badge>
-              <Badge variant="info">v0.1.0</Badge>
-            </View>
-          </CardContent>
-        </Card>
-
-        <View style={styles.buttonGroup}>
-          <Button variant="default" onPress={() => console.log('Primary pressed')}>
-            Botão Primário
-          </Button>
-          <Button variant="secondary" onPress={() => console.log('Secondary pressed')}>
-            Secundário
-          </Button>
-          <Button variant="outline" onPress={() => console.log('Outline pressed')}>
-            Outline
-          </Button>
-        </View>
-      </View>
-    </View>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <RootNavigator isAuthenticated={isAuthenticated} />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: spacing[6],
-    paddingTop: spacing[16],
-  },
-  title: {
-    fontSize: typography.sizes['2xl'],
-    fontWeight: typography.weights.semibold,
-    marginBottom: spacing[1],
-  },
-  subtitle: {
-    fontSize: typography.sizes.base,
-    marginBottom: spacing[6],
-  },
-  card: {
-    marginBottom: spacing[6],
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-  buttonGroup: {
-    gap: spacing[3],
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
+
+// Wrap with Sentry for error boundary
+export default withSentry(AppContent);

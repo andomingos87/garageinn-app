@@ -33,6 +33,8 @@
         "projectId": "gapp-mobile"
       }
     },
-    "plugins": []
+    "plugins": [
+      "@sentry/react-native"
+    ]
   }
 }
