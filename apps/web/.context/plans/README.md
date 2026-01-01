@@ -12,6 +12,7 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 
 ## Plan Queue (process in order)
 1. [Fix Missing Custom Types](./fix-missing-custom-types.md)
+2. [Fix User Roles Rls Policy](./fix-user-roles-rls-policy.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

@@ -24,6 +24,7 @@ function getTicketDetailRoute(departmentName: string, ticketId: string): string 
     'Compras': `/chamados/compras/${ticketId}`,
     'Manutenção': `/chamados/manutencao/${ticketId}`,
     'RH': `/chamados/rh/${ticketId}`,
+    'Sinistros': `/chamados/sinistros/${ticketId}`,
   }
   
   return routeMap[departmentName] || `/chamados/${ticketId}`

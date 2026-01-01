@@ -716,9 +716,14 @@ O sistema utiliza componentes **shadcn/ui** customizados:
 **Módulos**: Sinistros, Comercial
 
 #### Chamados — Sinistros
-- [ ] Criar tela de abertura de chamado de Sinistros
+- [x] Criar modelo de dados: `ticket_claim_details`, `accredited_suppliers`, `claim_purchases`, `claim_purchase_items`, `claim_purchase_quotations`, `claim_communications`
+- [x] Configurar RLS para todas as tabelas de sinistros
+- [x] Criar categorias de sinistros (Veículo de Cliente, Veículo de Terceiro, Estrutura da Unidade, Equipamento, Pessoa/Acidente)
+- [x] Criar tela de abertura de chamado de Sinistros
 - [ ] Criar tela de listagem de chamados de Sinistros
 - [ ] Implementar fluxo de execução do chamado de Sinistros
+- [ ] Implementar sistema de compras internas
+- [ ] Implementar comunicações com cliente
 - [ ] Implementar registro de ocorrências e danos
 
 #### Chamados — Comercial

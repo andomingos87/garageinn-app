@@ -14,7 +14,6 @@ export async function getClaimTicketDetails(ticketId: string) {
   const supabase = await createClient()
   
   // Buscar ticket com detalhes
-  // Nota: Usamos !ticket_id para especificar qual FK usar (há 2 FKs entre tickets e ticket_claim_details)
   const { data: ticket, error: ticketError } = await supabase
     .from('tickets')
     .select(`
@@ -22,8 +21,7 @@ export async function getClaimTicketDetails(ticketId: string) {
       unit:units(id, name, code),
       category:ticket_categories(id, name),
       creator:profiles!created_by(id, full_name, avatar_url, email),
-      assignee:profiles!assigned_to(id, full_name, avatar_url, email),
-      claim_details:ticket_claim_details!ticket_id(*)
+      assignee:profiles!assigned_to(id, full_name, avatar_url, email)
     `)
     .eq('id', ticketId)
     .single()
@@ -31,6 +29,19 @@ export async function getClaimTicketDetails(ticketId: string) {
   if (ticketError || !ticket) {
     console.error('Error fetching claim ticket details:', ticketError)
     return null
+  }
+  
+  // Buscar claim_details separadamente para evitar problemas com a FK dupla
+  const { data: claimDetailsData } = await supabase
+    .from('ticket_claim_details')
+    .select('*')
+    .eq('ticket_id', ticketId)
+    .single()
+  
+  // Adicionar claim_details ao ticket
+  const ticketWithClaimDetails = {
+    ...ticket,
+    claim_details: claimDetailsData ? [claimDetailsData] : []
   }
   
   // Buscar aprovações
@@ -74,7 +85,7 @@ export async function getClaimTicketDetails(ticketId: string) {
     .order('created_at', { ascending: false })
   
   // Buscar comunicações
-  const claimDetailsId = ticket.claim_details?.[0]?.id
+  const claimDetailsId = ticketWithClaimDetails.claim_details?.[0]?.id
   let communications: unknown[] = []
   
   if (claimDetailsId) {
@@ -102,7 +113,7 @@ export async function getClaimTicketDetails(ticketId: string) {
         approver:profiles!approved_by(id, full_name, avatar_url),
         creator:profiles!created_by(id, full_name, avatar_url),
         items:claim_purchase_items(*),
-        quotations:claim_purchase_quotations(
+        quotations:claim_purchase_quotations!claim_purchase_id(
           *,
           supplier:accredited_suppliers(id, name, cnpj),
           creator:profiles!created_by(id, full_name, avatar_url)
@@ -115,7 +126,7 @@ export async function getClaimTicketDetails(ticketId: string) {
   }
   
   return {
-    ...ticket,
+    ...ticketWithClaimDetails,
     approvals: approvals || [],
     comments: comments || [],
     history: history || [],

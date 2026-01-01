@@ -1,0 +1,1 @@
+Use o MCP playwright para fazer os testes
