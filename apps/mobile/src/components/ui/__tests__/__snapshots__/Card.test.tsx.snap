@@ -1,0 +1,228 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Card Card container applies custom style 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "borderColor": "#E5E5E5",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "elevation": 1,
+        "shadowColor": "#000",
+        "shadowOffset": {
+          "height": 1,
+          "width": 0,
+        },
+        "shadowOpacity": 0.05,
+        "shadowRadius": 2,
+      },
+      {
+        "marginTop": 20,
+      },
+    ]
+  }
+>
+  <Text>
+    Styled card
+  </Text>
+</View>
+`;
+
+exports[`Card CardContent applies custom style 1`] = `
+<View
+  style={
+    [
+      {
+        "paddingBottom": 24,
+        "paddingHorizontal": 24,
+      },
+      {
+        "gap": 16,
+      },
+    ]
+  }
+>
+  <Text>
+    Content with gap
+  </Text>
+</View>
+`;
+
+exports[`Card CardDescription applies custom style 1`] = `
+<Text
+  style={
+    [
+      {
+        "color": "#737373",
+        "fontSize": 14,
+      },
+      {
+        "marginTop": 8,
+      },
+    ]
+  }
+>
+  Styled description
+</Text>
+`;
+
+exports[`Card CardFooter applies custom style 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "paddingBottom": 24,
+        "paddingHorizontal": 24,
+      },
+      {
+        "justifyContent": "flex-end",
+      },
+    ]
+  }
+>
+  <Text>
+    Aligned footer
+  </Text>
+</View>
+`;
+
+exports[`Card CardHeader applies custom style 1`] = `
+<View
+  style={
+    [
+      {
+        "gap": 6,
+        "padding": 24,
+      },
+      {
+        "paddingBottom": 0,
+      },
+    ]
+  }
+>
+  <Text>
+    Styled header
+  </Text>
+</View>
+`;
+
+exports[`Card CardTitle applies custom style 1`] = `
+<Text
+  style={
+    [
+      {
+        "color": "#1A1A1A",
+        "fontSize": 20,
+        "fontWeight": "600",
+        "letterSpacing": -0.5,
+      },
+      {
+        "marginTop": 8,
+      },
+    ]
+  }
+>
+  Styled Title
+</Text>
+`;
+
+exports[`Card Full Card composition matches snapshot for full card 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#FFFFFF",
+        "borderColor": "#E5E5E5",
+        "borderRadius": 8,
+        "borderWidth": 1,
+        "elevation": 1,
+        "shadowColor": "#000",
+        "shadowOffset": {
+          "height": 1,
+          "width": 0,
+        },
+        "shadowOpacity": 0.05,
+        "shadowRadius": 2,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    style={
+      [
+        {
+          "gap": 6,
+          "padding": 24,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#1A1A1A",
+            "fontSize": 20,
+            "fontWeight": "600",
+            "letterSpacing": -0.5,
+          },
+          undefined,
+        ]
+      }
+    >
+      Snapshot Test
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "#737373",
+            "fontSize": 14,
+          },
+          undefined,
+        ]
+      }
+    >
+      Testing full card structure
+    </Text>
+  </View>
+  <View
+    style={
+      [
+        {
+          "paddingBottom": 24,
+          "paddingHorizontal": 24,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text>
+      Content here
+    </Text>
+  </View>
+  <View
+    style={
+      [
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "paddingBottom": 24,
+          "paddingHorizontal": 24,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text>
+      Footer here
+    </Text>
+  </View>
+</View>
+`;

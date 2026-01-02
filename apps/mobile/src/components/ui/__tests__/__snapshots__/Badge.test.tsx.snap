@@ -1,0 +1,320 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Badge custom styles applies custom style prop 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#FF3D3D",
+      },
+      {
+        "marginRight": 8,
+      },
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#FFFFFF",
+        },
+      ]
+    }
+  >
+    Styled
+  </Text>
+</View>
+`;
+
+exports[`Badge rendering renders with default variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#FF3D3D",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#FFFFFF",
+        },
+      ]
+    }
+  >
+    Default
+  </Text>
+</View>
+`;
+
+exports[`Badge variants matches snapshot for default variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#FF3D3D",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#FFFFFF",
+        },
+      ]
+    }
+  >
+    default
+  </Text>
+</View>
+`;
+
+exports[`Badge variants matches snapshot for destructive variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#EF4444",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#FFFFFF",
+        },
+      ]
+    }
+  >
+    destructive
+  </Text>
+</View>
+`;
+
+exports[`Badge variants matches snapshot for info variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#0EA5E9",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#FFFFFF",
+        },
+      ]
+    }
+  >
+    info
+  </Text>
+</View>
+`;
+
+exports[`Badge variants matches snapshot for outline variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "transparent",
+        "borderColor": "#E5E5E5",
+        "borderWidth": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#1A1A1A",
+        },
+      ]
+    }
+  >
+    outline
+  </Text>
+</View>
+`;
+
+exports[`Badge variants matches snapshot for secondary variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#F5F5F5",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#1A1A1A",
+        },
+      ]
+    }
+  >
+    secondary
+  </Text>
+</View>
+`;
+
+exports[`Badge variants matches snapshot for success variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#22C55E",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#FFFFFF",
+        },
+      ]
+    }
+  >
+    success
+  </Text>
+</View>
+`;
+
+exports[`Badge variants matches snapshot for warning variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignSelf": "flex-start",
+        "borderRadius": 9999,
+        "paddingHorizontal": 10,
+        "paddingVertical": 2,
+      },
+      {
+        "backgroundColor": "#F59E0B",
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "fontSize": 12,
+          "fontWeight": "500",
+        },
+        {
+          "color": "#FFFFFF",
+        },
+      ]
+    }
+  >
+    warning
+  </Text>
+</View>
+`;

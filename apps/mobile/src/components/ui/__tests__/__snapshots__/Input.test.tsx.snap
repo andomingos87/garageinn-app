@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Input custom styles applies containerStyle 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      {
+        "marginBottom": 16,
+      },
+    ]
+  }
+>
+  <TextInput
+    placeholder="Styled input"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "height": 40,
+          "paddingHorizontal": 12,
+          "width": "100%",
+        },
+        undefined,
+        undefined,
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`Input custom styles applies style to TextInput 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <TextInput
+    placeholder="Styled input"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "height": 40,
+          "paddingHorizontal": 12,
+          "width": "100%",
+        },
+        undefined,
+        {
+          "backgroundColor": "white",
+        },
+      ]
+    }
+  />
+</View>
+`;
+
+exports[`Input error styling applies error border style when error is present 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <TextInput
+    placeholder="Error input"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "height": 40,
+          "paddingHorizontal": 12,
+          "width": "100%",
+        },
+        {
+          "borderColor": "#EF4444",
+        },
+        undefined,
+      ]
+    }
+  />
+  <Text
+    style={
+      {
+        "color": "#EF4444",
+        "fontSize": 14,
+        "marginTop": 4,
+      }
+    }
+  >
+    Error message
+  </Text>
+</View>
+`;

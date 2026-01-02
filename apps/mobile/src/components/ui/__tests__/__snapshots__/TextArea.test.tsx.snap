@@ -1,0 +1,258 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextArea custom styles applies containerStyle 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      {
+        "marginBottom": 16,
+      },
+    ]
+  }
+>
+  <TextInput
+    multiline={true}
+    placeholder="Styled textarea"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "paddingHorizontal": 12,
+          "paddingVertical": 12,
+          "width": "100%",
+        },
+        {
+          "minHeight": 120,
+        },
+        undefined,
+        undefined,
+      ]
+    }
+    textAlignVertical="top"
+  />
+</View>
+`;
+
+exports[`TextArea custom styles applies style to TextInput 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <TextInput
+    multiline={true}
+    placeholder="Styled input"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "paddingHorizontal": 12,
+          "paddingVertical": 12,
+          "width": "100%",
+        },
+        {
+          "minHeight": 120,
+        },
+        undefined,
+        {
+          "backgroundColor": "white",
+        },
+      ]
+    }
+    textAlignVertical="top"
+  />
+</View>
+`;
+
+exports[`TextArea error styling applies error border style when error is present 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <TextInput
+    multiline={true}
+    placeholder="Error textarea"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "paddingHorizontal": 12,
+          "paddingVertical": 12,
+          "width": "100%",
+        },
+        {
+          "minHeight": 120,
+        },
+        {
+          "borderColor": "#EF4444",
+        },
+        undefined,
+      ]
+    }
+    textAlignVertical="top"
+  />
+  <Text
+    style={
+      {
+        "color": "#EF4444",
+        "fontSize": 14,
+        "marginTop": 4,
+      }
+    }
+  >
+    Error message
+  </Text>
+</View>
+`;
+
+exports[`TextArea rows configuration renders with custom rows 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <TextInput
+    multiline={true}
+    placeholder="6 rows"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "paddingHorizontal": 12,
+          "paddingVertical": 12,
+          "width": "100%",
+        },
+        {
+          "minHeight": 168,
+        },
+        undefined,
+        undefined,
+      ]
+    }
+    textAlignVertical="top"
+  />
+</View>
+`;
+
+exports[`TextArea rows configuration renders with default 4 rows 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <TextInput
+    multiline={true}
+    placeholder="Default rows"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "paddingHorizontal": 12,
+          "paddingVertical": 12,
+          "width": "100%",
+        },
+        {
+          "minHeight": 120,
+        },
+        undefined,
+        undefined,
+      ]
+    }
+    textAlignVertical="top"
+  />
+</View>
+`;
+
+exports[`TextArea rows configuration renders with minimum rows 1`] = `
+<View
+  style={
+    [
+      {
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <TextInput
+    multiline={true}
+    placeholder="2 rows"
+    placeholderTextColor="#737373"
+    style={
+      [
+        {
+          "backgroundColor": "#FAFAFA",
+          "borderColor": "#E5E5E5",
+          "borderRadius": 6,
+          "borderWidth": 1,
+          "color": "#1A1A1A",
+          "fontSize": 16,
+          "paddingHorizontal": 12,
+          "paddingVertical": 12,
+          "width": "100%",
+        },
+        {
+          "minHeight": 72,
+        },
+        undefined,
+        undefined,
+      ]
+    }
+    textAlignVertical="top"
+  />
+</View>
+`;

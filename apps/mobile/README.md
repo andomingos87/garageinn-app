@@ -94,6 +94,106 @@ O app segue os tokens definidos em `design-system.md`:
 | `npm run web` | Executa no navegador |
 | `npm run lint` | Verifica código com ESLint |
 | `npm run typecheck` | Verifica tipos TypeScript |
+| `npm test` | Executa testes unitários |
+| `npm run test:watch` | Executa testes em modo watch |
+| `npm run test:coverage` | Executa testes com relatório de cobertura |
+| `npm run test:ci` | Executa testes para CI/CD |
+
+## Testes
+
+O projeto usa **Jest** com **React Native Testing Library** para testes unitários.
+
+### Estrutura de Testes
+
+```
+src/
+├── components/ui/__tests__/    # Testes de componentes UI
+│   ├── Button.test.tsx
+│   ├── Input.test.tsx
+│   ├── Card.test.tsx
+│   ├── Badge.test.tsx
+│   ├── Loading.test.tsx
+│   ├── EmptyState.test.tsx
+│   └── TextArea.test.tsx
+├── theme/__tests__/            # Testes de tokens de tema
+│   └── colors.test.ts
+└── lib/observability/__tests__/ # Testes de observabilidade
+    ├── hooks.test.ts
+    └── logger.test.ts
+```
+
+### Cobertura de Testes
+
+| Módulo | Cobertura |
+|--------|-----------|
+| `components/ui/` | ~85% |
+| `theme/` | 100% |
+| `lib/observability/` | ~70% |
+
+### Executando Testes
+
+```bash
+# Todos os testes
+npm test
+
+# Testes específicos
+npm test -- --testPathPattern="Button"
+
+# Com cobertura
+npm run test:coverage
+
+# Watch mode (desenvolvimento)
+npm run test:watch
+```
+
+## Observabilidade
+
+O app inclui sistema de observabilidade integrado com **Sentry**.
+
+### Configuração
+
+1. Adicione o DSN do Sentry no `.env`:
+```
+EXPO_PUBLIC_SENTRY_DSN=your-sentry-dsn
+```
+
+### Hooks Disponíveis
+
+| Hook | Uso |
+|------|-----|
+| `useScreenTracking(screenName)` | Rastreia navegação entre telas |
+| `useActionTracking(context)` | Rastreia ações do usuário |
+| `useAppStateTracking()` | Monitora foreground/background |
+| `usePerformanceTracking(context)` | Mede performance de operações |
+| `useErrorTracking(context)` | Captura e reporta erros |
+
+### Exemplo de Uso
+
+```typescript
+import { useScreenTracking, useActionTracking } from '@/lib/observability';
+
+function MyScreen() {
+  useScreenTracking('MyScreen');
+  const trackAction = useActionTracking('MyScreen');
+
+  const handlePress = () => {
+    trackAction('button_pressed', { buttonId: 'submit' });
+    // ... lógica
+  };
+
+  return <Button onPress={handlePress}>Submit</Button>;
+}
+```
+
+### Logger Estruturado
+
+```typescript
+import { logger } from '@/lib/observability';
+
+logger.info('User logged in', { userId: '123' });
+logger.error('Failed to fetch', { error: err.message });
+logger.debug('Debug info', { data });
+```
 
 ## Documentação
 

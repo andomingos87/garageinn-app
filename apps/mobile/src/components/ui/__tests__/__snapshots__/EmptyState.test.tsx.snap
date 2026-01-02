@@ -1,0 +1,266 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmptyState complete empty state matches snapshot for complete empty state 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 24,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    style={
+      {
+        "marginBottom": 16,
+      }
+    }
+  >
+    <Text>
+      📋
+    </Text>
+  </View>
+  <Text
+    style={
+      {
+        "color": "#1A1A1A",
+        "fontSize": 18,
+        "fontWeight": "600",
+        "marginBottom": 8,
+        "textAlign": "center",
+      }
+    }
+  >
+    No tickets
+  </Text>
+  <Text
+    style={
+      {
+        "color": "#737373",
+        "fontSize": 14,
+        "maxWidth": 280,
+        "textAlign": "center",
+      }
+    }
+  >
+    All your tickets will appear here
+  </Text>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#FF3D3D",
+        "borderRadius": 6,
+        "flexDirection": "row",
+        "height": 40,
+        "justifyContent": "center",
+        "marginTop": 16,
+        "opacity": 1,
+        "paddingHorizontal": 16,
+      }
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "fontWeight": "500",
+          },
+          {
+            "color": "#FFFFFF",
+          },
+          {
+            "fontSize": 14,
+          },
+        ]
+      }
+    >
+      Create Ticket
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`EmptyState custom styles applies custom style 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 24,
+      },
+      {
+        "backgroundColor": "white",
+      },
+    ]
+  }
+>
+  <Text
+    style={
+      {
+        "color": "#1A1A1A",
+        "fontSize": 18,
+        "fontWeight": "600",
+        "marginBottom": 8,
+        "textAlign": "center",
+      }
+    }
+  >
+    Styled empty state
+  </Text>
+</View>
+`;
+
+exports[`EmptyState with action button renders action with custom variant 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 24,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      {
+        "color": "#1A1A1A",
+        "fontSize": 18,
+        "fontWeight": "600",
+        "marginBottom": 8,
+        "textAlign": "center",
+      }
+    }
+  >
+    Error occurred
+  </Text>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#EF4444",
+        "borderRadius": 6,
+        "flexDirection": "row",
+        "height": 40,
+        "justifyContent": "center",
+        "marginTop": 16,
+        "opacity": 1,
+        "paddingHorizontal": 16,
+      }
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "fontWeight": "500",
+          },
+          {
+            "color": "#FFFFFF",
+          },
+          {
+            "fontSize": 14,
+          },
+        ]
+      }
+    >
+      Retry
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`EmptyState with icon renders without icon when not provided 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 24,
+      },
+      undefined,
+    ]
+  }
+>
+  <Text
+    style={
+      {
+        "color": "#1A1A1A",
+        "fontSize": 18,
+        "fontWeight": "600",
+        "marginBottom": 8,
+        "textAlign": "center",
+      }
+    }
+  >
+    No icon
+  </Text>
+</View>
+`;
