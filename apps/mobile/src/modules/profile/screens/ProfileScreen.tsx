@@ -2,31 +2,75 @@
  * Gapp Mobile - Profile Screen
  * 
  * Tela de perfil do usuário.
+ * Integrada com AuthContext para exibir dados do usuário e logout.
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ProfileStackScreenProps } from '../../../navigation/types';
 import { useThemeColors, typography, spacing, colors as themeColors } from '../../../theme';
 import { Card, CardHeader, CardTitle, CardContent, Button } from '../../../components/ui';
 import { logger } from '../../../lib/observability';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 type NavigationProp = ProfileStackScreenProps<'ProfileScreen'>['navigation'];
 
 export function ProfileScreen() {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
+  const { user, signOut, loading } = useAuth();
 
   React.useEffect(() => {
-    logger.info('ProfileScreen mounted');
-  }, []);
+    logger.info('ProfileScreen mounted', { userId: user?.id });
+  }, [user]);
 
-  const handleLogout = () => {
-    logger.info('User logging out');
-    // TODO: Implementar logout
+  const handleLogout = async () => {
+    Alert.alert(
+      'Sair da Conta',
+      'Tem certeza que deseja sair?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sair',
+          style: 'destructive',
+          onPress: async () => {
+            logger.info('User logging out', { userId: user?.id });
+            try {
+              await signOut();
+              // Navegação acontece automaticamente via AuthContext
+            } catch (e) {
+              Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
+            }
+          },
+        },
+      ]
+    );
   };
+
+  // Extrai iniciais do nome ou email
+  const getInitials = () => {
+    if (user?.user_metadata?.full_name) {
+      const names = user.user_metadata.full_name.split(' ');
+      return names.length > 1 
+        ? `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase()
+        : names[0].substring(0, 2).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+    return '??';
+  };
+
+  // Nome de exibição
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário';
+  
+  // Role do usuário (se disponível nos metadados)
+  const userRole = user?.user_metadata?.role || 'Operador de Campo';
+  
+  // Unidade do usuário (se disponível nos metadados)
+  const userUnit = user?.user_metadata?.unit || 'Unidade não definida';
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -46,18 +90,23 @@ export function ProfileScreen() {
           <CardContent>
             <View style={styles.avatarContainer}>
               <View style={[styles.avatar, { backgroundColor: themeColors.primary[100] }]}>
-                <Text style={styles.avatarText}>JD</Text>
+                <Text style={styles.avatarText}>{getInitials()}</Text>
               </View>
               <View style={styles.userInfo}>
                 <Text style={[styles.userName, { color: colors.foreground }]}>
-                  João da Silva
+                  {displayName}
                 </Text>
                 <Text style={[styles.userRole, { color: colors.mutedForeground }]}>
-                  Operador de Campo
+                  {userRole}
                 </Text>
                 <Text style={[styles.userUnit, { color: colors.mutedForeground }]}>
-                  Unidade Centro - SP
+                  {userUnit}
                 </Text>
+                {user?.email && (
+                  <Text style={[styles.userEmail, { color: colors.mutedForeground }]}>
+                    {user.email}
+                  </Text>
+                )}
               </View>
             </View>
           </CardContent>
@@ -123,8 +172,8 @@ export function ProfileScreen() {
 
         {/* Logout */}
         <View style={styles.logoutContainer}>
-          <Button variant="destructive" onPress={handleLogout}>
-            Sair da Conta
+          <Button variant="destructive" onPress={handleLogout} disabled={loading}>
+            {loading ? 'Saindo...' : 'Sair da Conta'}
           </Button>
         </View>
       </ScrollView>
@@ -184,6 +233,10 @@ const styles = StyleSheet.create({
   userUnit: {
     fontSize: typography.sizes.sm,
     marginTop: spacing[1],
+  },
+  userEmail: {
+    fontSize: typography.sizes.xs,
+    marginTop: spacing[2],
   },
   menuItem: {
     paddingVertical: spacing[3],

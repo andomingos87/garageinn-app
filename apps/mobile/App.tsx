@@ -2,16 +2,19 @@
  * Gapp Mobile - Main App Entry
  * 
  * Aplicativo mobile Garageinn para operações de campo.
- * Inclui navegação, tema e observabilidade.
+ * Inclui navegação, tema, observabilidade e autenticação.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme, View, ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Navigation
 import { NavigationContainer, RootNavigator } from './src/navigation';
+
+// Auth
+import { AuthProvider, useSession } from './src/modules/auth';
 
 // Observability
 import { 
@@ -27,39 +30,28 @@ import { colors } from './src/theme';
 // Initialize Sentry before any rendering
 initSentry();
 
-function AppContent() {
+/**
+ * Componente interno que usa o AuthContext
+ */
+function AppNavigator() {
   const colorScheme = useColorScheme();
-  const [isReady, setIsReady] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, isLoading, isInitialized } = useSession();
 
   // Track app state changes (foreground/background)
   useAppStateTracking();
 
   useEffect(() => {
     logger.info('App starting', { colorScheme });
-    
-    // Simular verificação de autenticação
-    const checkAuth = async () => {
-      try {
-        // TODO: Implementar verificação real de autenticação
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Por enquanto, sempre autenticado para testes de navegação
-        setIsAuthenticated(true);
-        logger.info('Auth check completed', { isAuthenticated: true });
-      } catch (error) {
-        logger.error('Auth check failed', { error: (error as Error).message });
-        setIsAuthenticated(false);
-      } finally {
-        setIsReady(true);
-      }
-    };
+  }, [colorScheme]);
 
-    checkAuth();
-  }, []);
+  useEffect(() => {
+    if (isInitialized) {
+      logger.info('Auth initialized', { isAuthenticated });
+    }
+  }, [isInitialized, isAuthenticated]);
 
-  // Loading state
-  if (!isReady) {
+  // Loading state while checking auth
+  if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { 
         backgroundColor: colorScheme === 'dark' ? colors.dark.background : colors.light.background 
@@ -70,11 +62,22 @@ function AppContent() {
   }
 
   return (
+    <NavigationContainer>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <RootNavigator isAuthenticated={isAuthenticated} />
+    </NavigationContainer>
+  );
+}
+
+/**
+ * Componente principal do App
+ */
+function AppContent() {
+  return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <RootNavigator isAuthenticated={isAuthenticated} />
-      </NavigationContainer>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

@@ -2,38 +2,66 @@
  * Gapp Mobile - Login Screen
  * 
  * Tela de login com branding Garageinn.
+ * Integrada com Supabase Auth para autenticação real.
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, Text, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackScreenProps } from '../../../navigation/types';
 import { useThemeColors, typography, spacing, colors as themeColors } from '../../../theme';
 import { Card, CardContent, Input, Button } from '../../../components/ui';
 import { logger } from '../../../lib/observability';
+import { useAuth } from '../hooks/useAuth';
 
 type NavigationProp = RootStackScreenProps<'Login'>['navigation'];
 
 export function LoginScreen() {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
+  const { signIn, loading, error, clearError } = useAuth();
+  
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
+  const [localError, setLocalError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     logger.info('LoginScreen mounted');
   }, []);
 
+  // Limpa erros ao alterar campos
+  React.useEffect(() => {
+    if (localError) setLocalError(null);
+    if (error) clearError();
+  }, [email, password]);
+
   const handleLogin = async () => {
+    // Validação local
+    if (!email.trim()) {
+      setLocalError('Por favor, informe seu e-mail');
+      return;
+    }
+    if (!password) {
+      setLocalError('Por favor, informe sua senha');
+      return;
+    }
+
     logger.info('Login attempt', { email });
-    setLoading(true);
-    // TODO: Implementar autenticação real
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setLoading(false);
-    logger.info('Login successful');
+    setLocalError(null);
+
+    try {
+      await signIn(email, password);
+      // Navegação acontece automaticamente via AuthContext
+      logger.info('Login successful');
+    } catch (e) {
+      // Erro já está no estado do AuthContext
+      logger.warn('Login failed', { email });
+    }
   };
+
+  // Mensagem de erro a exibir (prioriza erro do auth context)
+  const displayError = error?.message || localError;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -58,6 +86,15 @@ export function LoginScreen() {
           {/* Login Form */}
           <Card style={styles.card}>
             <CardContent>
+              {/* Error Message */}
+              {displayError && (
+                <View style={[styles.errorContainer, { backgroundColor: '#FEE2E2' }]}>
+                  <Text style={[styles.errorText, { color: themeColors.destructive.DEFAULT }]}>
+                    {displayError}
+                  </Text>
+                </View>
+              )}
+
               <Input
                 label="E-mail"
                 placeholder="seu@email.com"
@@ -66,6 +103,7 @@ export function LoginScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
+                editable={!loading}
               />
               <View style={styles.inputSpacer} />
               <Input
@@ -75,6 +113,8 @@ export function LoginScreen() {
                 onChangeText={setPassword}
                 secureTextEntry
                 autoComplete="password"
+                editable={!loading}
+                onSubmitEditing={handleLogin}
               />
               <View style={styles.buttonSpacer} />
               <Button 
@@ -88,6 +128,7 @@ export function LoginScreen() {
                 variant="ghost" 
                 onPress={() => navigation.navigate('ForgotPassword')}
                 style={styles.forgotButton}
+                disabled={loading}
               >
                 Esqueci minha senha
               </Button>
@@ -143,6 +184,15 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: spacing[6],
+  },
+  errorContainer: {
+    padding: spacing[3],
+    borderRadius: 8,
+    marginBottom: spacing[4],
+  },
+  errorText: {
+    fontSize: typography.sizes.sm,
+    textAlign: 'center',
   },
   inputSpacer: {
     height: spacing[4],

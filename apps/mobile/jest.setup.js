@@ -57,6 +57,11 @@ jest.mock('expo-constants', () => ({
   },
 }));
 
+// Mock @react-native-async-storage/async-storage
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
+
 // Note: AppState is automatically mocked by jest-expo preset
 
 // Silence console warnings during tests

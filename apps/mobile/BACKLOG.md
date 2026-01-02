@@ -6,30 +6,30 @@ Cada história inclui **critérios de aceite** (CA) para virar tarefa “pronta�
 
 ---
 
-## Épico 0 — Fundação (Projeto, navegação, tema, qualidade)
+## Épico 0 — Fundação (Projeto, navegação, tema, observabilidade)
 
-### 0.1 Inicializar app Expo + TypeScript
-- **CA**
-  - Projeto Expo criado e roda em iOS/Android (dev)
-  - Estrutura mínima de pastas (`src/` com módulos)
-  - Variáveis de ambiente para Supabase (sem vazar chaves em código)
+### 0.1 Inicialização do app (Expo + TypeScript)
+- **Critérios de Aceite (CA):**
+  - Projeto Expo criado e executando localmente em iOS/Android (modo dev)
+  - Estrutura mínima organizada em `src/` com módulos essenciais
+  - Variáveis de ambiente configuradas para acesso ao Supabase, sem exposição de chaves sensíveis no código fonte
 
 ### 0.2 Navegação base (Tabs + Stacks)
-- **CA**
-  - Tabs: Início, Chamados, Checklists, Perfil
-  - Deep link interno entre telas (ex.: “Novo Chamado” abre no stack correto)
-  - Botão “voltar” consistente (Android/iOS)
+- **Critérios de Aceite (CA):**
+  - Navegação com abas: Início, Chamados, Checklists, Perfil
+  - Deep link funcional para transições internas, ex: “Novo Chamado” abre corretamente dentro do stack apropriado
+  - Botão de “voltar” implementado de modo consistente nas plataformas Android e iOS
 
-### 0.3 Tema (tokens principais)
-- **CA**
-  - Cor primária (vermelho Garageinn) aplicada em botões/ações
-  - Tipografia base consistente
-  - Componentes base: Button, Input, TextArea, Card, Badge, Loading, EmptyState
+### 0.3 Tema principal (tokens)
+- **Critérios de Aceite (CA):**
+  - Cor principal vermelha Garageinn aplicada nos botões e interações
+  - Tipografia e estilos visuais unificados
+  - Componentes visuais base disponíveis: Button, Input, TextArea, Card, Badge, Loading, EmptyState
 
-### 0.4 Observabilidade mínima
-- **CA**
-  - Erros não tratados são capturados (crash reporting)
-  - Logs de erro com contexto (usuário/sessão) sem PII sensível
+### 0.4 Observabilidade inicial
+- **Critérios de Aceite (CA):**
+  - Captura de erros não tratados (crash reporting habilitado)
+  - Logs de erro incluindo contexto relevante (usuário/sessão), porém sem expor informações pessoais sensíveis
 
 ---
 
