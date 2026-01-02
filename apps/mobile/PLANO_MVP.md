@@ -144,11 +144,12 @@ Implementar helpers bem testados para:
 
 > Ajuste conforme time (1 dev vs 2 devs) e maturidade do backend.
 
-### Semana 1 — Fundação + Auth + Shell
-- Setup Expo + arquitetura de pastas
-- Tema/tokens + navegação (tabs/stacks)
-- Auth (login/recuperação/logout) + sessão persistida
-- Perfil “read-only” inicial
+### Semana 1 — Fundação + Auth + Shell ✅
+- ✅ Setup Expo + arquitetura de pastas
+- ✅ Tema/tokens + navegação (tabs/stacks)
+- ✅ Auth (login/recuperação/logout) + sessão persistida
+- ✅ Perfil "read-only" inicial
+- ✅ **RBAC/Escopo (Épico 2)**: Perfil operacional + permissões + gating de UI
 
 ### Semana 2 — Checklists (Abertura) — execução
 - Carregar template por unidade

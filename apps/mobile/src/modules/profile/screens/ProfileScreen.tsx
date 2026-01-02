@@ -2,7 +2,9 @@
  * Gapp Mobile - Profile Screen
  * 
  * Tela de perfil do usuário.
- * Integrada com AuthContext para exibir dados do usuário e logout.
+ * Integrada com AuthContext e UserProfileContext.
+ * Exibe dados do usuário, cargos, departamentos e unidades.
+ * Nota: CPF NÃO é exibido conforme requisito do PRD.
  */
 
 import React from 'react';
@@ -11,20 +13,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ProfileStackScreenProps } from '../../../navigation/types';
 import { useThemeColors, typography, spacing, colors as themeColors } from '../../../theme';
-import { Card, CardHeader, CardTitle, CardContent, Button } from '../../../components/ui';
+import { Card, CardHeader, CardTitle, CardContent, Button, Loading } from '../../../components/ui';
 import { logger } from '../../../lib/observability';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { useUserProfileContext } from '../../user';
 
 type NavigationProp = ProfileStackScreenProps<'ProfileScreen'>['navigation'];
 
 export function ProfileScreen() {
   const navigation = useNavigation<NavigationProp>();
   const colors = useThemeColors();
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading, error: profileError } = useUserProfileContext();
 
   React.useEffect(() => {
-    logger.info('ProfileScreen mounted', { userId: user?.id });
-  }, [user]);
+    logger.info('ProfileScreen mounted', { userId: user?.id, profileId: profile?.id });
+  }, [user, profile]);
 
   const handleLogout = async () => {
     Alert.alert(
@@ -49,10 +53,10 @@ export function ProfileScreen() {
     );
   };
 
-  // Extrai iniciais do nome ou email
+  // Extrai iniciais do nome
   const getInitials = () => {
-    if (user?.user_metadata?.full_name) {
-      const names = user.user_metadata.full_name.split(' ');
+    if (profile?.fullName) {
+      const names = profile.fullName.split(' ');
       return names.length > 1 
         ? `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase()
         : names[0].substring(0, 2).toUpperCase();
@@ -64,13 +68,70 @@ export function ProfileScreen() {
   };
 
   // Nome de exibição
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário';
-  
-  // Role do usuário (se disponível nos metadados)
-  const userRole = user?.user_metadata?.role || 'Operador de Campo';
-  
-  // Unidade do usuário (se disponível nos metadados)
-  const userUnit = user?.user_metadata?.unit || 'Unidade não definida';
+  const displayName = profile?.fullName || user?.email?.split('@')[0] || 'Usuário';
+
+  // Roles formatados
+  const getRolesDisplay = () => {
+    if (!profile?.roles || profile.roles.length === 0) {
+      return 'Sem cargo definido';
+    }
+    return profile.roles.map((r) => r.name).join(', ');
+  };
+
+  // Departamentos formatados (únicos)
+  const getDepartmentsDisplay = () => {
+    if (!profile?.roles || profile.roles.length === 0) {
+      return null;
+    }
+    const departments = [...new Set(
+      profile.roles
+        .filter((r) => r.departmentName)
+        .map((r) => r.departmentName!)
+    )];
+    if (departments.length === 0) return null;
+    return departments.join(', ');
+  };
+
+  // Unidades formatadas
+  const getUnitsDisplay = () => {
+    if (!profile) return 'Nenhuma unidade vinculada';
+    
+    switch (profile.unitScopeType) {
+      case 'all':
+        return 'Todas as unidades';
+      case 'coverage':
+        const coverageNames = profile.coverageUnits.map((u) => u.name);
+        return `Cobertura: ${coverageNames.join(', ')}`;
+      case 'single':
+        return profile.primaryUnit?.name || 'Sem unidade';
+      case 'none':
+      default:
+        return 'Nenhuma unidade vinculada';
+    }
+  };
+
+  // Indicador de tipo de escopo
+  const getScopeIcon = () => {
+    if (!profile) return '📍';
+    switch (profile.unitScopeType) {
+      case 'all': return '🌐';
+      case 'coverage': return '📊';
+      case 'single': return '📍';
+      case 'none': return '🏢';
+      default: return '📍';
+    }
+  };
+
+  // Loading state
+  if (profileLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <Loading size="large" text="Carregando perfil..." />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
@@ -97,20 +158,75 @@ export function ProfileScreen() {
                   {displayName}
                 </Text>
                 <Text style={[styles.userRole, { color: colors.mutedForeground }]}>
-                  {userRole}
+                  {getRolesDisplay()}
                 </Text>
-                <Text style={[styles.userUnit, { color: colors.mutedForeground }]}>
-                  {userUnit}
-                </Text>
-                {user?.email && (
+                {getDepartmentsDisplay() && (
+                  <Text style={[styles.userDepartment, { color: colors.mutedForeground }]}>
+                    🏬 {getDepartmentsDisplay()}
+                  </Text>
+                )}
+                {profile?.email && (
                   <Text style={[styles.userEmail, { color: colors.mutedForeground }]}>
-                    {user.email}
+                    ✉️ {profile.email}
+                  </Text>
+                )}
+                {profile?.phone && (
+                  <Text style={[styles.userPhone, { color: colors.mutedForeground }]}>
+                    📞 {profile.phone}
                   </Text>
                 )}
               </View>
             </View>
           </CardContent>
         </Card>
+
+        {/* Units Info */}
+        <Card style={styles.card}>
+          <CardHeader>
+            <CardTitle>{getScopeIcon()} Unidades</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Text style={[styles.unitsText, { color: colors.foreground }]}>
+              {getUnitsDisplay()}
+            </Text>
+            {profile?.unitScopeType === 'coverage' && profile.coverageUnits.length > 0 && (
+              <View style={styles.unitsList}>
+                {profile.coverageUnits.map((unit) => (
+                  <View 
+                    key={unit.unitId} 
+                    style={[styles.unitBadge, { backgroundColor: themeColors.primary[100] }]}
+                  >
+                    <Text style={[styles.unitBadgeText, { color: themeColors.primary.DEFAULT }]}>
+                      {unit.code}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+            {profile?.primaryUnit && profile.unitScopeType === 'single' && (
+              <View style={styles.unitsList}>
+                <View 
+                  style={[styles.unitBadge, { backgroundColor: themeColors.primary[100] }]}
+                >
+                  <Text style={[styles.unitBadgeText, { color: themeColors.primary.DEFAULT }]}>
+                    {profile.primaryUnit.code}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Error Message */}
+        {profileError && (
+          <Card style={[styles.card, { borderColor: themeColors.destructive.DEFAULT }]}>
+            <CardContent>
+              <Text style={[styles.errorText, { color: themeColors.destructive.DEFAULT }]}>
+                ⚠️ {profileError.message}
+              </Text>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Menu Options */}
         <Card style={styles.card}>
@@ -165,15 +281,15 @@ export function ProfileScreen() {
             </View>
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>Build</Text>
-              <Text style={[styles.infoValue, { color: colors.foreground }]}>2026.01.01</Text>
+              <Text style={[styles.infoValue, { color: colors.foreground }]}>2026.01.02</Text>
             </View>
           </CardContent>
         </Card>
 
         {/* Logout */}
         <View style={styles.logoutContainer}>
-          <Button variant="destructive" onPress={handleLogout} disabled={loading}>
-            {loading ? 'Saindo...' : 'Sair da Conta'}
+          <Button variant="destructive" onPress={handleLogout} disabled={authLoading}>
+            {authLoading ? 'Saindo...' : 'Sair da Conta'}
           </Button>
         </View>
       </ScrollView>
@@ -184,6 +300,11 @@ export function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollView: {
     flex: 1,
@@ -230,13 +351,39 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.base,
     marginTop: spacing[1],
   },
-  userUnit: {
+  userDepartment: {
     fontSize: typography.sizes.sm,
     marginTop: spacing[1],
   },
   userEmail: {
     fontSize: typography.sizes.xs,
     marginTop: spacing[2],
+  },
+  userPhone: {
+    fontSize: typography.sizes.xs,
+    marginTop: spacing[1],
+  },
+  unitsText: {
+    fontSize: typography.sizes.base,
+  },
+  unitsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+    marginTop: spacing[3],
+  },
+  unitBadge: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+    borderRadius: 16,
+  },
+  unitBadgeText: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.medium,
+  },
+  errorText: {
+    fontSize: typography.sizes.sm,
+    textAlign: 'center',
   },
   menuItem: {
     paddingVertical: spacing[3],
@@ -261,4 +408,3 @@ const styles = StyleSheet.create({
     marginTop: spacing[4],
   },
 });
-

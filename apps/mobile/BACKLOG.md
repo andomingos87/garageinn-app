@@ -53,17 +53,31 @@ Cada história inclui **critérios de aceite** (CA) para virar tarefa “pronta�
 
 ---
 
-## Épico 2 — Identidade do usuário e escopo (RBAC/Unidades)
+## Épico 2 — Identidade do usuário e escopo (RBAC/Unidades) ✅
 
-### 2.1 Carregar “perfil operacional” do usuário
+### 2.1 Carregar "perfil operacional" do usuário ✅
 - **CA**
-  - App obtém: deptos/cargos + unidades vinculadas + cobertura (quando existir)
-  - App identifica tipo de escopo: unidade única / cobertura / todas
+  - ✅ App obtém: deptos/cargos + unidades vinculadas + cobertura (quando existir)
+  - ✅ App identifica tipo de escopo: unidade única / cobertura / todas
 
-### 2.2 Guardrails de acesso (gating)
+**Implementado:**
+- `src/modules/user/types/userProfile.types.ts` — Tipos TypeScript para perfil operacional
+- `src/modules/user/services/userProfileService.ts` — Serviço para buscar perfil do Supabase
+- `src/modules/user/hooks/useUserProfile.ts` — Hook para gerenciar estado
+- `src/modules/user/context/UserProfileContext.tsx` — Context provider global
+- ProfileScreen atualizada para exibir roles, departamentos e unidades
+
+### 2.2 Guardrails de acesso (gating) ✅
 - **CA**
-  - Telas/ações bloqueadas quando usuário não tem permissão (mensagem clara)
-  - Usuário administrativo (B) consegue **ler** Chamados e Checklists (quando permitido), mas não vê ações de operação indevidas
+  - ✅ Telas/ações bloqueadas quando usuário não tem permissão (mensagem clara)
+  - ✅ Usuário administrativo (B) consegue **ler** Chamados e Checklists (quando permitido), mas não vê ações de operação indevidas
+
+**Implementado:**
+- `src/modules/user/types/permissions.types.ts` — Tipos de permissões
+- `src/modules/user/services/permissionService.ts` — Lógica de autorização por role
+- `src/modules/user/hooks/usePermissions.ts` — Hook para checagem de permissões
+- `src/components/guards/ProtectedView.tsx` — Componente para gating de UI
+- `src/components/guards/AccessDeniedScreen.tsx` — Tela de acesso negado
 
 > Observação: as permissões finas devem refletir o backend (RLS). No mobile, o gating é UX; a segurança real vem do Supabase.
 

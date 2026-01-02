@@ -16,6 +16,9 @@ import { NavigationContainer, RootNavigator } from './src/navigation';
 // Auth
 import { AuthProvider, useSession } from './src/modules/auth';
 
+// User Profile
+import { UserProfileProvider } from './src/modules/user';
+
 // Observability
 import { 
   initSentry, 
@@ -76,7 +79,9 @@ function AppContent() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <AppNavigator />
+        <UserProfileProvider>
+          <AppNavigator />
+        </UserProfileProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );
