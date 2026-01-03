@@ -151,15 +151,32 @@ Implementar helpers bem testados para:
 - ✅ Perfil "read-only" inicial
 - ✅ **RBAC/Escopo (Épico 2)**: Perfil operacional + permissões + gating de UI
 
-### Semana 2 — Checklists (Abertura) — execução
-- Carregar template por unidade
-- Render Sim/Não + validações (obrigatório / observação quando “Não”)
-- Salvar progresso local + finalizar
+### Semana 2 — Checklists (Abertura) — execução ✅
+- ✅ Carregar template por unidade
+- ✅ Render Sim/Não + validações (obrigatório / observação quando "Não")
+- ✅ Salvar progresso local + finalizar
 
-### Semana 3 — Checklists (Abertura) — anexos + histórico + offline B
-- Fotos opcionais (compressão + upload)
-- Histórico básico (minhas execuções / por unidade conforme permissão)
-- Fila de envio (rascunho + reenvio)
+**Arquivos implementados:**
+- `src/modules/checklists/types/checklist.types.ts` — Tipos TypeScript
+- `src/modules/checklists/services/checklistService.ts` — Operações Supabase
+- `src/modules/checklists/services/draftService.ts` — Persistência local
+- `src/modules/checklists/hooks/useChecklistExecution.ts` — Hook de execução
+- `src/modules/checklists/hooks/useUnitSelection.ts` — Seleção de unidade
+- `src/modules/checklists/components/` — UnitSelector, QuestionCard, ChecklistProgress, ChecklistSummary
+- `src/modules/checklists/screens/ChecklistExecutionScreen.tsx` — Fluxo completo
+
+### Semana 3 — Checklists (Abertura) — anexos + histórico + offline B ✅
+- ✅ Fotos opcionais (compressão + upload)
+- ✅ Histórico básico (minhas execuções / por unidade conforme permissão)
+- ✅ Fila de envio (rascunho + reenvio)
+
+**Arquivos implementados:**
+- `src/modules/checklists/services/photoService.ts` — Câmera, galeria, compressão e upload
+- `src/modules/checklists/components/PhotoPicker.tsx` — Componente de fotos
+- `src/modules/checklists/screens/ChecklistsListScreen.tsx` — Lista com histórico
+- `src/modules/checklists/screens/ChecklistDetailsScreen.tsx` — Detalhes da execução
+
+> **Nota:** Para fotos funcionarem, executar: `npx expo install expo-image-picker expo-image-manipulator`
 
 ### Semana 4 — Chamados (criação + listagem)
 - Novo chamado (1 unidade) + anexos

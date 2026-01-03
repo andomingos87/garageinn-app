@@ -83,49 +83,82 @@ Cada história inclui **critérios de aceite** (CA) para virar tarefa “pronta�
 
 ---
 
-## Épico 3 — Checklists de Abertura (Execução)
+## Épico 3 — Checklists de Abertura (Execução) ✅
 
-### 3.1 Selecionar unidade (ou usar unidade padrão)
+### 3.1 Selecionar unidade (ou usar unidade padrão) ✅
 - **CA**
-  - Manobrista/Encarregado: unidade já vem definida (sem escolha, se aplicável)
-  - Supervisor/Gerente: pode escolher entre unidades do escopo
+  - ✅ Manobrista/Encarregado: unidade já vem definida (sem escolha, se aplicável)
+  - ✅ Supervisor/Gerente: pode escolher entre unidades do escopo
 
-### 3.2 Carregar template de abertura
-- **CA**
-  - Template carrega por unidade
-  - Perguntas renderizam em ordem
-  - Estado de erro/retry quando falhar rede
+**Implementado:**
+- `src/modules/checklists/hooks/useUnitSelection.ts` — Hook com lógica de escopo por perfil
+- `src/modules/checklists/components/UnitSelector.tsx` — Componente de seleção de unidade
 
-### 3.3 Responder checklist (Sim/Não + validação)
+### 3.2 Carregar template de abertura ✅
 - **CA**
-  - Pergunta obrigatória não pode ser pulada
-  - Se resposta = “Não” e exigir observação: **texto obrigatório**
-  - Usuário consegue salvar progresso (rascunho) sem enviar
+  - ✅ Template carrega por unidade
+  - ✅ Perguntas renderizam em ordem
+  - ✅ Estado de erro/retry quando falhar rede
 
-### 3.4 Finalizar e enviar execução
-- **CA**
-  - Ao finalizar, app valida tudo e envia execução
-  - Confirmação de sucesso + navegação para resumo/histórico
+**Implementado:**
+- `src/modules/checklists/services/checklistService.ts` — Serviço com `fetchOpeningTemplateForUnit()` e `fetchTemplateQuestions()`
+- `src/modules/checklists/types/checklist.types.ts` — Tipos TypeScript completos
 
-### 3.5 Fotos opcionais (por item e/ou geral)
+### 3.3 Responder checklist (Sim/Não + validação) ✅
 - **CA**
-  - Usuário anexa foto via câmera/galeria
-  - Imagem é comprimida antes do upload
-  - Upload mostra progresso e permite retry
+  - ✅ Pergunta obrigatória não pode ser pulada
+  - ✅ Se resposta = "Não" e exigir observação: **texto obrigatório**
+  - ✅ Usuário consegue salvar progresso (rascunho) sem enviar
+
+**Implementado:**
+- `src/modules/checklists/hooks/useChecklistExecution.ts` — Hook completo com validação e auto-save
+- `src/modules/checklists/services/draftService.ts` — Persistência local com AsyncStorage
+- `src/modules/checklists/components/QuestionCard.tsx` — Componente de pergunta Sim/Não
+- `src/modules/checklists/components/ChecklistProgress.tsx` — Barra de progresso
+
+### 3.4 Finalizar e enviar execução ✅
+- **CA**
+  - ✅ Ao finalizar, app valida tudo e envia execução
+  - ✅ Confirmação de sucesso + navegação para resumo/histórico
+
+**Implementado:**
+- `src/modules/checklists/components/ChecklistSummary.tsx` — Tela de resumo antes de enviar
+- `src/modules/checklists/screens/ChecklistExecutionScreen.tsx` — Fluxo completo com steps
+- Serviço `createExecution()`, `saveAnswers()`, `completeExecution()` no checklistService
+
+### 3.5 Fotos opcionais (por item e/ou geral) ✅
+- **CA**
+  - ✅ Usuário anexa foto via câmera/galeria
+  - ✅ Imagem é comprimida antes do upload
+  - ✅ Upload mostra progresso e permite retry
+
+**Implementado:**
+- `src/modules/checklists/services/photoService.ts` — Serviço de fotos com compressão e upload
+- `src/modules/checklists/components/PhotoPicker.tsx` — Componente de seleção de fotos
+
+> **Nota:** Para funcionalidade completa de fotos, instalar: `npx expo install expo-image-picker expo-image-manipulator`
 
 ---
 
-## Épico 4 — Checklists (Histórico)
+## Épico 4 — Checklists (Histórico) ✅
 
-### 4.1 Listar execuções (histórico básico)
+### 4.1 Listar execuções (histórico básico) ✅
 - **CA**
-  - Lista mostra data/hora, unidade, executor, resultado (ex.: “com N não-conformidades”)
-  - Paginação ou “carregar mais”
+  - ✅ Lista mostra data/hora, unidade, executor, resultado (ex.: "com N não-conformidades")
+  - ✅ Paginação ou "carregar mais"
 
-### 4.2 Detalhe de execução
+**Implementado:**
+- `src/modules/checklists/screens/ChecklistsListScreen.tsx` — Lista com histórico e estatísticas
+- Serviço `fetchExecutionHistory()` com suporte a paginação
+
+### 4.2 Detalhe de execução ✅
 - **CA**
-  - Detalhe mostra perguntas + respostas + observações + fotos (se houver)
-  - Respeita RBAC/escopo
+  - ✅ Detalhe mostra perguntas + respostas + observações + fotos (se houver)
+  - ✅ Respeita RBAC/escopo
+
+**Implementado:**
+- `src/modules/checklists/screens/ChecklistDetailsScreen.tsx` — Tela de detalhes completa
+- Serviço `fetchExecutionDetails()` com joins de template, unidade e executor
 
 ---
 
