@@ -32,10 +32,10 @@ export function useImpersonation() {
         return;
       }
 
-      // If no user is logged in, clear orphan state
+      // If no user is logged in yet, keep current state (don't clear prematurely)
+      // The state will be validated once the user session loads
       if (!user) {
-        clearImpersonationState();
-        setState({ isImpersonating: false });
+        setState(savedState);
         return;
       }
 
