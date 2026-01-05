@@ -7,6 +7,7 @@ import {
   ImpersonationState,
 } from "@/lib/auth/impersonation";
 import { useAuth } from "@/hooks/use-auth";
+import { createClient } from "@/lib/supabase/client";
 
 /**
  * Hook to manage impersonation state in client components.
@@ -62,8 +63,9 @@ export function useImpersonation() {
 
   const exitImpersonation = useCallback(async () => {
     clearImpersonationState();
-    // Reload to restore original session
-    window.location.href = "/";
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.href = "/login";
   }, []);
 
   return {
