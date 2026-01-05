@@ -6,18 +6,59 @@ import {
   clearImpersonationState,
   ImpersonationState,
 } from "@/lib/auth/impersonation";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * Hook to manage impersonation state in client components.
+ * Validates impersonation state against the current user session
+ * to prevent orphan states after logout/login.
  */
 export function useImpersonation() {
   const [state, setState] = useState<ImpersonationState>({
     isImpersonating: false,
   });
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    setState(getImpersonationState());
-  }, []);
+    // Wait for auth to load before validating
+    if (isLoading) return;
+
+    const validateState = () => {
+      const savedState = getImpersonationState();
+
+      // If no saved state, return empty
+      if (!savedState.isImpersonating) {
+        setState(savedState);
+        return;
+      }
+
+      // If no user is logged in, clear orphan state
+      if (!user) {
+        clearImpersonationState();
+        setState({ isImpersonating: false });
+        return;
+      }
+
+      // Validate if current user matches saved state
+      const isCurrentlyImpersonating = user.id === savedState.impersonatedUserId;
+      const isOriginalAdmin = user.id === savedState.originalUserId;
+
+      // If current user doesn't match any of the saved IDs, it's an orphan state
+      if (!isCurrentlyImpersonating && !isOriginalAdmin) {
+        clearImpersonationState();
+        setState({ isImpersonating: false });
+        return;
+      }
+
+      // Valid state: update with correct flag
+      setState({
+        ...savedState,
+        isImpersonating: isCurrentlyImpersonating,
+      });
+    };
+
+    validateState();
+  }, [user, isLoading]);
 
   const exitImpersonation = useCallback(async () => {
     clearImpersonationState();
