@@ -1,22 +1,24 @@
 'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2 } from 'lucide-react'
 
 /**
  * Client-side auth callback handler.
- * 
+ *
  * Handles multiple auth flows:
  * - PKCE flow: code in query params
  * - Implicit flow: tokens in URL hash fragment (used by magic links/impersonation)
  * - Password Recovery: token_hash in query params
- * 
+ *
  * The Supabase client automatically detects and processes tokens from the hash.
+ *
+ * IMPORTANT: Uses window.location.href for redirects to ensure cookies are
+ * properly propagated via full page reload (required for server-side auth).
  */
 function AuthCallbackContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState<string | null>(null)
 
@@ -36,6 +38,11 @@ function AuthCallbackContent() {
       const type = searchParams.get('type')
       const next = searchParams.get('next') || '/dashboard'
 
+      // Helper to redirect with full page reload (ensures cookies are sent)
+      const redirectTo = (path: string) => {
+        window.location.href = path
+      }
+
       try {
         // Handle PKCE flow with code
         if (code) {
@@ -45,7 +52,7 @@ function AuthCallbackContent() {
             setError(error.message)
             return
           }
-          router.replace(next)
+          redirectTo(next)
           return
         }
 
@@ -60,7 +67,7 @@ function AuthCallbackContent() {
             setError(error.message)
             return
           }
-          router.replace(next)
+          redirectTo(next)
           return
         }
 
@@ -76,7 +83,7 @@ function AuthCallbackContent() {
 
         if (session) {
           // Session established successfully
-          router.replace(next)
+          redirectTo(next)
           return
         }
 
@@ -85,7 +92,7 @@ function AuthCallbackContent() {
           console.log('Auth state changed:', event)
           if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
             subscription.unsubscribe()
-            router.replace(next)
+            redirectTo(next)
           }
         })
 
@@ -94,7 +101,7 @@ function AuthCallbackContent() {
           subscription.unsubscribe()
           supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-              router.replace(next)
+              redirectTo(next)
             } else {
               setError('Não foi possível estabelecer a sessão. Por favor, tente novamente.')
             }
@@ -108,16 +115,16 @@ function AuthCallbackContent() {
     }
 
     handleCallback()
-  }, [router, searchParams])
+  }, [searchParams])
 
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h1 className="text-xl font-semibold text-destructive">Erro de autenticação</h1>
+          <h1 className="text-xl font-semibold text-destructive">Erro de autenticacao</h1>
           <p className="mt-2 text-muted-foreground">{error}</p>
           <button
-            onClick={() => router.push('/login')}
+            onClick={() => window.location.href = '/login'}
             className="mt-4 text-primary hover:underline"
           >
             Voltar para o login
