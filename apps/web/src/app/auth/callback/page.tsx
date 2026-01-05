@@ -6,14 +6,31 @@ import { createClient } from '@/lib/supabase/client'
 import { Loader2 } from 'lucide-react'
 
 /**
+ * Parse hash fragment into key-value pairs
+ */
+function parseHashFragment(hash: string): Record<string, string> {
+  if (!hash || hash.length <= 1) return {}
+
+  const params: Record<string, string> = {}
+  const hashContent = hash.startsWith('#') ? hash.substring(1) : hash
+
+  hashContent.split('&').forEach(pair => {
+    const [key, value] = pair.split('=')
+    if (key && value) {
+      params[decodeURIComponent(key)] = decodeURIComponent(value)
+    }
+  })
+
+  return params
+}
+
+/**
  * Client-side auth callback handler.
  *
  * Handles multiple auth flows:
  * - PKCE flow: code in query params
  * - Implicit flow: tokens in URL hash fragment (used by magic links/impersonation)
  * - Password Recovery: token_hash in query params
- *
- * The Supabase client automatically detects and processes tokens from the hash.
  *
  * IMPORTANT: Uses window.location.href for redirects to ensure cookies are
  * properly propagated via full page reload (required for server-side auth).
@@ -71,7 +88,32 @@ function AuthCallbackContent() {
           return
         }
 
-        // For implicit flow (tokens in hash), the Supabase client handles it automatically
+        // Handle implicit flow - tokens in hash fragment (magic links/impersonation)
+        const hash = window.location.hash
+        if (hash && hash.includes('access_token')) {
+          const hashParams = parseHashFragment(hash)
+          const accessToken = hashParams['access_token']
+          const refreshToken = hashParams['refresh_token']
+
+          if (accessToken && refreshToken) {
+            console.log('Processing tokens from hash fragment...')
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            })
+
+            if (error) {
+              console.error('Set session error:', error)
+              setError(error.message)
+              return
+            }
+
+            console.log('Session established successfully')
+            redirectTo(next)
+            return
+          }
+        }
+
         // Check if we already have a session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
@@ -87,26 +129,8 @@ function AuthCallbackContent() {
           return
         }
 
-        // No session yet, wait for onAuthStateChange to pick up the hash tokens
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-          console.log('Auth state changed:', event)
-          if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
-            subscription.unsubscribe()
-            redirectTo(next)
-          }
-        })
-
-        // Timeout after 10 seconds
-        setTimeout(() => {
-          subscription.unsubscribe()
-          supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-              redirectTo(next)
-            } else {
-              setError('Não foi possível estabelecer a sessão. Por favor, tente novamente.')
-            }
-          })
-        }, 10000)
+        // No session and no tokens - show error
+        setError('Não foi possível estabelecer a sessão. Por favor, tente novamente.')
 
       } catch (err) {
         console.error('Callback error:', err)
