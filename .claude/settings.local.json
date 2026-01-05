@@ -1,0 +1,11 @@
+{
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:/Users/Anderson Domingos/Documents/Projetos/garageinn\" status)"
+    ]
+  }
+}

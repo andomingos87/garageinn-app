@@ -28,7 +28,8 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 11. [Dashboard Dados Reais](./dashboard-dados-reais.md)
 12. [Deploy Bugfix](./deploy-bugfix.md)
 13. [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)
-14. [Fix Bug Redefinicao Senha](./fix-bug-redefinicao-senha.md)
+14. [Fix Bug Impersonacao Estado Persistente](./fix-bug-impersonacao-estado-persistente.md) 🔴 **BUG - Prioridade Média-Alta**
+15. [Fix Bug Redefinicao Senha](./fix-bug-redefinicao-senha.md)
 15. [Gestao Avancada Usuarios](./gestao-avancada-usuarios.md)
 16. [Gestao Unidades](./gestao-unidades.md)
 17. [Gestao Usuarios](./gestao-usuarios.md)
