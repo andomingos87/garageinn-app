@@ -4,7 +4,12 @@
       "Bash(git -C \"C:/Users/Anderson Domingos/Documents/Projetos/garageinn\" status)",
       "Bash(dir:*)",
       "Bash(git -C \"C:/Users/Anderson Domingos/Documents/Projetos/garageinn\" add apps/web/src/middleware.ts apps/web/src/app/auth/callback/page.tsx)",
-      "Bash(git -C \"C:/Users/Anderson Domingos/Documents/Projetos/garageinn\" commit -m \"$\\(cat <<''EOF''\nfix\\(auth\\): ativar middleware e corrigir callback para persistir sessao\n\n- Cria middleware.ts que ativa o proxy de autenticacao\n- Altera callback para usar window.location.href ao inves de router.replace\n- Garante que cookies de sessao sejam propagados corretamente\n\nO problema era que o middleware do Next.js nao estava ativo \\(proxy.ts existia\nmas nao havia middleware.ts para exporta-lo\\) e o callback usava navegacao\nclient-side que nao propagava cookies para o servidor.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git -C \"C:/Users/Anderson Domingos/Documents/Projetos/garageinn\" commit -m \"$\\(cat <<''EOF''\nfix\\(auth\\): ativar middleware e corrigir callback para persistir sessao\n\n- Cria middleware.ts que ativa o proxy de autenticacao\n- Altera callback para usar window.location.href ao inves de router.replace\n- Garante que cookies de sessao sejam propagados corretamente\n\nO problema era que o middleware do Next.js nao estava ativo \\(proxy.ts existia\nmas nao havia middleware.ts para exporta-lo\\) e o callback usava navegacao\nclient-side que nao propagava cookies para o servidor.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__get_advisors",
+      "Bash(npm run lint)",
+      "mcp__supabase__list_migrations"
     ]
   },
   "enableAllProjectMcpServers": true,
