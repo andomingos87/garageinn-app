@@ -41,7 +41,10 @@ export function UsersFilters({ departments }: UsersFiltersProps) {
   const updateSearchParams = useCallback(
     (updates: Record<string, string | null>) => {
       const params = new URLSearchParams(searchParams.toString())
-      
+
+      // Resetar página para 1 quando filtros são alterados
+      params.delete('page')
+
       for (const [key, value] of Object.entries(updates)) {
         if (value === null || value === '' || value === 'all') {
           params.delete(key)

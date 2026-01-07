@@ -51,6 +51,24 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
   const limit = filters?.limit || 20
   const offset = (page - 1) * limit
 
+  // Se houver filtro de departamento, buscar IDs dos usuários primeiro (para paginação correta)
+  let userIdsInDepartment: string[] | null = null
+  if (filters?.departmentId) {
+    const { data: usersInDept } = await supabase
+      .from('user_roles')
+      .select(`
+        user_id,
+        role:roles!inner (
+          department_id
+        )
+      `)
+      .eq('role.department_id', filters.departmentId)
+
+    if (usersInDept) {
+      userIdsInDepartment = [...new Set(usersInDept.map((ur: { user_id: string }) => ur.user_id))]
+    }
+  }
+
   let query = supabase
     .from('profiles')
     .select(`
@@ -88,11 +106,25 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
       )
     `, { count: 'exact' })
     .order('full_name')
-    .range(offset, offset + limit - 1)
 
   // Por padrão, não incluir usuários deletados
   if (!filters?.includeDeleted) {
     query = query.is('deleted_at', null)
+  }
+
+  // Filtro de departamento (aplicado ANTES da paginação via IDs)
+  if (userIdsInDepartment !== null) {
+    if (userIdsInDepartment.length === 0) {
+      // Nenhum usuário no departamento, retornar vazio
+      return {
+        users: [],
+        total: 0,
+        page,
+        limit,
+        totalPages: 0,
+      }
+    }
+    query = query.in('id', userIdsInDepartment)
   }
 
   // Filtro de busca
@@ -104,6 +136,9 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
   if (filters?.status && filters.status !== 'all') {
     query = query.eq('status', filters.status)
   }
+
+  // Aplicar paginação APÓS todos os filtros
+  query = query.range(offset, offset + limit - 1)
 
   const { data, error, count } = await query
 
@@ -152,13 +187,6 @@ export async function getUsers(filters?: UsersFilters): Promise<PaginatedUsers> 
       units,
     }
   })
-
-  // Filtrar por departamento se necessário (client-side após paginação)
-  if (filters?.departmentId) {
-    users = users.filter(user => 
-      user.roles.some(r => r.department_id === filters.departmentId)
-    )
-  }
 
   // Filtrar por status do convite se necessário
   if (filters?.invitationStatus && filters.invitationStatus !== 'all') {
