@@ -1,11 +1,12 @@
 import { ShoppingCart } from 'lucide-react'
-import { createPurchaseTicket, getPurchaseCategories, getUserUnits } from '../actions'
+import { createPurchaseTicket, getPurchaseCategories, getUserUnits, getUserFixedUnit } from '../actions'
 import { TicketForm } from '../components'
 
 export default async function NovoChamadoComprasPage() {
-  const [categories, units] = await Promise.all([
+  const [categories, units, fixedUnit] = await Promise.all([
     getPurchaseCategories(),
     getUserUnits(),
+    getUserFixedUnit(),
   ])
 
   async function handleCreateTicket(formData: FormData) {
@@ -31,6 +32,7 @@ export default async function NovoChamadoComprasPage() {
         <TicketForm
           categories={categories}
           units={units}
+          fixedUnit={fixedUnit}
           onSubmit={handleCreateTicket}
         />
       </div>

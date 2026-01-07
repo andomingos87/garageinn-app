@@ -1,11 +1,12 @@
 import { Wrench } from 'lucide-react'
-import { createMaintenanceTicket, getMaintenanceCategories, getUserUnits } from '../actions'
+import { createMaintenanceTicket, getMaintenanceCategories, getUserUnits, getUserFixedUnit } from '../actions'
 import { MaintenanceTicketForm } from '../components'
 
 export default async function NovoChamadoManutencaoPage() {
-  const [categories, units] = await Promise.all([
+  const [categories, units, fixedUnit] = await Promise.all([
     getMaintenanceCategories(),
     getUserUnits(),
+    getUserFixedUnit(),
   ])
 
   async function handleCreateTicket(formData: FormData) {
@@ -31,6 +32,7 @@ export default async function NovoChamadoManutencaoPage() {
         <MaintenanceTicketForm
           categories={categories}
           units={units}
+          fixedUnit={fixedUnit}
           onSubmit={handleCreateTicket}
         />
       </div>

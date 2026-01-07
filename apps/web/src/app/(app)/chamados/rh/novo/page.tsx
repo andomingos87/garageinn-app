@@ -1,13 +1,14 @@
 import { Users } from 'lucide-react'
 import { createRHTicket, getRHCategories, getUniforms } from '../actions'
-import { getUserUnits } from '../../compras/actions'
+import { getUserUnits, getUserFixedUnit } from '@/lib/units'
 import { RHTicketForm } from '../components/rh-ticket-form'
 import { redirect } from 'next/navigation'
 
 export default async function NovoChamadoRHPage() {
-  const [categories, units, uniforms] = await Promise.all([
+  const [categories, units, fixedUnit, uniforms] = await Promise.all([
     getRHCategories(),
     getUserUnits(),
+    getUserFixedUnit(),
     getUniforms(),
   ])
 
@@ -40,6 +41,7 @@ export default async function NovoChamadoRHPage() {
         <RHTicketForm
           categories={categories}
           units={units}
+          fixedUnit={fixedUnit}
           uniforms={uniforms}
           onSubmit={handleCreateTicket}
         />

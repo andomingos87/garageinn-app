@@ -1,11 +1,12 @@
 import { AlertTriangle } from 'lucide-react'
-import { createClaimTicket, getClaimCategories, getUserUnits } from '../actions'
+import { createClaimTicket, getClaimCategories, getUserUnits, getUserFixedUnit } from '../actions'
 import { ClaimForm } from '../components'
 
 export default async function NovoSinistroPage() {
-  const [categories, units] = await Promise.all([
+  const [categories, units, fixedUnit] = await Promise.all([
     getClaimCategories(),
     getUserUnits(),
+    getUserFixedUnit(),
   ])
 
   async function handleCreateClaim(formData: FormData) {
@@ -31,6 +32,7 @@ export default async function NovoSinistroPage() {
         <ClaimForm
           categories={categories}
           units={units}
+          fixedUnit={fixedUnit}
           onSubmit={handleCreateClaim}
         />
       </div>

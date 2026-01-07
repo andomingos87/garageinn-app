@@ -22,6 +22,7 @@ import type { ClaimCategory, UserUnit } from '../actions'
 interface ClaimFormProps {
   categories: ClaimCategory[]
   units: UserUnit[]
+  fixedUnit?: UserUnit | null  // Unidade fixa para Manobrista/Encarregado
   onSubmit: (formData: FormData) => Promise<{ error?: string } | void>
 }
 
@@ -53,15 +54,20 @@ function formatCPF(value: string): string {
   return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9, 11)}`
 }
 
-export function ClaimForm({ categories, units, onSubmit }: ClaimFormProps) {
+export function ClaimForm({ categories, units, fixedUnit, onSubmit }: ClaimFormProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [hasThirdParty, setHasThirdParty] = useState(false)
-  
+
+  // Flags de comportamento baseado no role do usuário
+  const isUnitFixed = !!fixedUnit  // Unidade fixa para Manobrista/Encarregado
+  const hasUnits = units.length > 0  // Usuário tem unidades disponíveis
+  const showUnitWarning = !hasUnits && !isUnitFixed  // Aviso se sem unidades
+
   const [formData, setFormData] = useState({
     // Identificação
     title: '',
-    unit_id: '',
+    unit_id: fixedUnit?.id || '',  // Auto-preencher se tiver unidade fixa
     category_id: '',
     occurrence_type: '',
     // Ocorrência
@@ -228,22 +234,45 @@ export function ClaimForm({ categories, units, onSubmit }: ClaimFormProps) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="unit_id">Unidade *</Label>
-              <Select
-                value={formData.unit_id}
-                onValueChange={(value) => handleChange('unit_id', value)}
-                disabled={isPending}
-              >
-                <SelectTrigger id="unit_id">
-                  <SelectValue placeholder="Selecione a unidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  {units.map((unit) => (
-                    <SelectItem key={unit.id} value={unit.id}>
-                      {unit.code} - {unit.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+              {showUnitWarning ? (
+                <div className="text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 p-3 rounded-md flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>
+                    Você não possui unidades vinculadas. Entre em contato com o administrador.
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <Select
+                    value={formData.unit_id}
+                    onValueChange={(value) => handleChange('unit_id', value)}
+                    disabled={isPending || isUnitFixed}
+                  >
+                    <SelectTrigger id="unit_id">
+                      <SelectValue
+                        placeholder={
+                          isUnitFixed
+                            ? `${fixedUnit?.code} - ${fixedUnit?.name}`
+                            : 'Selecione a unidade'
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {units.map((unit) => (
+                        <SelectItem key={unit.id} value={unit.id}>
+                          {unit.code} - {unit.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {isUnitFixed && (
+                    <p className="text-xs text-muted-foreground">
+                      Sua unidade foi selecionada automaticamente
+                    </p>
+                  )}
+                </>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="category_id">Categoria *</Label>

@@ -35,11 +35,8 @@ export interface ClaimCategory {
   status: string
 }
 
-export interface UserUnit {
-  id: string
-  name: string
-  code: string
-}
+// Re-export from shared lib
+export { getUserUnits, getUserFixedUnit, type UserUnit } from '@/lib/units'
 
 // ============================================
 // Query Functions
@@ -89,36 +86,6 @@ export async function getClaimCategories(): Promise<ClaimCategory[]> {
   return data || []
 }
 
-/**
- * Obtém unidades do usuário
- */
-export async function getUserUnits(): Promise<UserUnit[]> {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return []
-  
-  // Verificar se é admin
-  const { data: isAdmin } = await supabase.rpc('is_admin')
-  
-  if (isAdmin) {
-    const { data } = await supabase
-      .from('units')
-      .select('id, name, code')
-      .eq('status', 'active')
-      .order('name')
-    return data || []
-  }
-  
-  // Senão, apenas unidades vinculadas
-  const { data } = await supabase
-    .from('user_units')
-    .select('unit:units(id, name, code)')
-    .eq('user_id', user.id)
-  
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return data?.map((d: any) => d.unit).filter(Boolean) || []
-}
 
 /**
  * Lista sinistros com filtros

@@ -21,17 +21,24 @@ import { MAINTENANCE_TYPES } from '../constants'
 interface MaintenanceTicketFormProps {
   categories: MaintenanceCategory[]
   units: UserUnit[]
+  fixedUnit?: UserUnit | null  // Unidade fixa para Manobrista/Encarregado
   onSubmit: (formData: FormData) => Promise<{ error?: string } | void>
 }
 
-export function MaintenanceTicketForm({ categories, units, onSubmit }: MaintenanceTicketFormProps) {
+export function MaintenanceTicketForm({ categories, units, fixedUnit, onSubmit }: MaintenanceTicketFormProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-  
+
+  // Flags de comportamento baseado no role do usuário
+  const isUnitFixed = !!fixedUnit  // Unidade fixa para Manobrista/Encarregado
+  const hasUnits = units.length > 0  // Usuário tem unidades disponíveis
+  const isUnitRequired = hasUnits  // Obrigatório se tem unidades
+  const showUnitWarning = !hasUnits && !isUnitFixed  // Aviso se sem unidades
+
   const [formData, setFormData] = useState({
     title: '',
     category_id: '',
-    unit_id: '',
+    unit_id: fixedUnit?.id || '',  // Auto-preencher se tiver unidade fixa
     maintenance_type: 'corretiva',
     location_description: '',
     equipment_affected: '',
@@ -58,6 +65,12 @@ export function MaintenanceTicketForm({ categories, units, onSubmit }: Maintenan
     }
     if (!formData.description.trim() || formData.description.length < 10) {
       setError('Descrição deve ter pelo menos 10 caracteres')
+      return
+    }
+
+    // Validação de unidade (obrigatória se usuário tem unidades disponíveis)
+    if (isUnitRequired && !formData.unit_id) {
+      setError('Selecione uma unidade para continuar')
       return
     }
 
@@ -179,23 +192,48 @@ export function MaintenanceTicketForm({ categories, units, onSubmit }: Maintenan
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="unit_id">Unidade</Label>
-              <Select
-                value={formData.unit_id}
-                onValueChange={(value) => handleChange('unit_id', value)}
-                disabled={isPending}
-              >
-                <SelectTrigger id="unit_id">
-                  <SelectValue placeholder="Selecione a unidade (opcional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {units.map((unit) => (
-                    <SelectItem key={unit.id} value={unit.id}>
-                      {unit.code} - {unit.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="unit_id">
+                Unidade {isUnitRequired && <span className="text-destructive">*</span>}
+              </Label>
+
+              {showUnitWarning ? (
+                <div className="text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 p-3 rounded-md flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>
+                    Você não possui unidades vinculadas. Entre em contato com o administrador.
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <Select
+                    value={formData.unit_id}
+                    onValueChange={(value) => handleChange('unit_id', value)}
+                    disabled={isPending || isUnitFixed}
+                  >
+                    <SelectTrigger id="unit_id">
+                      <SelectValue
+                        placeholder={
+                          isUnitFixed
+                            ? `${fixedUnit?.code} - ${fixedUnit?.name}`
+                            : 'Selecione a unidade'
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {units.map((unit) => (
+                        <SelectItem key={unit.id} value={unit.id}>
+                          {unit.code} - {unit.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {isUnitFixed && (
+                    <p className="text-xs text-muted-foreground">
+                      Sua unidade foi selecionada automaticamente
+                    </p>
+                  )}
+                </>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="perceived_urgency">Urgência Percebida</Label>
