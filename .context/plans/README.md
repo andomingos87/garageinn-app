@@ -33,13 +33,14 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 20. [Mobile Epico 1 Autenticacao](./mobile-epico-1-autenticacao.md)
 21. [Modulo Sinistros](./modulo-sinistros.md)
 22. [Modulo Sinistros Completo](./modulo-sinistros-completo.md)
-23. [Revisao Impersonacao](./revisao-impersonacao.md)
-24. [Revisao Rls E Paginacao](./revisao-rls-e-paginacao.md)
-25. [Revisao Vinculo Unidades Usuarios](./revisao-vinculo-unidades-usuarios.md)
-26. [Rh Uniformes](./rh-uniformes.md)
-27. [Security Advisors Pending](./security-advisors-pending.md)
-28. [Ui Design System Refinements](./ui-design-system-refinements.md)
-29. [Unidades Followups](./unidades-followups.md)
+23. [Restaurar Sessao Impersonacao](./restaurar-sessao-impersonacao.md)
+24. [Revisao Impersonacao](./revisao-impersonacao.md)
+25. [Revisao Rls E Paginacao](./revisao-rls-e-paginacao.md)
+26. [Revisao Vinculo Unidades Usuarios](./revisao-vinculo-unidades-usuarios.md)
+27. [Rh Uniformes](./rh-uniformes.md)
+28. [Security Advisors Pending](./security-advisors-pending.md)
+29. [Ui Design System Refinements](./ui-design-system-refinements.md)
+30. [Unidades Followups](./unidades-followups.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.
