@@ -3,126 +3,114 @@
 **Senha padrão para todos os usuários:** `Teste123!`
 
 ## Resumo
-- **Total de usuários criados:** 40
-- **Data de criação:** 31/12/2025
+- **Total de usuários criados:** 31
+- **Data de criação:** 11/01/2026
 - **Status:** Todos ativos e com email confirmado
+- **Padrão de email:** `{cargo}_{setor}_teste@garageinn.com`
 
 ---
 
-## Cargos Globais (sem departamento)
+## Cargos Globais (3 usuários)
 
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_administrador_global@garageinn.com | Teste Administrador - Global | Administrador |
-| teste_desenvolvedor_global@garageinn.com | Teste Desenvolvedor - Global | Desenvolvedor |
-| teste_diretor_global@garageinn.com | Teste Diretor - Global | Diretor |
-
----
-
-## Departamento: Operações
-
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_manobrista_operacoes@garageinn.com | Teste Manobrista - Operações | Manobrista |
-| teste_encarregado_operacoes@garageinn.com | Teste Encarregado - Operações | Encarregado |
-| teste_supervisor_operacoes@garageinn.com | Teste Supervisor - Operações | Supervisor |
-| teste_gerente_operacoes@garageinn.com | Teste Gerente - Operações | Gerente |
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `desenvolvedor_global_teste@garageinn.com` | Teste Desenvolvedor - Global | Desenvolvedor | - |
+| `diretor_global_teste@garageinn.com` | Teste Diretor - Global | Diretor | - |
+| `administrador_global_teste@garageinn.com` | Teste Administrador - Global | Administrador | - |
 
 ---
 
-## Departamento: Manutenção
+## Departamento: Operações (4 usuários)
 
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_tecnico_de_manutencao_manutencao@garageinn.com | Teste Técnico de Manutenção - Manutenção | Técnico de Manutenção |
-| teste_encarregado_de_manutencao_manutencao@garageinn.com | Teste Encarregado de Manutenção - Manutenção | Encarregado de Manutenção |
-| teste_supervisor_de_manutencao_manutencao@garageinn.com | Teste Supervisor de Manutenção - Manutenção | Supervisor de Manutenção |
-| teste_gerente_de_manutencao_manutencao@garageinn.com | Teste Gerente de Manutenção - Manutenção | Gerente de Manutenção |
-
----
-
-## Departamento: Compras
-
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_comprador_compras@garageinn.com | Teste Comprador - Compras | Comprador |
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `manobrista_operacoes_teste@garageinn.com` | Teste Manobrista - Operações | Manobrista | BERRINI ONE |
+| `encarregado_operacoes_teste@garageinn.com` | Teste Encarregado - Operações | Encarregado | TOWER BRIDGE |
+| `supervisor_operacoes_teste@garageinn.com` | Teste Supervisor - Operações | Supervisor | BERRINI ONE, TOWER BRIDGE, HEBRAICA, CUBO, MARIA CECILIA |
+| `gerente_operacoes_teste@garageinn.com` | Teste Gerente - Operações | Gerente | - |
 
 ---
 
-## Departamento: Compras e Manutenção
+## Departamento: Compras e Manutenção (3 usuários)
 
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_auxiliar_compras_e_manutencao@garageinn.com | Teste Auxiliar - Compras e Manutenção | Auxiliar |
-| teste_analista_compras_e_manutencao@garageinn.com | Teste Analista - Compras e Manutenção | Analista |
-| teste_coordenador_compras_e_manutencao@garageinn.com | Teste Coordenador - Compras e Manutenção | Coordenador |
-| teste_gerente_compras_e_manutencao@garageinn.com | Teste Gerente - Compras e Manutenção | Gerente |
-
----
-
-## Departamento: Financeiro
-
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_auxiliar_financeiro@garageinn.com | Teste Auxiliar - Financeiro | Auxiliar |
-| teste_analista_financeiro@garageinn.com | Teste Analista - Financeiro | Analista |
-| teste_coordenador_financeiro@garageinn.com | Teste Coordenador - Financeiro | Coordenador |
-| teste_gerente_financeiro@garageinn.com | Teste Gerente - Financeiro | Gerente |
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `assistente_compras_e_manutencao_teste@garageinn.com` | Teste Assistente - Compras e Manutenção | Assistente | - |
+| `comprador_compras_e_manutencao_teste@garageinn.com` | Teste Comprador - Compras e Manutenção | Comprador | - |
+| `gerente_compras_e_manutencao_teste@garageinn.com` | Teste Gerente - Compras e Manutenção | Gerente | - |
 
 ---
 
-## Departamento: RH
+## Departamento: Financeiro (7 usuários)
 
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_auxiliar_rh@garageinn.com | Teste Auxiliar - RH | Auxiliar |
-| teste_analista_rh@garageinn.com | Teste Analista - RH | Analista |
-| teste_coordenador_rh@garageinn.com | Teste Coordenador - RH | Coordenador |
-| teste_gerente_rh@garageinn.com | Teste Gerente - RH | Gerente |
-
----
-
-## Departamento: Sinistros
-
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_auxiliar_sinistros@garageinn.com | Teste Auxiliar - Sinistros | Auxiliar |
-| teste_analista_sinistros@garageinn.com | Teste Analista - Sinistros | Analista |
-| teste_coordenador_sinistros@garageinn.com | Teste Coordenador - Sinistros | Coordenador |
-| teste_gerente_sinistros@garageinn.com | Teste Gerente - Sinistros | Gerente |
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `auxiliar_financeiro_teste@garageinn.com` | Teste Auxiliar - Financeiro | Auxiliar | - |
+| `assistente_financeiro_teste@garageinn.com` | Teste Assistente - Financeiro | Assistente | - |
+| `analista_junior_financeiro_teste@garageinn.com` | Teste Analista Júnior - Financeiro | Analista Júnior | - |
+| `analista_pleno_financeiro_teste@garageinn.com` | Teste Analista Pleno - Financeiro | Analista Pleno | - |
+| `analista_senior_financeiro_teste@garageinn.com` | Teste Analista Sênior - Financeiro | Analista Sênior | - |
+| `supervisor_financeiro_teste@garageinn.com` | Teste Supervisor - Financeiro | Supervisor | - |
+| `gerente_financeiro_teste@garageinn.com` | Teste Gerente - Financeiro | Gerente | - |
 
 ---
 
-## Departamento: Comercial
+## Departamento: RH (7 usuários)
 
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_vendedor_comercial@garageinn.com | Teste Vendedor - Comercial | Vendedor |
-| teste_analista_comercial@garageinn.com | Teste Analista - Comercial | Analista |
-| teste_coordenador_comercial@garageinn.com | Teste Coordenador - Comercial | Coordenador |
-| teste_gerente_comercial@garageinn.com | Teste Gerente - Comercial | Gerente |
-
----
-
-## Departamento: Auditoria
-
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_auditor_auditoria@garageinn.com | Teste Auditor - Auditoria | Auditor |
-| teste_auditor_senior_auditoria@garageinn.com | Teste Auditor Sênior - Auditoria | Auditor Sênior |
-| teste_coordenador_auditoria@garageinn.com | Teste Coordenador - Auditoria | Coordenador |
-| teste_gerente_auditoria@garageinn.com | Teste Gerente - Auditoria | Gerente |
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `auxiliar_rh_teste@garageinn.com` | Teste Auxiliar - RH | Auxiliar | - |
+| `assistente_rh_teste@garageinn.com` | Teste Assistente - RH | Assistente | - |
+| `analista_junior_rh_teste@garageinn.com` | Teste Analista Júnior - RH | Analista Júnior | - |
+| `analista_pleno_rh_teste@garageinn.com` | Teste Analista Pleno - RH | Analista Pleno | - |
+| `analista_senior_rh_teste@garageinn.com` | Teste Analista Sênior - RH | Analista Sênior | - |
+| `supervisor_rh_teste@garageinn.com` | Teste Supervisor - RH | Supervisor | - |
+| `gerente_rh_teste@garageinn.com` | Teste Gerente - RH | Gerente | - |
 
 ---
 
-## Departamento: TI
+## Departamento: Sinistros (2 usuários)
 
-| Email | Nome | Cargo |
-|-------|------|-------|
-| teste_analista_de_suporte_ti@garageinn.com | Teste Analista de Suporte - TI | Analista de Suporte |
-| teste_desenvolvedor_ti@garageinn.com | Teste Desenvolvedor - TI | Desenvolvedor |
-| teste_coordenador_ti@garageinn.com | Teste Coordenador - TI | Coordenador |
-| teste_gerente_ti@garageinn.com | Teste Gerente - TI | Gerente |
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `supervisor_sinistros_teste@garageinn.com` | Teste Supervisor - Sinistros | Supervisor | - |
+| `gerente_sinistros_teste@garageinn.com` | Teste Gerente - Sinistros | Gerente | - |
+
+---
+
+## Departamento: Comercial (1 usuário)
+
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `gerente_comercial_teste@garageinn.com` | Teste Gerente - Comercial | Gerente | - |
+
+---
+
+## Departamento: Auditoria (2 usuários)
+
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `auditor_auditoria_teste@garageinn.com` | Teste Auditor - Auditoria | Auditor | - |
+| `gerente_auditoria_teste@garageinn.com` | Teste Gerente - Auditoria | Gerente | - |
+
+---
+
+## Departamento: TI (2 usuários)
+
+| Email | Nome | Cargo | Unidades |
+|-------|------|-------|----------|
+| `analista_ti_teste@garageinn.com` | Teste Analista - TI | Analista | - |
+| `gerente_ti_teste@garageinn.com` | Teste Gerente - TI | Gerente | - |
+
+---
+
+## Regras de Vínculo com Unidades
+
+Conforme documentação em `projeto/usuarios/departamentos_cargos.md`:
+
+1. **Manobrista e Encarregado (Operações):** Vinculados a **1 unidade** (trabalham em uma unidade específica)
+2. **Supervisor (Operações):** Vinculado a **várias unidades** (supervisiona múltiplas unidades)
+3. **Demais cargos:** **Sem vínculo** com unidades (trabalham para todas as unidades)
 
 ---
 
@@ -133,12 +121,16 @@
 3. **A senha padrão `Teste123!`** deve ser alterada em ambiente de produção.
 4. Estes usuários são apenas para fins de teste e desenvolvimento.
 
+---
+
 ## Como usar
 
 Para fazer login com qualquer usuário de teste:
 1. Acesse a página de login do sistema
-2. Use o email do usuário desejado (ex: `teste_manobrista_operacoes@garageinn.com`)
+2. Use o email do usuário desejado (ex: `manobrista_operacoes_teste@garageinn.com`)
 3. Use a senha: `Teste123!`
+
+---
 
 ## Edge Function utilizada
 
@@ -146,8 +138,30 @@ A Edge Function `create-test-users` foi criada para gerar estes usuários automa
 Para recriar os usuários (caso sejam deletados), execute:
 
 ```bash
-curl -X POST "https://pwsesfwbbwimniivemwg.supabase.co/functions/v1/create-test-users" \
+curl -X POST "https://llxgumwacwgppoxkawnu.supabase.co/functions/v1/create-test-users" \
   -H "Content-Type: application/json" \
-  -d '{"secret_key": "garageinn-test-2024"}'
+  -d '{"secret_key": "garageinn-test-2026"}'
 ```
 
+---
+
+## Rollback (Remover usuários de teste)
+
+Para remover todos os usuários de teste, execute o seguinte SQL:
+
+```sql
+-- Remover vínculos com unidades
+DELETE FROM user_units 
+WHERE user_id IN (
+  SELECT id FROM profiles WHERE email LIKE '%_teste@garageinn.com'
+);
+
+-- Remover vínculos com cargos
+DELETE FROM user_roles 
+WHERE user_id IN (
+  SELECT id FROM profiles WHERE email LIKE '%_teste@garageinn.com'
+);
+
+-- Remover perfis (cascade para auth.users)
+DELETE FROM profiles WHERE email LIKE '%_teste@garageinn.com';
+```
