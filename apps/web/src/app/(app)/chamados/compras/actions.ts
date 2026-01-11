@@ -968,7 +968,7 @@ export async function handleApproval(
   }
   
   // Atualizar aprovação
-  const { error } = await supabase
+  const { error, data: updatedApproval } = await supabase
     .from('ticket_approvals')
     .update({
       approved_by: user.id,
@@ -977,6 +977,8 @@ export async function handleApproval(
       notes: notes || null
     })
     .eq('id', approvalId)
+    .select('id, status, approved_by')
+    .single()
   
   if (error) {
     console.error('Error handling approval:', error)

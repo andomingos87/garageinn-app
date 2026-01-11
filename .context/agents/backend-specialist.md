@@ -37,6 +37,7 @@ The Backend Specialist Agent supports the development team by focusing on the se
 - [Data Flow & Integrations](../docs/data-flow.md) — agent-update:data-flow
 - [Security & Compliance Notes](../docs/security.md) — agent-update:security
 - [Tooling & Productivity Guide](../docs/tooling.md) — agent-update:tooling
+- [RLS Patterns & Best Practices](../docs/rls-patterns.md) — Para implementação de auth/authorization com Supabase
 
 <!-- agent-readonly:guidance -->
 ## Collaboration Checklist

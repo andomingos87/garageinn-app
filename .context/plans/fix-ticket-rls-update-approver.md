@@ -188,14 +188,19 @@ AND status = 'awaiting_approval_encarregado';
 **Migrations Aplicadas:**
 - `fix_tickets_update_approver_policy` - Correção inicial com filtro por nível
 - `fix_tickets_update_approver_policy_v2` - Aumentou janela de tempo de 10s para 60s
+- `fix_tickets_update_approver_policy_v3` - Removeu verificação temporal, usa `approved_by = auth.uid()`
+- `fix_tickets_update_own_policy_remove_with_check` - Removeu `WITH CHECK` da política `tickets_update_own`
+- `fix_tickets_update_approver_add_with_check` - **FINAL**: Adicionou `WITH CHECK (true)` à política
+
+**Causa Raiz Final:**
+No PostgreSQL, quando uma política UPDATE **não tem `WITH CHECK`**, a cláusula `USING` é usada para verificar **TANTO a linha antiga QUANTO a nova**. Nossa política verificava o status atual do ticket (`CASE tickets.status ... THEN approval_level`), mas após o UPDATE mudar o status de `awaiting_approval_encarregado` para `awaiting_approval_supervisor`, a verificação falhava porque o novo status esperava nível 2, mas o aprovador era nível 1.
 
 **Migration SQL Final**
 ```sql
 -- =====================================================
--- Migration: Fix tickets_update_approver policy v2
--- Corrige bug que impedia UPDATE quando múltiplas 
--- aprovações existem para o mesmo ticket
--- Janela de tempo aumentada para 60 segundos
+-- Migration: Fix tickets_update_approver policy
+-- Adiciona WITH CHECK (true) para permitir a mudança de status
+-- O USING já garante que o usuário tem permissão
 -- =====================================================
 
 DROP POLICY IF EXISTS tickets_update_approver ON tickets;
@@ -206,7 +211,6 @@ USING (
   EXISTS (
     SELECT 1 FROM ticket_approvals ta
     WHERE ta.ticket_id = tickets.id
-    -- Filtra apenas a aprovação do nível correspondente ao status atual
     AND ta.approval_level = CASE tickets.status
       WHEN 'awaiting_approval_encarregado' THEN 1
       WHEN 'awaiting_approval_supervisor' THEN 2
@@ -214,11 +218,7 @@ USING (
     END
     AND (
       ta.status = 'pending'
-      OR (
-        ta.status IN ('approved', 'rejected')
-        AND ta.approved_by = auth.uid()
-        AND ta.decision_at > (now() - '00:01:00'::interval)  -- 60 segundos
-      )
+      OR ta.approved_by = auth.uid()
     )
     AND EXISTS (
       SELECT 1 FROM user_roles ur
@@ -227,8 +227,11 @@ USING (
       AND r.name = ta.approval_role
     )
   )
-);
+)
+WITH CHECK (true);  -- Permite qualquer valor novo, o USING já validou a permissão
 ```
+
+**Mudança chave:** Adicionado `WITH CHECK (true)` para permitir qualquer novo valor após o UPDATE. O `USING` já valida que o usuário tem permissão para atualizar a linha original (baseado no status ANTES do update). Sem o `WITH CHECK`, o PostgreSQL usaria o `USING` para também verificar a linha NOVA, que falharia porque o status mudou.
 
 **Advisors de Segurança:** Nenhum novo problema introduzido
 

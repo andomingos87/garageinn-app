@@ -39,6 +39,7 @@ The Security Auditor Agent supports the team by proactively identifying, assessi
 - [Data Flow & Integrations](../docs/data-flow.md) — agent-update:data-flow
 - [Security & Compliance Notes](../docs/security.md) — agent-update:security
 - [Tooling & Productivity Guide](../docs/tooling.md) — agent-update:tooling
+- [RLS Patterns & Best Practices](../docs/rls-patterns.md) — ⚠️ **LEITURA OBRIGATÓRIA** para auditorias RLS
 
 <!-- agent-readonly:guidance -->
 ## Collaboration Checklist
@@ -87,6 +88,23 @@ Document frequent problems this agent encounters and their solutions:
 3. Scan the repo with git-secrets or truffleHog to confirm removal
 4. Rotate affected credentials and notify stakeholders
 **Prevention:** Enforce pre-commit hooks for secret scanning, educate team on secure practices, and integrate automated secret detection in CI/CD pipelines
+
+### Issue: RLS Policies Allowing Unintended Access or Blocking Valid Users
+**Symptoms:** Usuários conseguem acessar dados que não deveriam OU usuários legítimos são bloqueados (error 42501)
+**Root Cause:** 
+- Políticas UPDATE sem `WITH CHECK` usam `USING` para verificar linha nova (pode bloquear)
+- Múltiplas políticas PERMISSIVE têm `WITH CHECK` combinados com AND (pode bloquear)
+- Políticas muito permissivas ou com lógica incorreta (pode permitir acesso indevido)
+**Resolution:**
+1. Auditar todas as políticas: `SELECT * FROM pg_policies WHERE tablename = 'x'`
+2. Para cada política UPDATE, verificar se `with_check` é NULL (usa USING como fallback)
+3. Simular cenários: a condição é válida ANTES e DEPOIS do UPDATE?
+4. Verificar interações entre políticas PERMISSIVE
+5. Usar `EXPLAIN (ANALYZE, VERBOSE)` com `SET row_security = on` para debug
+**Prevention:**
+- Checklist de auditoria em [RLS Patterns](../docs/rls-patterns.md)
+- Revisar políticas RLS em todo PR que modifica tabelas
+- Testar com diferentes roles usando `SET ROLE` em ambiente de desenvolvimento
 
 ## Hand-off Notes
 Summarize outcomes, remaining risks, and suggested follow-up actions after the agent completes its work. For example: "Security audit complete; all high-severity issues resolved. Remaining low-risk items tracked in #123. Recommend next audit in 30 days or upon major dependency update."

@@ -12,6 +12,7 @@ Welcome to the repository knowledge base. Start with the project overview, then 
 - [Data Flow & Integrations](./data-flow.md)
 - [Security & Compliance Notes](./security.md)
 - [Tooling & Productivity Guide](./tooling.md)
+- [RLS Patterns & Best Practices](./rls-patterns.md) ⚠️ **Leitura obrigatória para políticas RLS**
 
 ## Guias de Usuário
 - [Checklists - Guia do Usuário](./checklists-guia-usuario.md)
@@ -31,6 +32,7 @@ Welcome to the repository knowledge base. Start with the project overview, then 
 | Data Flow & Integrations | `data-flow.md` | agent-update:data-flow | System diagrams, integration specs, queue topics |
 | Security & Compliance Notes | `security.md` | agent-update:security | Auth model, secrets management, compliance requirements |
 | Tooling & Productivity Guide | `tooling.md` | agent-update:tooling | CLI scripts, IDE configs, automation workflows |
+| RLS Patterns & Best Practices | `rls-patterns.md` | agent-update:rls-patterns | RLS policies, UPDATE gotchas, debugging 42501 |
 
 <!-- agent-readonly:guidance -->
 ## AI Update Checklist

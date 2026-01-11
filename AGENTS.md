@@ -41,6 +41,48 @@ Este projeto utiliza o **Supabase** como backend. **Sempre utilize o MCP do Supa
 3. **Gere TypeScript types** após mudanças no schema para manter tipagem atualizada
 4. Para operações de leitura simples, prefira `execute_sql` sobre chamadas via código
 
+### RLS Best Practices para Políticas UPDATE
+
+> ⚠️ **Regra Crítica**: No PostgreSQL, quando uma política UPDATE **não tem `WITH CHECK`**, a cláusula `USING` é aplicada tanto à linha ANTIGA quanto à NOVA. Isso causa falhas silenciosas quando o UPDATE modifica colunas referenciadas no `USING`.
+
+**Padrão obrigatório para políticas UPDATE:**
+
+```sql
+-- ✅ CORRETO: WITH CHECK explícito
+CREATE POLICY example_update ON table_name
+FOR UPDATE TO authenticated
+USING (
+  -- Verifica permissão de ACESSO à linha original
+  owner_id = auth.uid()
+)
+WITH CHECK (
+  -- Verifica se o NOVO valor é permitido
+  -- Use (true) se qualquer valor novo é aceito
+  true
+);
+
+-- ❌ INCORRETO: Sem WITH CHECK
+CREATE POLICY example_update ON table_name
+FOR UPDATE TO authenticated
+USING (status = 'pending');  -- FALHA se UPDATE mudar status!
+```
+
+**Quando usar `WITH CHECK (true)`:**
+- A intenção é apenas verificar se o usuário pode acessar a linha
+- Não há restrições sobre os novos valores
+
+**Quando definir `WITH CHECK` específico:**
+- Há restrições sobre quais valores o usuário pode definir
+- Ex: `WITH CHECK (priority <= user_max_priority)`
+
+**Debugging de Erros RLS 42501:**
+1. Listar TODAS as políticas da tabela: `SELECT * FROM pg_policies WHERE tablename = 'x'`
+2. Verificar `with_check` de cada política - se NULL, o `USING` será usado
+3. Simular o UPDATE mentalmente: a condição `USING` será válida APÓS o UPDATE?
+4. Lembrar: múltiplas políticas PERMISSIVE têm seus `WITH CHECK` combinados com AND
+
+**Referência completa:** `.context/docs/rls-patterns.md`
+
 ## AI Context References
 - Documentation index: `.context/docs/README.md`
 - Agent playbooks: `.context/agents/README.md`

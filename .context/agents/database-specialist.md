@@ -37,6 +37,7 @@ The database specialist agent supports the team by ensuring robust, scalable, an
 - [Data Flow & Integrations](../docs/data-flow.md) — agent-update:data-flow
 - [Security & Compliance Notes](../docs/security.md) — agent-update:security
 - [Tooling & Productivity Guide](../docs/tooling.md) — agent-update:tooling
+- [RLS Patterns & Best Practices](../docs/rls-patterns.md) — ⚠️ **LEITURA OBRIGATÓRIA** para políticas RLS
 
 <!-- agent-readonly:guidance -->
 ## Collaboration Checklist
@@ -89,6 +90,20 @@ Document frequent problems this agent encounters and their solutions:
 2. Run `npm update` to get compatible versions
 3. Test locally before committing
 **Prevention:** Keep dependencies updated regularly, use lockfiles
+
+### Issue: RLS UPDATE Policy Blocks Valid Operations (Error 42501)
+**Symptoms:** UPDATE operations fail with `new row violates row-level security policy` even when user has permission
+**Root Cause:** Política UPDATE sem `WITH CHECK` explícito — PostgreSQL usa `USING` para verificar TANTO a linha antiga QUANTO a nova. Se o UPDATE modifica colunas referenciadas no `USING`, a verificação falha.
+**Resolution:**
+1. Listar todas as políticas: `SELECT * FROM pg_policies WHERE tablename = 'x'`
+2. Identificar políticas UPDATE sem `with_check` (valor NULL)
+3. Verificar se `USING` referencia colunas que o UPDATE modifica
+4. Adicionar `WITH CHECK (true)` se qualquer novo valor é permitido
+5. Verificar interação com outras políticas PERMISSIVE (seus WITH CHECK são combinados com AND)
+**Prevention:** 
+- **SEMPRE** definir `WITH CHECK` explícito em políticas UPDATE
+- Consultar [RLS Patterns](../docs/rls-patterns.md) antes de criar novas políticas
+- Testar o fluxo completo, não apenas a permissão de acesso
 
 ## Hand-off Notes
 Summarize outcomes, remaining risks, and suggested follow-up actions after the agent completes its work. For example: "Schema optimized; monitor query performance for 24 hours post-deployment. Risk: High-traffic periods may require further tuning. Follow-up: Schedule quarterly index review."

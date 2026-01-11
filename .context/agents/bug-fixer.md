@@ -34,6 +34,7 @@ The Bug Fixer Agent supports the development team by systematically identifying,
 - [Data Flow & Integrations](../docs/data-flow.md) — agent-update:data-flow
 - [Security & Compliance Notes](../docs/security.md) — agent-update:security
 - [Tooling & Productivity Guide](../docs/tooling.md) — agent-update:tooling
+- [RLS Patterns & Best Practices](../docs/rls-patterns.md) — Para debugging de erros RLS 42501
 
 <!-- agent-readonly:guidance -->
 ## Collaboration Checklist
@@ -82,6 +83,20 @@ Document frequent problems this agent encounters and their solutions:
 3. Update CI configuration to increase timeouts or use dedicated runners
 4. Commit and re-run the pipeline to verify
 **Prevention:** Implement retry logic for flaky tests and standardize CI environments with Docker
+
+### Issue: RLS Error 42501 em Operações que "Deveriam Funcionar"
+**Symptoms:** UPDATE/INSERT falha com `new row violates row-level security policy` mesmo quando o usuário parece ter permissão
+**Root Cause:** Comportamento não-óbvio do PostgreSQL RLS:
+- Política UPDATE sem `WITH CHECK` usa `USING` para verificar linha NOVA (não apenas antiga)
+- Múltiplas políticas PERMISSIVE têm `WITH CHECK` combinados com AND
+- Erro genérico não indica qual política ou condição falhou
+**Resolution:**
+1. Listar TODAS as políticas da tabela: `SELECT policyname, cmd, qual, with_check FROM pg_policies WHERE tablename = 'x'`
+2. Identificar políticas com `with_check IS NULL` — estas usam `USING` como fallback
+3. Simular o UPDATE: a condição `USING` é válida APÓS o UPDATE com os novos valores?
+4. Verificar se outras políticas PERMISSIVE têm `WITH CHECK` que pode estar bloqueando
+5. Adicionar `WITH CHECK (true)` se a intenção é apenas verificar acesso
+**Prevention:** Consultar [RLS Patterns](../docs/rls-patterns.md) antes de debugging extenso
 
 ## Hand-off Notes
 After completing a fix, the agent should summarize: the bug description and root cause; changes made (including new tests); verification steps performed; any remaining risks (e.g., performance impacts); and suggested follow-ups like monitoring post-deployment or updating related docs.
