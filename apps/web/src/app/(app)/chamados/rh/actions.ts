@@ -574,13 +574,18 @@ export async function handleRHApproval(
   
   // Atualizar status do ticket
   if (decision === 'rejected') {
-    await supabase
+    const { error: ticketError } = await supabase
       .from('tickets')
       .update({
         status: 'denied',
         denial_reason: notes || 'Negado na aprovação'
       })
       .eq('id', ticketId)
+    
+    if (ticketError) {
+      console.error('Error updating ticket status (rejected):', ticketError)
+      return { error: 'Aprovação registrada, mas falha ao atualizar status do chamado' }
+    }
   } else {
     // Aprovar e avançar para próximo nível ou triagem
     const nextStatusMap: Record<number, string> = {
@@ -589,10 +594,15 @@ export async function handleRHApproval(
       3: 'awaiting_triage'
     }
     
-    await supabase
+    const { error: ticketError } = await supabase
       .from('tickets')
       .update({ status: nextStatusMap[approval.approval_level] })
       .eq('id', ticketId)
+    
+    if (ticketError) {
+      console.error('Error updating ticket status (approved):', ticketError)
+      return { error: 'Aprovação registrada, mas falha ao atualizar status do chamado' }
+    }
   }
   
   revalidatePath(`/chamados/rh/${ticketId}`)
