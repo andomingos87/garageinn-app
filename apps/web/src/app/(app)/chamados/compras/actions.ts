@@ -46,7 +46,7 @@ export interface UserUnit {
 // ============================================
 
 /**
- * Busca departamento de Compras
+ * Busca departamento de Compras e Manutenção
  */
 async function getComprasDepartment() {
   const supabase = await createClient()
@@ -54,7 +54,7 @@ async function getComprasDepartment() {
   const { data, error } = await supabase
     .from('departments')
     .select('id')
-    .eq('name', 'Compras')
+    .eq('name', 'Compras e Manutenção')
     .single()
   
   if (error) {

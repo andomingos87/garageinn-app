@@ -36,8 +36,65 @@ export interface MaintenanceCategory {
   status: string
 }
 
-// Re-export from shared lib
-export { getUserUnits, getUserFixedUnit, type UserUnit } from '@/lib/units'
+export interface UserUnit {
+  id: string
+  name: string
+  code: string
+}
+
+/**
+ * Obtém unidades acessíveis ao usuário atual
+ */
+export async function getUserUnits(): Promise<UserUnit[]> {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  // Usar RPC que centraliza a lógica de acesso por role
+  const { data, error } = await supabase.rpc('get_user_accessible_units')
+
+  if (error) {
+    console.error('Error fetching accessible units:', error)
+    return []
+  }
+
+  return data || []
+}
+
+/**
+ * Verifica se o usuário tem unidade fixa (Manobrista/Encarregado)
+ */
+export async function getUserFixedUnit(): Promise<UserUnit | null> {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  // Verificar se tem role de unidade fixa
+  const { data: userRoles } = await supabase
+    .from('user_roles')
+    .select('role:roles(name)')
+    .eq('user_id', user.id)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hasFixedUnitRole = userRoles?.some((ur: any) =>
+    ['Manobrista', 'Encarregado'].includes(ur.role?.name)
+  )
+
+  if (!hasFixedUnitRole) return null
+
+  // Buscar unidade única (não coverage)
+  const { data: units } = await supabase
+    .from('user_units')
+    .select('unit:units(id, name, code)')
+    .eq('user_id', user.id)
+    .eq('is_coverage', false)
+    .limit(1)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (units?.[0] as any)?.unit || null
+}
 
 // ============================================
 // Query Functions
