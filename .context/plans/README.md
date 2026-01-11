@@ -1,16 +1,8 @@
 # Collaboration Plans
 
-This directory is the run queue for AI agents and maintainers coordinating work across documentation and playbooks. Treat the list below as an ordered backlog: finish the first plan before moving on to the next unless a human directs otherwise.
+This directory contains plans for coordinating work across documentation and playbooks.
 
-## Agent Execution Protocol
-1. **Read the queue** from top to bottom. The numbering reflects execution priority.
-2. **Open the plan file** (e.g., './plans/<slug>.md') and review the YAML front matter and the '<!-- agent-update:start:plan-... -->' wrapper so you understand the goal, required inputs, and success criteria.
-3. **Gather context** by visiting the linked documentation and agent playbooks referenced in the "Agent Lineup" and "Documentation Touchpoints" tables.
-4. **Execute the stages** exactly as written, capturing evidence and updating linked docs as instructed. If a stage cannot be completed, record the reason inside the plan before pausing.
-5. **Close out the plan** by updating any TODOs, recording outcomes in the "Evidence & Follow-up" section, and notifying maintainers if human review is required.
-6. **Return here** and pick the next plan in the queue. Always leave the README and plan files consistent with the work performed.
-
-## Plan Queue (process in order)
+## Plan Queue
 1. [Autenticacao](./autenticacao.md)
 2. [Chamados Compras](./chamados-compras.md)
 3. [Chamados Hub Unificado](./chamados-hub-unificado.md)
@@ -24,28 +16,32 @@ This directory is the run queue for AI agents and maintainers coordinating work 
 11. [Entrega1 Infra Bootstrap](./entrega1-infra-bootstrap.md)
 12. [Fix Bug Impersonacao Estado Persistente](./fix-bug-impersonacao-estado-persistente.md)
 13. [Fix Bug Redefinicao Senha](./fix-bug-redefinicao-senha.md)
-14. [Gestao Avancada Usuarios](./gestao-avancada-usuarios.md)
+14. [Fix Ticket RLS Approval Flow](./fix-ticket-rls-approval-flow.md) ⚡ **READY**
+15. [Gestao Avancada Usuarios](./gestao-avancada-usuarios.md)
 15. [Gestao Unidades](./gestao-unidades.md)
 16. [Gestao Usuarios](./gestao-usuarios.md)
 17. [Gestao Usuarios Followups](./gestao-usuarios-followups.md)
-18. [Implementacao Impersonacao](./implementacao-impersonacao.md)
-19. [Mobile Epico 0 Fundacao](./mobile-epico-0-fundacao.md)
-20. [Mobile Epico 1 Autenticacao](./mobile-epico-1-autenticacao.md)
-21. [Modulo Sinistros](./modulo-sinistros.md)
-22. [Modulo Sinistros Completo](./modulo-sinistros-completo.md)
-23. [Restaurar Sessao Impersonacao](./restaurar-sessao-impersonacao.md)
-24. [Revisao Impersonacao](./revisao-impersonacao.md)
-25. [Revisao Rls E Paginacao](./revisao-rls-e-paginacao.md)
-26. [Revisao Vinculo Unidades Usuarios](./revisao-vinculo-unidades-usuarios.md)
-27. [Rh Uniformes](./rh-uniformes.md)
-28. [Security Advisors Pending](./security-advisors-pending.md)
-29. [Ui Design System Refinements](./ui-design-system-refinements.md)
-30. [Unidades Followups](./unidades-followups.md)
+18. [Impersonation User](./impersonation-user.md)
+19. [Implementacao Impersonacao](./implementacao-impersonacao.md)
+20. [Mobile Epico 0 Fundacao](./mobile-epico-0-fundacao.md)
+21. [Mobile Epico 1 Autenticacao](./mobile-epico-1-autenticacao.md)
+22. [Modulo Sinistros](./modulo-sinistros.md)
+23. [Modulo Sinistros Completo](./modulo-sinistros-completo.md)
+24. [Restaurar Sessao Impersonacao](./restaurar-sessao-impersonacao.md)
+25. [Revisao Impersonacao](./revisao-impersonacao.md)
+26. [Revisao Rls E Paginacao](./revisao-rls-e-paginacao.md)
+27. [Revisao Vinculo Unidades Usuarios](./revisao-vinculo-unidades-usuarios.md)
+28. [Rh Uniformes](./rh-uniformes.md)
+29. [Security Advisors Pending](./security-advisors-pending.md)
+30. [Ticket Redirect Route](./ticket-redirect-route.md)
+31. [Ui Design System Refinements](./ui-design-system-refinements.md)
+32. [Unidades Followups](./unidades-followups.md)
+33. [Usuarios Teste](./usuarios-teste.md)
+34. [Views Database Sync](./views-database-sync.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.
-- Run "ai-context plan <name> --fill" (optionally with "--dry-run") to have an LLM refresh the plan using the latest repository context.
-- Cross-link any new documentation or agent resources you introduce so future runs stay discoverable.
+- Run "ai-context plan <name> --fill" to have an LLM refresh the plan using the latest repository context.
 
 ## Related Resources
 - [Agent Handbook](../agents/README.md)
