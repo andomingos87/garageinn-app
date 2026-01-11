@@ -1,2 +1,3 @@
-admin@garageinn.com
+admin@garageinn.com.br
 Teste123!
+
